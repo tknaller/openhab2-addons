@@ -31,8 +31,9 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
     public void startScan() {
         BroadlinkSocket.registerListener(this);
-        discoverDevices();
-        waitUntilEnded();
+        logger.warn("Broadlink device scan currently not implemented.");
+        //discoverDevices();
+        //waitUntilEnded();
         BroadlinkSocket.unregisterListener(this);
     }
 
@@ -41,31 +42,31 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(getTimestampOfLastScan());
     }
 
-    private void waitUntilEnded() {
-        final Semaphore discoveryEndedLock = new Semaphore(0);
-        scheduler.schedule(new Runnable() {
-
-            public void run() {
-                discoveryEndedLock.release();
-            }
-
-            final BroadlinkDiscoveryService this$0;
-            private final Semaphore val$discoveryEndedLock;
-
-
-            {
-                this$0 = BroadlinkDiscoveryService.this;
-                discoveryEndedLock = semaphore;
-                super();
-            }
-        }
-                , 10L, TimeUnit.SECONDS);
-        try {
-            discoveryEndedLock.acquire();
-        } catch (InterruptedException e) {
-            logger.error("Discovery problem {}", e.getMessage());
-        }
-    }
+//    private void waitUntilEnded() {
+//        final Semaphore discoveryEndedLock = new Semaphore(0);
+//        scheduler.schedule(new Runnable() {
+//
+//            public void run() {
+//                discoveryEndedLock.release();
+//            }
+//
+//            final BroadlinkDiscoveryService this$0;
+//            private final Semaphore val$discoveryEndedLock;
+//
+//
+//            {
+//                this$0 = BroadlinkDiscoveryService.this;
+//                discoveryEndedLock = semaphore;
+//                super();
+//            }
+//        }
+//                , 10L, TimeUnit.SECONDS);
+//        try {
+//            discoveryEndedLock.acquire();
+//        } catch (InterruptedException e) {
+//            logger.error("Discovery problem {}", e.getMessage());
+//        }
+//    }
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
@@ -118,19 +119,19 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
     private static InetAddress findNonLoopbackAddress() throws SocketException {
         Enumeration ifaces = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface iface : ifaces) {
-            Enumeration inetAddrs = iface.getInetAddresses();
-            for (InetAddress inetAddr : inetAddrs) {
-                if (inetAddr.isLoopbackAddress()) {
-                    continue; /* Loop/switch isn't completed */
-                }
-
-                if (inetAddr.isSiteLocalAddress()) {
-                    return inetAddr;
-                }
-
-            }
-        }
+//        for (NetworkInterface iface : ifaces) {
+//            Enumeration inetAddrs = iface.getInetAddresses();
+//            for (InetAddress inetAddr : inetAddrs) {
+//                if (inetAddr.isLoopbackAddress()) {
+//                    continue; /* Loop/switch isn't completed */
+//                }
+//
+//                if (inetAddr.isSiteLocalAddress()) {
+//                    return inetAddr;
+//                }
+//
+//            }
+//        }
         return null;
     }
 
