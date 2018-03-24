@@ -11,6 +11,7 @@ Export-Package:
  org.openhab.binding.broadlink,
  org.openhab.binding.broadlink.handler
 Import-Package: 
+ org.apache.commons.lang,
  org.openhab.binding.broadlink,
  org.openhab.binding.broadlink.handler,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -20,6 +21,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.util,
  org.slf4j
