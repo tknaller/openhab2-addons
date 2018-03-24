@@ -6,6 +6,7 @@
 package org.openhab.binding.broadlink.internal.discovery;
 
 import java.util.*;
+
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.*;
@@ -16,42 +17,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
-    implements ControllerStatusListener
-{
+        implements ControllerStatusListener {
 
-    public BroadlinkDeviceDiscoveryService(BroadlinkControllerHandler controller)
-    {
+    public BroadlinkDeviceDiscoveryService(BroadlinkControllerHandler controller) {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
-        logger = LoggerFactory.getLogger(org/openhab/binding/broadlink/internal/discovery/BroadlinkDeviceDiscoveryService);
+        logger = LoggerFactory.getLogger(BroadlinkDeviceDiscoveryService.class);
         logger.debug("BroadlinkDeviceDiscoveryService {}", controller);
         this.controller = controller;
         this.controller.addControllerStatusListener(this);
     }
 
-    protected void startScan()
-    {
+    protected void startScan() {
         discoverDevices();
     }
 
-    protected void startBackgroundDiscovery()
-    {
+    protected void startBackgroundDiscovery() {
         discoverDevices();
     }
 
-    public void controllerStatusChanged(ThingStatus status)
-    {
-        if(status.equals(ThingStatus.ONLINE))
+    public void controllerStatusChanged(ThingStatus status) {
+        if (status.equals(ThingStatus.ONLINE))
             discoverDevices();
     }
 
-    protected void deactivate()
-    {
+    protected void deactivate() {
         super.deactivate();
         controller.removeControllerStatusListener(this);
     }
 
-    private void discoverDevices()
-    {
+    private void discoverDevices() {
         String serial = null;
         String name = null;
         String type = null;
@@ -69,8 +63,7 @@ public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
     Logger logger;
     public static final Set SUPPORTED_THING_TYPES_UIDS;
 
-    static 
-    {
+    static {
         SUPPORTED_THING_TYPES_UIDS = Collections.singleton(BroadlinkBindingConstants.THING_TYPE_S1C);
     }
 }
