@@ -16,10 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
@@ -119,35 +116,32 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         }
     }
 
+    private static InetAddress findNonLoopbackAddress() throws SocketException {
+        Enumeration ifaces = NetworkInterface.getNetworkInterfaces();
+        for (NetworkInterface iface : ifaces) {
+            Enumeration inetAddrs = iface.getInetAddresses();
+            for (InetAddress inetAddr : inetAddrs) {
+                if (inetAddr.isLoopbackAddress()) {
+                    continue; /* Loop/switch isn't completed */
+                }
+
+                if (inetAddr.isSiteLocalAddress()) {
+                    return inetAddr;
+                }
+
+            }
+        }
+        return null;
+    }
+
     private static InetAddress getLocalHostLANAddress()
             throws UnknownHostException {
-        InetAddress candidateAddress;
-        Enumeration ifaces;
-        candidateAddress = null;
-        ifaces = NetworkInterface.getNetworkInterfaces();
-        goto _L1
-        _L5:
-        Enumeration inetAddrs;
-        NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
-        inetAddrs = iface.getInetAddresses();
-        goto _L2
-        _L3:
-        InetAddress inetAddr;
-        inetAddr = (InetAddress) inetAddrs.nextElement();
-        if (inetAddr.isLoopbackAddress())
-            continue; /* Loop/switch isn't completed */
-        if (inetAddr.isSiteLocalAddress())
-            return inetAddr;
-        if (candidateAddress == null)
-            candidateAddress = inetAddr;
-        _L2:
-        if (inetAddrs.hasMoreElements())goto _L3;else goto _L1
-        _L1:
-        if (ifaces.hasMoreElements())goto _L5;else goto _L4
-        _L4:
-        if (candidateAddress != null)
-            return candidateAddress;
+
         try {
+            InetAddress candidateAddress = findNonLoopbackAddress();
+
+            if (candidateAddress != null) return candidateAddress;
+
             InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
             if (jdkSuppliedAddress == null)
                 throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
