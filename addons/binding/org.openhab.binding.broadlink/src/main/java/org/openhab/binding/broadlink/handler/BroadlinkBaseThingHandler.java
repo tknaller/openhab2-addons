@@ -53,13 +53,13 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         count = 0;
     }
 
-    private void logDebug(String msg, String... args) {
+    protected void logDebug(String msg, Object... args) {
         if (logger.isDebugEnabled()) {
             logger.debug(getThing().getUID() + ": " + msg, args);
         }
     }
 
-    private void logError(String msg, Object... args) {
+    protected void logError(String msg, Object... args) {
         logger.error(getThing().getUID() + ": " + msg, args);
     }
 
@@ -160,9 +160,11 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         properties.put("id", Hex.toHexString(deviceId));
         updateProperties(properties);
         thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
-        logDebug("Authenticated with id '{}' and key '{}'.", new Object[]{
-            Hex.toHexString(deviceId), Hex.toHexString(deviceKey)
-        });
+        logDebug(
+            "Authenticated with id '{}' and key '{}'.",
+            Hex.toHexString(deviceId),
+            Hex.toHexString(deviceKey)
+        );
         return true;
     }
 
