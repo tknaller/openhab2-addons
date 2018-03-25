@@ -316,12 +316,18 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     }
 
     public void updateItemStatus() {
-        logger.info("updateItemStatus " + getThing().getUID());
+        logDebug("updateItemStatus");
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
-            if (!isOnline())
+            if (!isOnline()) {
                 updateStatus(ThingStatus.ONLINE);
-        } else if (!isOffline())
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString());
+            }
+        } else if (!isOffline()) {
+            updateStatus(
+                ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR,
+                (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString()
+            );
+        }
     }
 
     protected static boolean hostAvailabilityCheck(String host, int timeout) {
