@@ -59,6 +59,10 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    private void logError(String msg, Object... args) {
+        logger.error(getThing().getUID() + ": " + msg, args);
+    }
+
     public void initialize() {
         logDebug("initializing");
 
@@ -103,7 +107,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     }
 
     public void dispose() {
-        logger.error("'{}' is being disposed", getThing().getLabel());
+        logError("'{}' is being disposed", getThing().getLabel());
         super.dispose();
     }
 
@@ -135,17 +139,17 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         payload[54] = 49;
 
         if (!sendDatagram(buildMessage((byte) 101, payload), "authentication")) {
-            logDebug("Authenticate - failed to send.");
+            logError("Authenticate - failed to send.");
             return false;
         }
         byte response[] = receiveDatagram("authentication");
         if (response == null) {
-            logDebug("Authenticate - failed to receive.");
+            logError("Authenticate - failed to receive.");
             return false;
         }
         int error = response[34] | response[35] << 8;
         if (error != 0) {
-            logDebug("Authenticated -received error '{}'", String.valueOf(error));
+            logError("Authenticated -received error '{}'", String.valueOf(error));
             return false;
         }
         byte decryptResponse[] = Utils.decrypt(Hex.convertHexToBytes(authenticationKey), new IvParameterSpec(Hex.convertHexToBytes(iv)), Utils.slice(response, 56, 88));
@@ -156,10 +160,9 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         properties.put("id", Hex.toHexString(deviceId));
         updateProperties(properties);
         thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
-        if (logger.isDebugEnabled())
-            logger.debug("Authenticated device '{}' with id '{}' and key '{}'.", new Object[]{
-                    getThing().getUID(), Hex.toHexString(deviceId), Hex.toHexString(deviceKey)
-            });
+        logDebug("Authenticated with id '{}' and key '{}'.", new Object[]{
+            Hex.toHexString(deviceId), Hex.toHexString(deviceKey)
+        });
         return true;
     }
 
