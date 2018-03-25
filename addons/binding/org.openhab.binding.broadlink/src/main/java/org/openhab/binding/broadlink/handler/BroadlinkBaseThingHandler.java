@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.crypto.spec.IvParameterSpec;
+
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -23,20 +24,18 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BroadlinkBaseThingHandler extends BaseThingHandler
-{
+public class BroadlinkBaseThingHandler extends BaseThingHandler {
     public static final Set SUPPORTED_THING_TYPES;
     private static Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
-    private static DatagramSocket socket = null;
+    private DatagramSocket socket = null;
     int count;
     String authenticationKey;
     String iv;
-    static boolean commandRunning = false;
+    boolean commandRunning = false;
     public BroadlinkDeviceConfiguration thingConfig;
 
-    static
-    {
-        SUPPORTED_THING_TYPES = new HashSet(Arrays.asList(new ThingTypeUID[] {
+    static {
+        SUPPORTED_THING_TYPES = new HashSet(Arrays.asList(new ThingTypeUID[]{
                 BroadlinkBindingConstants.THING_TYPE_A1,
                 BroadlinkBindingConstants.THING_TYPE_RM,
                 BroadlinkBindingConstants.THING_TYPE_RM2,
@@ -49,22 +48,23 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
         }));
     }
 
-    public BroadlinkBaseThingHandler(Thing thing)
-    {
+    public BroadlinkBaseThingHandler(Thing thing) {
         super(thing);
         count = 0;
     }
 
-    public void initialize()
-    {
+    private void logDebug(String msg, String... args) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Initializing Broadlink device handler '{}'", getThing().getUID());
+            logger.debug(getThing().getUID() + ": " + msg, args);
         }
+    }
+
+    public void initialize() {
+        logDebug("initializing");
 
         count = (new Random()).nextInt(65535);
-        thingConfig = (BroadlinkDeviceConfiguration)getConfigAs(BroadlinkDeviceConfiguration.class);
-        if(iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey())
-        {
+        thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
+        if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
             Map properties = editProperties();
@@ -77,25 +77,24 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
+        logDebug("initialization complete");
 
-        if(thingConfig.getPollingInterval() != 0)
+        if (thingConfig.getPollingInterval() != 0)
             scheduler.scheduleWithFixedDelay(new Runnable() {
 
-                public void run()
-                {
+                public void run() {
                     updateItemStatus();
                 }
             }
-, 1L, thingConfig.getPollingInterval(), TimeUnit.SECONDS);
+                    , 1L, thingConfig.getPollingInterval(), TimeUnit.SECONDS);
     }
 
-    public void thingUpdated(Thing thing)
-    {
-        if(iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey())
-        {
+    public void thingUpdated(Thing thing) {
+        logDebug("thingUpdated");
+        if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
-            if(authenticate())
+            if (authenticate())
                 updateStatus(ThingStatus.ONLINE);
             else
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -103,14 +102,12 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
         updateItemStatus();
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         logger.error("'{}' is being disposed", getThing().getLabel());
         super.dispose();
     }
 
-    private boolean authenticate()
-    {
+    private boolean authenticate() {
         byte payload[] = new byte[80];
         payload[4] = 49;
         payload[5] = 49;
@@ -137,21 +134,18 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
         payload[53] = 32;
         payload[54] = 49;
 
-        if (!sendDatagram(buildMessage((byte)101, payload)))
-        {
-            logger.debug("Authenticated device '{}' failed to send.", getThing().getUID());
+        if (!sendDatagram(buildMessage((byte) 101, payload), "authentication")) {
+            logDebug("Authenticate - failed to send.");
             return false;
         }
-        byte response[] = receiveDatagram();
-        if(response == null)
-        {
-            logger.debug("Authenticated device '{}' failed to receive.", getThing().getUID());
+        byte response[] = receiveDatagram("authentication");
+        if (response == null) {
+            logDebug("Authenticate - failed to receive.");
             return false;
         }
         int error = response[34] | response[35] << 8;
-        if(error != 0)
-        {
-            logger.debug("Authenticated device '{}' received error '{}'", getThing().getUID(), error);
+        if (error != 0) {
+            logDebug("Authenticated -received error '{}'", String.valueOf(error));
             return false;
         }
         byte decryptResponse[] = Utils.decrypt(Hex.convertHexToBytes(authenticationKey), new IvParameterSpec(Hex.convertHexToBytes(iv)), Utils.slice(response, 56, 88));
@@ -161,93 +155,92 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
         properties.put("key", Hex.toHexString(deviceKey));
         properties.put("id", Hex.toHexString(deviceId));
         updateProperties(properties);
-        thingConfig = (BroadlinkDeviceConfiguration)getConfigAs(BroadlinkDeviceConfiguration.class);
-        if(logger.isDebugEnabled())
-            logger.debug("Authenticated device '{}' with id '{}' and key '{}'.", new Object[] {
-                getThing().getUID(), Hex.toHexString(deviceId), Hex.toHexString(deviceKey)
+        thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
+        if (logger.isDebugEnabled())
+            logger.debug("Authenticated device '{}' with id '{}' and key '{}'.", new Object[]{
+                    getThing().getUID(), Hex.toHexString(deviceId), Hex.toHexString(deviceKey)
             });
         return true;
     }
 
-    public boolean sendDatagram(byte message[])
-    {
-        try
-        {
-            if(socket == null || socket.isClosed())
-            {
+    public boolean sendDatagram(byte message[]) {
+        return sendDatagram(message, "Normal Operation");
+    }
+
+
+    public boolean sendDatagram(byte message[], String purpose) {
+        try {
+            logDebug("Sending " + purpose);
+            if (socket == null || socket.isClosed()) {
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
+                socket.setReuseAddress(true);
+                socket.setSoTimeout(5000);
             }
             InetAddress host = InetAddress.getByName(thingConfig.getIpAddress());
             int port = thingConfig.getPort();
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
             commandRunning = true;
             socket.send(sendPacket);
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             logger.error("IO error for device '{}' during UDP command sending: {}", getThing().getUID(), e.getMessage());
             commandRunning = false;
             return false;
         }
+        logDebug("Sending " + purpose + " complete");
         return true;
     }
 
-    public byte[] receiveDatagram()
-    {
+    public byte[] receiveDatagram(String purpose) {
+        logDebug("Receiving " + purpose);
         try {
-            socket.setReuseAddress(true);
+//            socket.setReuseAddress(true);
             socket.setSoTimeout(5000);
         } catch (SocketException se) {
+            logger.error("Socket exception {} while Rxing " + purpose + " from {}!",se.getMessage(), getThing().getUID());
             commandRunning = false;
             socket.close();
             return null;
         }
 
-        if(!commandRunning) {
-            logger.error("No command running - device '{}' should not be receiving at this time!", getThing().getUID());
+        if (!commandRunning) {
+            logger.error("No command running - device '{}' should not be receiving " + purpose + " at this time!", getThing().getUID());
             return null;
         }
 
-        try
-        {
-            if(socket != null)
-            {
+        try {
+            if (socket == null) {
+                logger.error("receiveDatagram " + purpose + " for {} - socket was unexpectedly null", getThing().getUID() );
+            } else {
                 byte response[] = new byte[1024];
                 DatagramPacket receivePacket = new DatagramPacket(response, response.length);
                 socket.receive(receivePacket);
                 response = receivePacket.getData();
                 commandRunning = false;
                 socket.close();
+                logDebug("Receiving " + purpose + " complete (OK)");
                 return response;
             }
-        }
-        catch (SocketTimeoutException ste) {
-            if(logger.isDebugEnabled()) {
-                logger.debug("No further response received for device '{}'", getThing().getUID());
-            }
-        }
-
-        catch(Exception e)
-        {
-            logger.error("IO Exception: '{}", e.getMessage());
+        } catch (SocketTimeoutException ste) {
+            logDebug("No further " + purpose + " response received for device");
+        } catch (Exception e) {
+            logger.error("While {} - IO Exception: '{}'", purpose, e.getMessage());
         }
 
         commandRunning = false;
         return null;
     }
 
-    protected byte[] buildMessage(byte command, byte payload[])
-    {
+    protected byte[] buildMessage(byte command, byte payload[]) {
         count = count + 1 & 0xffff;
         byte packet[] = new byte[56];
         byte mac[] = thingConfig.getMAC();
         Map properties = editProperties();
         byte id[];
-        if(properties.get("id") == null)
+        if (properties.get("id") == null)
             id = new byte[4];
         else
-            id = Hex.fromHexString((String)properties.get("id"));
+            id = Hex.fromHexString((String) properties.get("id"));
         packet[0] = 90;
         packet[1] = -91;
         packet[2] = -86;
@@ -259,8 +252,8 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
         packet[36] = 42;
         packet[37] = 39;
         packet[38] = command;
-        packet[40] = (byte)(count & 0xff);
-        packet[41] = (byte)(count >> 8);
+        packet[40] = (byte) (count & 0xff);
+        packet[41] = (byte) (count >> 8);
         packet[42] = mac[0];
         packet[43] = mac[1];
         packet[44] = mac[2];
@@ -275,27 +268,23 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
         int i = 0;
         byte abyte0[];
         int k = (abyte0 = payload).length;
-        for(int j = 0; j < k; j++)
-        {
+        for (int j = 0; j < k; j++) {
             byte b = abyte0[j];
             i = Byte.toUnsignedInt(b);
             checksum += i;
             checksum &= 0xffff;
         }
 
-        packet[52] = (byte)(checksum & 0xff);
-        packet[53] = (byte)(checksum >> 8);
+        packet[52] = (byte) (checksum & 0xff);
+        packet[53] = (byte) (checksum >> 8);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try
-        {
+        try {
             outputStream.write(packet);
-            if(properties.get("key") == null || properties.get("id") == null)
+            if (properties.get("key") == null || properties.get("id") == null)
                 outputStream.write(Utils.encrypt(Hex.convertHexToBytes(thingConfig.getAuthorizationKey()), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
             else
-                outputStream.write(Utils.encrypt(Hex.fromHexString((String)properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
-        }
-        catch(IOException e)
-        {
+                outputStream.write(Utils.encrypt(Hex.fromHexString((String) properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -303,57 +292,48 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler
         checksum = 48815;
         byte abyte1[];
         int i1 = (abyte1 = data).length;
-        for(int l = 0; l < i1; l++)
-        {
+        for (int l = 0; l < i1; l++) {
             byte b = abyte1[l];
             i = Byte.toUnsignedInt(b);
             checksum += i;
             checksum &= 0xffff;
         }
 
-        data[32] = (byte)(checksum & 0xff);
-        data[33] = (byte)(checksum >> 8);
+        data[32] = (byte) (checksum & 0xff);
+        data[33] = (byte) (checksum >> 8);
         return data;
     }
 
-    public void handleCommand(ChannelUID channelUID, Command command)
-    {
-        if(command instanceof RefreshType)
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("handleCommand " + getThing().getUID());
+        if (command instanceof RefreshType)
             updateItemStatus();
     }
 
-    public void updateItemStatus()
-    {
-        if(hostAvailabilityCheck(thingConfig.getIpAddress(), 3000))
-        {
-            if(!isOnline())
+    public void updateItemStatus() {
+        logger.info("updateItemStatus " + getThing().getUID());
+        if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
+            if (!isOnline())
                 updateStatus(ThingStatus.ONLINE);
-        } else
-        if(!isOffline())
+        } else if (!isOffline())
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString());
     }
 
-    protected static boolean hostAvailabilityCheck(String host, int timeout)
-    {
-        try
-        {
+    protected static boolean hostAvailabilityCheck(String host, int timeout) {
+        try {
             InetAddress address = InetAddress.getByName(host);
             return address.isReachable(timeout);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Host is not reachable:", e.getMessage());
         }
         return false;
     }
 
-    protected boolean isOnline()
-    {
+    protected boolean isOnline() {
         return thing.getStatus().equals(ThingStatus.ONLINE);
     }
 
-    protected boolean isOffline()
-    {
+    protected boolean isOffline() {
         return thing.getStatus().equals(ThingStatus.OFFLINE);
     }
 

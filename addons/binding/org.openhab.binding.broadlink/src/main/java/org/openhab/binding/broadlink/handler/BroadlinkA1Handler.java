@@ -45,7 +45,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler
 
         int error = response[34] | response[35] << 8;
         if (error != 0) {
-            logger.error("Response from device '{}' is not valid.", thingConfig.getIpAddress());
+            logger.error("Response from device '{}' is not valid. (Error code {})", thingConfig.getIpAddress(), error);
             return false;
         }
 
