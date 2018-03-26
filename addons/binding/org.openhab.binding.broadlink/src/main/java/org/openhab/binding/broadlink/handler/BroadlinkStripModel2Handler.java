@@ -10,11 +10,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 // Referenced classes of package org.openhab.binding.broadlink.handler:
 //            BroadlinkSocketModel2Handler
 
-public class BroadlinkStripModel2Handler extends BroadlinkSocketModel2Handler
-{
+public class BroadlinkStripModel2Handler extends BroadlinkSocketModel2Handler {
 
-    public BroadlinkStripModel2Handler(Thing thing)
-    {
+    public BroadlinkStripModel2Handler(Thing thing) {
         super(thing);
     }
 }

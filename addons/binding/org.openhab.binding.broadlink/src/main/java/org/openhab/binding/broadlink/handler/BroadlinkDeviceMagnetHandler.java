@@ -9,11 +9,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BroadlinkDeviceMagnetHandler
-{
+public class BroadlinkDeviceMagnetHandler {
 
-    public BroadlinkDeviceMagnetHandler(Thing thing)
-    {
+    public BroadlinkDeviceMagnetHandler(Thing thing) {
     }
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkDeviceMagnetHandler.class);

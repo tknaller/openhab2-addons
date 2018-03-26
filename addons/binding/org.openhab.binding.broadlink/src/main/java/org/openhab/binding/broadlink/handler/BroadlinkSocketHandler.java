@@ -12,11 +12,9 @@ import org.slf4j.LoggerFactory;
 // Referenced classes of package org.openhab.binding.broadlink.handler:
 //            BroadlinkBaseThingHandler
 
-public class BroadlinkSocketHandler extends BroadlinkBaseThingHandler
-{
+public class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
 
-    public BroadlinkSocketHandler(Thing thing)
-    {
+    public BroadlinkSocketHandler(Thing thing) {
         super(thing);
         logger = LoggerFactory.getLogger(BroadlinkSocketHandler.class);
     }

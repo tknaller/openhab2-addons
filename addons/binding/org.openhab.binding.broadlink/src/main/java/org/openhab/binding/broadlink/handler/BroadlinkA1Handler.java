@@ -74,7 +74,11 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
                 if (!isOnline())
                     updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString());
+                updateStatus(
+                    ThingStatus.OFFLINE,
+                    ThingStatusDetail.COMMUNICATION_ERROR,
+                    (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString()
+                );
             }
         } else {
             updateStatus(

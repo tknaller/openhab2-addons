@@ -10,6 +10,7 @@ package org.openhab.binding.broadlink;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,53 +20,50 @@ import java.util.Set;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
- @NonNullByDefault
-public class BroadlinkBindingConstants
-{
+@NonNullByDefault
+public class BroadlinkBindingConstants {
     // Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
     // Jad home page: http://www.kpdus.com/jad.html
     // Decompiler options: packimports(3)
     // Source File Name:   BroadlinkBindingConstants.java
 
-    public BroadlinkBindingConstants()
-    {
+    public BroadlinkBindingConstants() {
     }
 
-    public static String getErrorMessage(int code)
-    {
-        if(code == -1)
+    public static String getErrorMessage(int code) {
+        if (code == -1)
             return "\u8BBE\u5907\u6240\u5728\u7F51\u7EDC\u5DF2\u6539\u53D8\u6216\u7F51\u7EDC\u5BC6\u7801\u5DF2\u7ECF\u4FEE\u6539";
-        if(code == -2)
+        if (code == -2)
             return "\u8BBE\u5907\u5DF2\u5728\u5176\u4ED6\u5730\u65B9\u767B\u5F55,\u5982\u9700\u7EE7\u7EED\u63A7\u5236,\u8BF7\u91CD\u65B0\u767B\u5F55(\u9488\u5BF9rm1/sp1)";
-        if(code == -3)
+        if (code == -3)
             return "\u8BBE\u5907\u4E0D\u5728\u7EBF";
-        if(code == -4)
+        if (code == -4)
             return "\u4E0D\u652F\u6301\u7684\u64CD\u4F5C";
-        if(code == -5)
+        if (code == -5)
             return "\u7A7A\u95F4\u6EE1";
-        if(code == -6)
+        if (code == -6)
             return "\u6570\u636E\u7ED3\u6784\u5F02\u5E38";
-        if(code == -7)
+        if (code == -7)
             return "\u8BBE\u5907\u5DF2\u7ECF\u590D\u4F4D,\u9700\u8FDB\u5165\u5C40\u57DF\u7F51\u91CD\u65B0\u8BA4\u8BC1\u3002(\u9488\u5BF9sp1/rm1\u4EE5\u5916\u7684\u8BBE\u5907)";
-        if(code == -100)
+        if (code == -100)
             return "\u8D85\u65F6";
-        if(code == -101)
+        if (code == -101)
             return "\u7F51\u7EDC\u7EBF\u7A0B\u627E\u4E0D\u5230\u8BE5\u8BBE\u5907";
-        if(code == -102)
+        if (code == -102)
             return "\u5185\u5B58\u4E0D\u8DB3";
-        if(code == -103)
+        if (code == -103)
             return "\u8BBE\u5907\u672A\u521D\u59CB\u5316";
-        if(code == -104)
+        if (code == -104)
             return "\u7F51\u7EDC\u7EBF\u7A0B\u5DF2\u6682\u505C";
-        if(code == -105)
+        if (code == -105)
             return "\u8FD4\u56DE\u6D88\u606F\u7C7B\u578B\u9519\u8BEF";
-        if(code == -106)
+        if (code == -106)
             return "\u64CD\u4F5C\u8FC7\u4E8E\u9891\u7E41";
-        if(code == -107)
+        if (code == -107)
             return "\u670D\u52A1\u5668\u5DF2\u62D2\u7EDD\u8BE5license\u64CD\u4F5C,\u8BF7\u8054\u7CFB\u5BA2\u670D\u5904\u7406";
-        if(code == -108)
+        if (code == -108)
             return "\u8BBE\u5907\u4E0D\u5728\u5C40\u57DF\u7F51\u4E2D";
-        if(code == -10000)
+        if (code == -10000)
             return "\u672A\u77E5\u9519\u8BEF";
         else
             return (new StringBuilder("Unknown error code: ")).append(code).toString();
@@ -201,8 +199,7 @@ public class BroadlinkBindingConstants
     public static final int CMD_RM2_SEND_ID = 134;
     public static final int CMD_EASY_CONFIG_ID = 10000;
 
-    static
-    {
+    static {
         THING_TYPE_RM = new ThingTypeUID("broadlink", "rm");
         THING_TYPE_RM2 = new ThingTypeUID("broadlink", "rm2");
         THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");

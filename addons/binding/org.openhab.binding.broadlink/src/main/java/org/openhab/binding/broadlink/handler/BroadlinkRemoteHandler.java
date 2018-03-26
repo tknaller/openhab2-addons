@@ -7,6 +7,7 @@ package org.openhab.binding.broadlink.handler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.*;
@@ -21,123 +22,103 @@ import org.slf4j.LoggerFactory;
 // Referenced classes of package org.openhab.binding.broadlink.handler:
 //            BroadlinkBaseThingHandler
 
-public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler
-{
+public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
-    public BroadlinkRemoteHandler(Thing thing)
-    {
+    public BroadlinkRemoteHandler(Thing thing) {
         super(thing);
         logger = LoggerFactory.getLogger(BroadlinkRemoteHandler.class);
     }
 
-    protected void sendCode(byte code[])
-    {
+    protected void sendCode(byte code[]) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte abyte0[];
-        try
-        {
+        try {
             abyte0 = new byte[4];
             abyte0[0] = 2;
             outputStream.write(abyte0);
             outputStream.write(code);
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        if(outputStream.size() % 16 == 0)
-            sendDatagram(buildMessage((byte)106, outputStream.toByteArray()));
+        if (outputStream.size() % 16 == 0)
+            sendDatagram(buildMessage((byte) 106, outputStream.toByteArray()));
     }
 
-    public void handleCommand(ChannelUID channelUID, Command command)
-    {
-        if(command == null)
-        {
-            if(logger.isDebugEnabled())
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == null) {
+            if (logger.isDebugEnabled())
                 logger.debug("Command passed to handler for thing {} is null");
             return;
         }
-        if(!isOnline())
-        {
-            if(logger.isDebugEnabled())
+        if (!isOnline()) {
+            if (logger.isDebugEnabled())
                 logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command, getThing().getLabel());
             return;
         }
-        if(command instanceof RefreshType)
-        {
+        if (command instanceof RefreshType) {
             updateItemStatus();
             return;
         }
         Channel channel = thing.getChannel(channelUID.getId());
         String s;
-        switch((s = channel.getChannelTypeUID().getId()).hashCode())
-        {
-        case 950394699: 
-            if(s.equals("command"))
-            {
-                if(logger.isDebugEnabled())
-                    logger.debug("Handling ir/rf command {} on channel {} of thing {}", new Object[] {
-                        command, channelUID.getId(), getThing().getLabel()
-                    });
-                byte code[] = lookupCode(command, channelUID);
-                if(code != null)
-                    sendCode(code);
-                break;
-            }
-            // fall through
+        switch ((s = channel.getChannelTypeUID().getId()).hashCode()) {
+            case 950394699:
+                if (s.equals("command")) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Handling ir/rf command {} on channel {} of thing {}", new Object[]{
+                                command, channelUID.getId(), getThing().getLabel()
+                        });
+                    byte code[] = lookupCode(command, channelUID);
+                    if (code != null)
+                        sendCode(code);
+                    break;
+                }
+                // fall through
 
-        default:
-            if(logger.isDebugEnabled())
-                logger.debug("Thing {} has unknown channel type {}", getThing().getLabel(), channel.getChannelTypeUID().getId());
-            break;
+            default:
+                if (logger.isDebugEnabled())
+                    logger.debug("Thing {} has unknown channel type {}", getThing().getLabel(), channel.getChannelTypeUID().getId());
+                break;
         }
     }
 
-    private byte[] lookupCode(Command command, ChannelUID channelUID)
-    {
-        if(command.toString() == null)
-        {
-            if(logger.isDebugEnabled())
+    private byte[] lookupCode(Command command, ChannelUID channelUID) {
+        if (command.toString() == null) {
+            if (logger.isDebugEnabled())
                 logger.debug("Unable to perform transform on null command string");
             return null;
         }
-        String mapFile = (String)thing.getConfiguration().get("mapFilename");
-        if(StringUtils.isEmpty(mapFile))
-        {
-            if(logger.isDebugEnabled())
+        String mapFile = (String) thing.getConfiguration().get("mapFilename");
+        if (StringUtils.isEmpty(mapFile)) {
+            if (logger.isDebugEnabled())
                 logger.debug("MAP file is not defined in configuration of thing {}", getThing().getLabel());
             return null;
         }
         TransformationService transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
-        if(transformService == null)
-        {
+        if (transformService == null) {
             logger.error("Failed to get MAP transformation service for thing {}; is bundle installed?", getThing().getLabel());
             return null;
         }
         byte code[] = null;
         String value;
-        try
-        {
+        try {
             value = transformService.transform(mapFile, command.toString());
             code = Hex.convertHexToBytes(value);
-        }
-        catch(TransformationException e)
-        {
-            logger.error("Failed to transform {} for thing {} using map file '{}', exception={}", new Object[] {
-                command, getThing().getLabel(), mapFile, e.getMessage()
+        } catch (TransformationException e) {
+            logger.error("Failed to transform {} for thing {} using map file '{}', exception={}", new Object[]{
+                    command, getThing().getLabel(), mapFile, e.getMessage()
             });
             return null;
         }
-        if(StringUtils.isEmpty(value))
-        {
-            logger.error("No entry for {} in map file '{}' for thing {}", new Object[] {
-                command, mapFile, getThing().getLabel()
+        if (StringUtils.isEmpty(value)) {
+            logger.error("No entry for {} in map file '{}' for thing {}", new Object[]{
+                    command, mapFile, getThing().getLabel()
             });
             return null;
         }
-        if(logger.isDebugEnabled())
-            logger.debug("Transformed {} for thing {} with map file '{}'", new Object[] {
-                command, getThing().getLabel(), mapFile
+        if (logger.isDebugEnabled())
+            logger.debug("Transformed {} for thing {} with map file '{}'", new Object[]{
+                    command, getThing().getLabel(), mapFile
             });
         return code;
     }
