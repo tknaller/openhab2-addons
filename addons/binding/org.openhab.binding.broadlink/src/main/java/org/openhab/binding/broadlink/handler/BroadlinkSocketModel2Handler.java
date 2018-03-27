@@ -51,8 +51,8 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
                     payload[0] = 1;
                     try {
                         byte message[] = buildMessage((byte) 106, payload);
-                        sendDatagram(message);
-                        byte response[] = receiveDatagram();
+                        sendDatagram(message, "status for socket");
+                        byte response[] = receiveDatagram("status for socket");
                         if (response == null)
                             break label0;
                         int error = response[34] | response[35] << 8;

@@ -93,8 +93,8 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
                     payload[8] = 1;
                     try {
                         byte message[] = buildMessage((byte) 106, payload);
-                        sendDatagram(message);
-                        byte response[] = receiveDatagram();
+                        sendDatagram(message, "status for strip");
+                        byte response[] = receiveDatagram("status for strip");
                         if (response == null)
                             break label0;
                         int error = response[34] | response[35] << 8;
