@@ -19,8 +19,18 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
         implements ControllerStatusListener {
 
+    private static final int DISCOVERY_TIMEOUT_SEC = 10;
+    private final BroadlinkControllerHandler controller;
+    private Logger logger = LoggerFactory.getLogger(BroadlinkDeviceDiscoveryService.class);
+    public static final Set SUPPORTED_THING_TYPES_UIDS;
+
+    static {
+        SUPPORTED_THING_TYPES_UIDS = Collections.singleton(BroadlinkBindingConstants.THING_TYPE_S1C);
+    }
+
     public BroadlinkDeviceDiscoveryService(BroadlinkControllerHandler controller) {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
+				logger.info("BroadlinkDeviceDiscoveryService constructed");
         logger = LoggerFactory.getLogger(BroadlinkDeviceDiscoveryService.class);
         logger.debug("BroadlinkDeviceDiscoveryService {}", controller);
         this.controller = controller;
@@ -28,6 +38,7 @@ public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     protected void startScan() {
+				logger.info("BroadlinkDeviceDiscoveryService scan started");
         discoverDevices();
     }
 
@@ -58,12 +69,4 @@ public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
         thingDiscovered(discoveryResult);
     }
 
-    private static final int DISCOVERY_TIMEOUT_SEC = 10;
-    private final BroadlinkControllerHandler controller;
-    Logger logger;
-    public static final Set SUPPORTED_THING_TYPES_UIDS;
-
-    static {
-        SUPPORTED_THING_TYPES_UIDS = Collections.singleton(BroadlinkBindingConstants.THING_TYPE_S1C);
-    }
 }
