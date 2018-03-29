@@ -201,24 +201,16 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     public byte[] receiveDatagram(String purpose) {
         logTrace("Receiving " + purpose);
-        try {
-//            socket.setReuseAddress(true);
-            socket.setSoTimeout(5000);
-        } catch (SocketException se) {
-            logger.error("Socket exception {} while Rxing " + purpose + " from {}!",se.getMessage(), getThing().getUID());
-            socket.close();
-            return null;
-        }
 
         try {
             if (socket == null) {
-                logger.error("receiveDatagram " + purpose + " for {} - socket was unexpectedly null", getThing().getUID() );
+                logError("receiveDatagram " + purpose + " for socket was unexpectedly null");
             } else {
                 byte response[] = new byte[1024];
                 DatagramPacket receivePacket = new DatagramPacket(response, response.length);
                 socket.receive(receivePacket);
                 response = receivePacket.getData();
-                socket.close();
+//                socket.close();
                 logTrace("Receiving " + purpose + " complete (OK)");
                 return response;
             }
@@ -306,8 +298,9 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     public void handleCommand(ChannelUID channelUID, Command command) {
         logDebug("handleCommand " + command.toString());
-        if (command instanceof RefreshType)
+        if (command instanceof RefreshType) {
             updateItemStatus();
+        }
     }
 
     public void updateItemStatus() {
@@ -317,7 +310,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } else if (!isOffline()) {
-            logDebug("updateItemStatus: Online -> Offline");
+            logError("updateItemStatus: Online -> Offline");
             updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,

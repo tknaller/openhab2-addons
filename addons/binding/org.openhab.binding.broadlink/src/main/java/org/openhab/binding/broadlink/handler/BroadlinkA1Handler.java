@@ -75,7 +75,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else if (!isOffline()) {
-                logDebug("updateItemStatus: Online -> Offline (error communicating)");
+                logError("updateItemStatus: Online -> Offline (error communicating)");
                 updateStatus(
                     ThingStatus.OFFLINE,
                     ThingStatusDetail.COMMUNICATION_ERROR,
@@ -83,7 +83,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
                 );
             }
         } else if (!isOffline()) {
-            logDebug("updateItemStatus: Online -> Offline (host unavailable)");
+            logError("updateItemStatus: Online -> Offline (host unavailable)");
             updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
