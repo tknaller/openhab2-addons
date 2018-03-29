@@ -33,19 +33,19 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
         payload[0] = 1;
         byte message[] = buildMessage((byte) 106, payload);
         if (!sendDatagram(message, "A1 device status")) {
-            logger.error("Sending packet to device '{}' failed.", getThing().getUID());
+            logError("Sending packet to device failed.");
             return false;
         }
         byte response[];
         response = receiveDatagram("A1 device status");
         if (response == null) {
-            logger.debug("Incoming packet from device '{}' is null.", getThing().getUID());
+            logDebug("Incoming packet from device is null.");
             return false;
         }
 
         int error = response[34] | response[35] << 8;
         if (error != 0) {
-            logger.error("Response from device '{}' is not valid. (Error code {})", thingConfig.getIpAddress(), error);
+            logError("Response from device is not valid. (Error code {})", error);
             return false;
         }
 
@@ -61,30 +61,33 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
             updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));
         } catch (Exception ex) {
             ex.printStackTrace();
-            logger.error("{}.", ex.getMessage());
+            logError("Failed while getting device status: " + ex.getMessage());
             return false;
         }
         return true;
     }
 
     public void updateItemStatus() {
-        logDebug("updateItemStatus");
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (getStatusFromDevice()) {
-                if (!isOnline())
+                if (!isOnline()) {
+                    logDebug("updateItemStatus: Offline -> Online");
                     updateStatus(ThingStatus.ONLINE);
-            } else {
+                }
+            } else if (!isOffline()) {
+                logDebug("updateItemStatus: Online -> Offline (error communicating)");
                 updateStatus(
                     ThingStatus.OFFLINE,
                     ThingStatusDetail.COMMUNICATION_ERROR,
-                    (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString()
+                    "Problem communicating with " + getThing().getUID()
                 );
             }
-        } else {
+        } else if (!isOffline()) {
+            logDebug("updateItemStatus: Online -> Offline (host unavailable)");
             updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
-                (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString()
+                "Device " + getThing().getUID() + " seems offline"
             );
         }
     }

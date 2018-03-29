@@ -31,7 +31,6 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     int count;
     String authenticationKey;
     String iv;
-    boolean commandRunning = false;
     public BroadlinkDeviceConfiguration thingConfig;
 
     static {
@@ -61,6 +60,12 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     protected void logError(String msg, Object... args) {
         logger.error(getThing().getUID() + ": " + msg, args);
+    }
+
+    protected void logTrace(String msg, Object... args) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(getThing().getUID() + ": " + msg, args);
+        }
     }
 
     public void initialize() {
@@ -175,7 +180,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     public boolean sendDatagram(byte message[], String purpose) {
         try {
-            logDebug("Sending " + purpose);
+            logTrace("Sending " + purpose);
             if (socket == null || socket.isClosed()) {
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
@@ -185,31 +190,23 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
             InetAddress host = InetAddress.getByName(thingConfig.getIpAddress());
             int port = thingConfig.getPort();
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
-            commandRunning = true;
             socket.send(sendPacket);
         } catch (IOException e) {
             logger.error("IO error for device '{}' during UDP command sending: {}", getThing().getUID(), e.getMessage());
-            commandRunning = false;
             return false;
         }
-        logDebug("Sending " + purpose + " complete");
+        logTrace("Sending " + purpose + " complete");
         return true;
     }
 
     public byte[] receiveDatagram(String purpose) {
-        logDebug("Receiving " + purpose);
+        logTrace("Receiving " + purpose);
         try {
 //            socket.setReuseAddress(true);
             socket.setSoTimeout(5000);
         } catch (SocketException se) {
             logger.error("Socket exception {} while Rxing " + purpose + " from {}!",se.getMessage(), getThing().getUID());
-            commandRunning = false;
             socket.close();
-            return null;
-        }
-
-        if (!commandRunning) {
-            logger.error("No command running - device '{}' should not be receiving " + purpose + " at this time!", getThing().getUID());
             return null;
         }
 
@@ -221,9 +218,8 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
                 DatagramPacket receivePacket = new DatagramPacket(response, response.length);
                 socket.receive(receivePacket);
                 response = receivePacket.getData();
-                commandRunning = false;
                 socket.close();
-                logDebug("Receiving " + purpose + " complete (OK)");
+                logTrace("Receiving " + purpose + " complete (OK)");
                 return response;
             }
         } catch (SocketTimeoutException ste) {
@@ -232,7 +228,6 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
             logger.error("While {} - IO Exception: '{}'", purpose, e.getMessage());
         }
 
-        commandRunning = false;
         return null;
     }
 
@@ -310,18 +305,19 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("handleCommand " + getThing().getUID());
+        logDebug("handleCommand " + command.toString());
         if (command instanceof RefreshType)
             updateItemStatus();
     }
 
     public void updateItemStatus() {
-        logDebug("updateItemStatus");
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!isOnline()) {
+                logDebug("updateItemStatus: Offline -> Online");
                 updateStatus(ThingStatus.ONLINE);
             }
         } else if (!isOffline()) {
+            logDebug("updateItemStatus: Online -> Offline");
             updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
