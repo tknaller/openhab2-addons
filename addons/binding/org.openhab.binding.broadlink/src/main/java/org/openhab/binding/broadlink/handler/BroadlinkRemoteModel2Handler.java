@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.crypto.spec.IvParameterSpec;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.*;
-import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 

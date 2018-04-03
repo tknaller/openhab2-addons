@@ -10,7 +10,6 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.*;
-import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
