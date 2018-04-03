@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   BroadlinkBaseThingHandler.java
-
 package org.openhab.binding.broadlink.handler;
 
 import java.io.ByteArrayOutputStream;
@@ -26,12 +21,12 @@ import org.slf4j.LoggerFactory;
 
 public class BroadlinkBaseThingHandler extends BaseThingHandler {
     public static final Set SUPPORTED_THING_TYPES;
-    private static Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
     private DatagramSocket socket = null;
-    int count;
-    String authenticationKey;
-    String iv;
-    public BroadlinkDeviceConfiguration thingConfig;
+    private int count;
+    private String authenticationKey;
+    private String iv;
+    protected BroadlinkDeviceConfiguration thingConfig;
 
     static {
         SUPPORTED_THING_TYPES = new HashSet(Arrays.asList(new ThingTypeUID[]{

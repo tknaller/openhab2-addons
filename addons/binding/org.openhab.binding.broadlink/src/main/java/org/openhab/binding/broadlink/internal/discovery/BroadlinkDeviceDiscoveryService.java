@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   BroadlinkDeviceDiscoveryService.java
-
 package org.openhab.binding.broadlink.internal.discovery;
 
 import java.util.*;
@@ -21,7 +16,7 @@ public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
 
     private static final int DISCOVERY_TIMEOUT_SEC = 10;
     private final BroadlinkControllerHandler controller;
-    private Logger logger = LoggerFactory.getLogger(BroadlinkDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(BroadlinkDeviceDiscoveryService.class);
     public static final Set SUPPORTED_THING_TYPES_UIDS;
 
     static {
@@ -31,8 +26,6 @@ public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
     public BroadlinkDeviceDiscoveryService(BroadlinkControllerHandler controller) {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
 				logger.info("BroadlinkDeviceDiscoveryService constructed");
-        logger = LoggerFactory.getLogger(BroadlinkDeviceDiscoveryService.class);
-        logger.debug("BroadlinkDeviceDiscoveryService {}", controller);
         this.controller = controller;
         this.controller.addControllerStatusListener(this);
     }
@@ -68,5 +61,4 @@ public class BroadlinkDeviceDiscoveryService extends AbstractDiscoveryService
         org.eclipse.smarthome.config.discovery.DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withBridge(controllerUID).withLabel(name).build();
         thingDiscovered(discoveryResult);
     }
-
 }

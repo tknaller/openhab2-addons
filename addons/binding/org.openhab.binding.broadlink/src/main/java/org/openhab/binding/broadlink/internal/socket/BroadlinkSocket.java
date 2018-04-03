@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   BroadlinkSocket.java
-
 package org.openhab.binding.broadlink.internal.socket;
 
 import org.openhab.binding.broadlink.internal.Hex;
@@ -19,10 +14,19 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-// Referenced classes of package org.openhab.binding.broadlink.internal.socket:
-//            BroadlinkSocketListener
-
 public class BroadlinkSocket {
+    private static final int BUFFER_LENGTH = 1024;
+    private static byte buffer[];
+    private static DatagramPacket datagramPacket;
+    private static MulticastSocket socket = null;
+    private static Thread socketReceiveThread;
+    private static List listeners = new ArrayList();
+    private final Logger logger = LoggerFactory.getLogger(BroadlinkSocket.class);
+
+    static {
+        buffer = new byte[1024];
+        datagramPacket = new DatagramPacket(buffer, buffer.length);
+    }
     private static class ReceiverThread extends Thread {
 
         public void run() {
@@ -60,20 +64,18 @@ public class BroadlinkSocket {
         }
     }
 
-
-    public BroadlinkSocket() {
-    }
-
     public static void registerListener(BroadlinkSocketListener listener) {
         listeners.add(listener);
-        if (socket == null)
+        if (socket == null) {
             setupSocket();
+				}
     }
 
     public static void unregisterListener(BroadlinkSocketListener listener) {
         listeners.remove(listener);
-        if (listeners.isEmpty() && socket != null)
+        if (listeners.isEmpty() && socket != null) {
             closeSocket();
+				}
     }
 
     private static void setupSocket() {
@@ -90,8 +92,9 @@ public class BroadlinkSocket {
 
     private static void closeSocket() {
         synchronized (BroadlinkSocket.class) {
-            if (socketReceiveThread != null)
+            if (socketReceiveThread != null) {
                 socketReceiveThread.interrupt();
+						}
             if (socket != null) {
                 logger.info("Socket closed");
                 socket.close();
@@ -112,19 +115,4 @@ public class BroadlinkSocket {
             logger.error("IO Error sending message: '{}'", e.getMessage());
         }
     }
-
-    private static final int BUFFER_LENGTH = 1024;
-    private static byte buffer[];
-    private static DatagramPacket datagramPacket;
-    private static MulticastSocket socket = null;
-    private static Thread socketReceiveThread;
-    private static List listeners = new ArrayList();
-    private static Logger logger = LoggerFactory.getLogger(BroadlinkSocket.class);
-
-    static {
-        buffer = new byte[1024];
-        datagramPacket = new DatagramPacket(buffer, buffer.length);
-    }
-
-
 }

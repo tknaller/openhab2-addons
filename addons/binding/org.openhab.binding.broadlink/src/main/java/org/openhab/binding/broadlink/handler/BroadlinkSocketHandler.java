@@ -9,15 +9,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// Referenced classes of package org.openhab.binding.broadlink.handler:
-//            BroadlinkBaseThingHandler
-
 public class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
+    
+		private final Logger logger = LoggerFactory.getLogger(BroadlinkSocketHandler.class);
 
     public BroadlinkSocketHandler(Thing thing) {
         super(thing);
-        logger = LoggerFactory.getLogger(BroadlinkSocketHandler.class);
     }
 
-    private Logger logger;
 }

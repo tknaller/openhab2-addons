@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   BroadlinkRemoteHandler.java
-
 package org.openhab.binding.broadlink.handler;
 
 import java.io.ByteArrayOutputStream;
@@ -19,14 +14,11 @@ import org.openhab.binding.broadlink.internal.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// Referenced classes of package org.openhab.binding.broadlink.handler:
-//            BroadlinkBaseThingHandler
-
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(BroadlinkRemoteHandler.class);
 
     public BroadlinkRemoteHandler(Thing thing) {
         super(thing);
-        logger = LoggerFactory.getLogger(BroadlinkRemoteHandler.class);
     }
 
     protected void sendCode(byte code[]) {
@@ -123,5 +115,4 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return code;
     }
 
-    private Logger logger;
 }
