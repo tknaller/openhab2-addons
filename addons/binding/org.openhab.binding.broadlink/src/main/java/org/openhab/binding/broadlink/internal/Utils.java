@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   Utils.java
-
 package org.openhab.binding.broadlink.internal;
 
 import javax.crypto.Cipher;
@@ -10,9 +5,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Utils {
-
-    public Utils() {
-    }
 
     public static byte[] getDeviceId(byte response[]) {
         return slice(response, 0, 4);
@@ -23,11 +15,13 @@ public class Utils {
     }
 
     public static byte[] slice(byte source[], int from, int to) {
-        if (from > to)
+        if (from > to) {
             return null;
-        if (to - from > source.length)
+				}
+        if (to - from > source.length) {
             return null;
-        if (to == from) {
+        }
+				if (to == from) {
             byte sliced[] = new byte[1];
             sliced[0] = source[from];
             return sliced;

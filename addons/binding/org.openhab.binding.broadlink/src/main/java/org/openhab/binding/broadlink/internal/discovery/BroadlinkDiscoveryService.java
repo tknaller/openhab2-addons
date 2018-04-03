@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   BroadlinkDiscoveryService.java
-
 package org.openhab.binding.broadlink.internal.discovery;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;

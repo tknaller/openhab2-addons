@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   Hex.java
-
 package org.openhab.binding.broadlink.internal;
 
 import java.util.regex.Matcher;
@@ -10,7 +5,6 @@ import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 
 public class Hex {
-
     private static final Pattern validPattern = Pattern.compile("0000( +[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])+");
 		private static final String HEXES = "0123456789ABCDEF";
 
@@ -20,8 +14,9 @@ public class Hex {
         StringBuilder sb = new StringBuilder(18);
         for(int i = 5; i >= 0; i--)
         {
-            if (sb.length() > 0)
+            if (sb.length() > 0) {
                 sb.append(':');
+						}
             sb.append(String.format("%02x", new Object[] {
                 Byte.valueOf(mac[i])
             }));
