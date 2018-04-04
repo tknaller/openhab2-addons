@@ -39,8 +39,8 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler
         byte payload[] = new byte[16];
         payload[0] = 1;
         byte message[] = buildMessage((byte)106, payload);
-        sendDatagram(message);
-        byte response[] = receiveDatagram();
+        sendDatagram(message, "RM2 device status");
+        byte response[] = receiveDatagram("RM2 device status");
         if(response != null)
         {
             int error = response[34] | response[35] << 8;

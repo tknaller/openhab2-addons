@@ -20,13 +20,20 @@ import java.util.concurrent.TimeUnit;
 public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         implements BroadlinkSocketListener {
 
+    private static final Set SUPPORTED_THING_TYPES;
+    private final Logger logger = LoggerFactory.getLogger(BroadlinkDiscoveryService.class);
+
+    static {
+        SUPPORTED_THING_TYPES = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+    }
+
     public BroadlinkDiscoveryService() {
         super(SUPPORTED_THING_TYPES, 10, true);
     }
 
     public void startScan() {
         BroadlinkSocket.registerListener(this);
-        logger.warn("Broadlink device scan currently not implemented.");
+        logger.warn("BroadlinkDiscoveryService - Broadlink device scan currently not implemented.");
         //discoverDevices();
         //waitUntilEnded();
         BroadlinkSocket.unregisterListener(this);
@@ -236,10 +243,5 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         return packet;
     }
 
-    private static final Set SUPPORTED_THING_TYPES;
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkDiscoveryService.class);
 
-    static {
-        SUPPORTED_THING_TYPES = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-    }
 }

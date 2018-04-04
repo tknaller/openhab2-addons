@@ -4,5 +4,5 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 public interface BroadlinkSocketListener {
 
-    public abstract void onDataReceived(String s, int i, String s1, ThingTypeUID thingtypeuid);
+    public abstract void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID);
 }

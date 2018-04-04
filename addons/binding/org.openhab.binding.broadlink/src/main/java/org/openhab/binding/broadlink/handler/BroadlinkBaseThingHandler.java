@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class BroadlinkBaseThingHandler extends BaseThingHandler {
     public static final Set SUPPORTED_THING_TYPES;
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
     private DatagramSocket socket = null;
     private int count;
     private String authenticationKey;

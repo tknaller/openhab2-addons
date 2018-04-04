@@ -21,7 +21,7 @@ public class BroadlinkSocket {
     private static MulticastSocket socket = null;
     private static Thread socketReceiveThread;
     private static List listeners = new ArrayList();
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkSocket.class);
+    private static final Logger logger = LoggerFactory.getLogger(BroadlinkSocket.class);
 
     static {
         buffer = new byte[1024];
@@ -51,7 +51,7 @@ public class BroadlinkSocket {
                 }
             } catch (IOException e) {
                 if (!isInterrupted())
-                    BroadlinkSocket.logger.error("Error while receiving '{}'", e);
+                    logger.error("Error while receiving '{}'", e);
             }
             BroadlinkSocket.logger.info("Receiver thread ended");
         }
