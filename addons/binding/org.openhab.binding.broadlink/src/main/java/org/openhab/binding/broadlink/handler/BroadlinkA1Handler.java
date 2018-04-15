@@ -50,8 +50,8 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
             updateState("air", ModelMapper.getAirValue(decryptResponse[10]));
             updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));
         } catch (Exception ex) {
-            ex.printStackTrace();
-            logError("Failed while getting device status: " + ex);
+            // ex.printStackTrace();
+            logError("Failed while getting device status", ex);
             return false;
         }
         return true;
@@ -59,26 +59,31 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
 
     public void updateItemStatus() {
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
+//            logDebug("top half" + thing.getStatus());
             if (getStatusFromDevice()) {
                 if (!isOnline()) {
-                    logDebug("updateItemStatus: Offline -> Online");
+                    logDebug("A1::updateItemStatus: Offline -> Online");
                     updateStatus(ThingStatus.ONLINE);
                 }
-            } else if (!isOffline()) {
-                logError("updateItemStatus: Online -> Offline (error communicating)");
+            } else {
+                if (!isOffline()) {
+                    logError("A1::updateItemStatus: Online -> Offline (error communicating)");
+                    updateStatus(
+                            ThingStatus.OFFLINE,
+                            ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Problem communicating with " + getThing().getUID()
+                    );
+                }
+            }
+        } else {
+            if (!isOffline()) {
+                logError("A1::updateItemStatus: Online -> Offline (host unavailable)");
                 updateStatus(
-                    ThingStatus.OFFLINE,
-                    ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Problem communicating with " + getThing().getUID()
+                        ThingStatus.OFFLINE,
+                        ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Device " + getThing().getUID() + " seems offline"
                 );
             }
-        } else if (!isOffline()) {
-            logError("updateItemStatus: Online -> Offline (host unavailable)");
-            updateStatus(
-                ThingStatus.OFFLINE,
-                ThingStatusDetail.COMMUNICATION_ERROR,
-                "Device " + getThing().getUID() + " seems offline"
-            );
         }
     }
 

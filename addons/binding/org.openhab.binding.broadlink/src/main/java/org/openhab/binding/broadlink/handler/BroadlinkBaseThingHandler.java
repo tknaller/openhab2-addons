@@ -98,10 +98,11 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
-            if (authenticate())
+            if (authenticate()) {
                 updateStatus(ThingStatus.ONLINE);
-            else
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            }
         }
         updateItemStatus();
     }
