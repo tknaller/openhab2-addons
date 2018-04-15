@@ -13,8 +13,12 @@ import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(BroadlinkSocketModel2Handler.class);
 
     public BroadlinkSocketModel2Handler(Thing thing) {
         super(thing);
@@ -64,7 +68,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
                         else
                             updateState("powerOn", OnOffType.OFF);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        logger.error("Exception while getting status from device", ex);
                         return false;
                     }
                     return true;

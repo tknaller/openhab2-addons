@@ -3,9 +3,13 @@ package org.openhab.binding.broadlink.internal;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class Utils {
 
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
     public static byte[] getDeviceId(byte response[]) {
         return slice(response, 0, 4);
     }
@@ -39,7 +43,7 @@ public class Utils {
             cipher.init(1, secretKey, ivSpec);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception while encrypting", e);
         }
         return null;
     }
@@ -51,7 +55,7 @@ public class Utils {
             cipher.init(2, secretKey, ivSpec);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception while decrypting", e);
         }
         return null;
     }

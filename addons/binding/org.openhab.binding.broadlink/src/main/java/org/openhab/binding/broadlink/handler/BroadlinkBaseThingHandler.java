@@ -273,7 +273,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
             else
                 outputStream.write(Utils.encrypt(Hex.fromHexString((String) properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("IOException while building message", e);
             return null;
         }
         byte data[] = outputStream.toByteArray();

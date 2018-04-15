@@ -30,7 +30,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             outputStream.write(abyte0);
             outputStream.write(code);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Exception while sending code", e);
         }
         if (outputStream.size() % 16 == 0)
             sendDatagram(buildMessage((byte) 106, outputStream.toByteArray()));
