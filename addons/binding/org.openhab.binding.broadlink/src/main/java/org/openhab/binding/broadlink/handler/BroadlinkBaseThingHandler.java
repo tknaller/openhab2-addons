@@ -78,6 +78,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
             if (authenticate()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
+                resetPacketCounter();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
@@ -106,6 +107,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
             if (authenticate()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
+                resetPacketCounter();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
@@ -223,6 +225,11 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         }
 
         return null;
+    }
+
+    /** If initial auth fails, don't advance the counter */
+    private void resetPacketCounter() {
+        count = 0x0000;
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) {

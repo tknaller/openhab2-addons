@@ -58,7 +58,6 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
 
     public void updateItemStatus() {
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
-//            logDebug("top half" + thing.getStatus());
             if (getStatusFromDevice()) {
                 if (!isOnline()) {
                     logDebug("A1::updateItemStatus: Offline -> Online");
