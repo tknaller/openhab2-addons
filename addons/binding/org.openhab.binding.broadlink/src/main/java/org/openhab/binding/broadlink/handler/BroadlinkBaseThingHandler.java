@@ -83,14 +83,19 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         }
         logDebug("initialization complete");
 
-        if (thingConfig.getPollingInterval() != 0)
-            scheduler.scheduleWithFixedDelay(new Runnable() {
+        if (thingConfig.getPollingInterval() != 0) {
+            scheduler.scheduleWithFixedDelay(
+                new Runnable() {
 
                 public void run() {
                     updateItemStatus();
                 }
-            }
-                    , 1L, thingConfig.getPollingInterval(), TimeUnit.SECONDS);
+            },
+                1L,
+                thingConfig.getPollingInterval(),
+                TimeUnit.SECONDS
+            );
+        }
     }
 
     public void thingUpdated(Thing thing) {
@@ -112,6 +117,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         super.dispose();
     }
 
+    // https://github.com/mjg59/python-broadlink/blob/master/protocol.md
     private boolean authenticate() {
         byte payload[] = new byte[80];
         payload[4] = 49;
@@ -225,18 +231,19 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         byte mac[] = thingConfig.getMAC();
         Map properties = editProperties();
         byte id[];
-        if (properties.get("id") == null)
+        if (properties.get("id") == null) {
             id = new byte[4];
-        else
+        } else {
             id = Hex.fromHexString((String) properties.get("id"));
-        packet[0] = 90;
-        packet[1] = -91;
-        packet[2] = -86;
-        packet[3] = 85;
-        packet[4] = 90;
-        packet[5] = -91;
-        packet[6] = -86;
-        packet[7] = 85;
+        }
+        packet[0] = 0x5a;
+        packet[1] = (byte) 0xa5;
+        packet[2] = (byte) 0xaa;
+        packet[3] = 0x55;
+        packet[4] = 0x5a;
+        packet[5] = (byte) 0xa5;
+        packet[6] = (byte) 0xaa;
+        packet[7] = 0x55;
         packet[36] = 42;
         packet[37] = 39;
         packet[38] = command;
@@ -252,7 +259,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         packet[49] = id[1];
         packet[50] = id[2];
         packet[51] = id[3];
-        int checksum = 48815;
+        int checksum = 0xBEAF;
         int i = 0;
         byte abyte0[];
         int k = (abyte0 = payload).length;
@@ -268,16 +275,17 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             outputStream.write(packet);
-            if (properties.get("key") == null || properties.get("id") == null)
+            if (properties.get("key") == null || properties.get("id") == null) {
                 outputStream.write(Utils.encrypt(Hex.convertHexToBytes(thingConfig.getAuthorizationKey()), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
-            else
+            } else  {
                 outputStream.write(Utils.encrypt(Hex.fromHexString((String) properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
+            }
         } catch (IOException e) {
             logger.error("IOException while building message", e);
             return null;
         }
         byte data[] = outputStream.toByteArray();
-        checksum = 48815;
+        checksum = 0xBEAF;
         byte abyte1[];
         int i1 = (abyte1 = data).length;
         for (int l = 0; l < i1; l++) {

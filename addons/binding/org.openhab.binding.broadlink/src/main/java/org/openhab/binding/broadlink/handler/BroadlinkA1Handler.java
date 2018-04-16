@@ -21,7 +21,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
         byte payload[];
         payload = new byte[16];
         payload[0] = 1;
-        byte message[] = buildMessage((byte) 106, payload);
+        byte message[] = buildMessage((byte) 0x6a, payload);
         if (!sendDatagram(message, "A1 device status")) {
             logError("Sending packet to device failed.");
             return false;
