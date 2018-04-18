@@ -23,6 +23,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     public static final Set SUPPORTED_THING_TYPES;
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
     private DatagramSocket socket = null;
+    private boolean authenticated = false;
     private int count;
     private String authenticationKey;
     private String iv;
@@ -45,6 +46,10 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     public BroadlinkBaseThingHandler(Thing thing) {
         super(thing);
         count = 0;
+    }
+
+    protected boolean hasAuthenticated() {
+        return this.authenticated;
     }
 
     protected void logDebug(String msg, Object... args) {
@@ -120,7 +125,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     }
 
     // https://github.com/mjg59/python-broadlink/blob/master/protocol.md
-    private boolean authenticate() {
+    protected boolean authenticate() {
         byte payload[] = new byte[80];
         payload[4] = 49;
         payload[5] = 49;
@@ -147,6 +152,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         payload[53] = 32;
         payload[54] = 49;
 
+        authenticated = false;
         if (!sendDatagram(buildMessage((byte) 101, payload), "authentication")) {
             logError("Authenticate - failed to send.");
             return false;
@@ -174,6 +180,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
             Hex.toHexString(deviceId),
             Hex.toHexString(deviceKey)
         );
+        authenticated = true;
         return true;
     }
 
@@ -229,6 +236,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     /** If initial auth fails, don't advance the counter */
     private void resetPacketCounter() {
+        logDebug("Resetting packet counter to 0");
         count = 0x0000;
     }
 

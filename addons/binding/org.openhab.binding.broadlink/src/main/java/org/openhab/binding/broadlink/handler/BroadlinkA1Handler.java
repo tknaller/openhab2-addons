@@ -18,6 +18,17 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
     }
 
     private boolean getStatusFromDevice() {
+
+        if (!hasAuthenticated()) {
+            logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
+            if (authenticate()) {
+                logDebug("Authenticated with newly-detected device, will now get its status");
+            } else {
+                logError("Attempting to authenticate prior to getting device status FAILED");
+                return false;
+            }
+        }
+
         byte payload[];
         payload = new byte[16];
         payload[0] = 1;
