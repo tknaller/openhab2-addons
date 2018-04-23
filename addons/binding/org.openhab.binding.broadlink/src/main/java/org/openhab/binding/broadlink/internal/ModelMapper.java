@@ -19,6 +19,8 @@ import org.openhab.binding.broadlink.BroadlinkBindingConstants;
  */
 public class ModelMapper {
 
+    private static final StringType UNKNOWN = new StringType("UNKNOWN");
+
     public static ThingTypeUID getThingType(int model) {
         if (model == 0)
             return BroadlinkBindingConstants.THING_TYPE_SP1;
@@ -85,7 +87,7 @@ public class ModelMapper {
         if (air == 3)
             return new StringType("BAD");
         else
-            return new StringType("UNKNOWN");
+            return UNKNOWN;
     }
 
     public static StringType getLightValue(byte b) {
@@ -99,20 +101,23 @@ public class ModelMapper {
         if (light == 3)
             return new StringType("BRIGHT");
         else
-            return new StringType("UNKNOWN");
+            return UNKNOWN;
     }
+
+    private static final StringType[] noiseValues = {
+        new StringType("QUIET"),
+        new StringType("NORMAL"),
+        new StringType("NOISY"),
+        new StringType("EXTREME")
+    };
 
     public static StringType getNoiseValue(byte b) {
         int noise = Byte.toUnsignedInt(b);
-        if (noise == 0)
-            return new StringType("QUIET");
-        if (noise == 1)
-            return new StringType("NORMAL");
-        if (noise == 2)
-            return new StringType("NOISY");
-        if (noise == 3)
-            return new StringType("EXTREME");
-        else
-            return new StringType("UNKNOWN");
+        if (noise < noiseValues.length) {
+            return noiseValues[noise];
+        }
+        else {
+            return UNKNOWN;
+        }
     }
 }
