@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   BroadlinkStripModel1Handler.java
-
 package org.openhab.binding.broadlink.handler;
 
 import java.util.Map;
@@ -17,13 +12,9 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// Referenced classes of package org.openhab.binding.broadlink.handler:
-//            BroadlinkBaseThingHandler
-
 public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkStripModel1Handler.class);
-
 
     public BroadlinkStripModel1Handler(Thing thing) {
         super(thing);
