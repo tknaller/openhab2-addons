@@ -1,12 +1,24 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.broadlink.internal;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
+import java.util.regex.Pattern;
 
+/**
+ * Handles conversions to/from hexadecimal.
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class Hex {
     private static final Pattern validPattern = Pattern.compile("0000( +[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])+");
-		private static final String HEXES = "0123456789ABCDEF";
+    private static final String HEXES = "0123456789ABCDEF";
 
     public static String decodeMAC(byte mac[]) {
         if (mac == null) return null;
@@ -16,7 +28,7 @@ public class Hex {
         {
             if (sb.length() > 0) {
                 sb.append(':');
-						}
+            }
             sb.append(String.format("%02x", new Object[] {
                 Byte.valueOf(mac[i])
             }));
@@ -48,7 +60,7 @@ public class Hex {
     }
 
     public static String toHexString(byte raw[]) {
-				if (raw == null) return null;
+        if (raw == null) return null;
         StringBuilder hex = new StringBuilder(2 * raw.length);
         byte abyte0[];
         int j = (abyte0 = raw).length;

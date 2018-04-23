@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.broadlink.internal;
 
 import javax.crypto.Cipher;
@@ -6,7 +14,11 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * Utilities for working with the Broadlink devices.
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -21,11 +33,11 @@ public class Utils {
     public static byte[] slice(byte source[], int from, int to) {
         if (from > to) {
             return null;
-				}
+        }
         if (to - from > source.length) {
             return null;
         }
-				if (to == from) {
+        if (to == from) {
             byte sliced[] = new byte[1];
             sliced[0] = source[from];
             return sliced;

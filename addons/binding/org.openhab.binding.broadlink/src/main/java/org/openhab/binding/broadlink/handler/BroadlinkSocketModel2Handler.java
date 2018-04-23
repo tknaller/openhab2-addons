@@ -18,7 +18,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         super(thing);
     }
 
-    private void setStatusOnDevice(int status) {
+    protected void setStatusOnDevice(int status) {
         byte payload[] = new byte[16];
         payload[0] = 2;
         payload[4] = (byte) status;

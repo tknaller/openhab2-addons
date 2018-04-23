@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.broadlink.handler;
 
 import java.io.ByteArrayOutputStream;
@@ -19,6 +27,11 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract superclass of all supported Broadlink devices.
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     public static final Set SUPPORTED_THING_TYPES;
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
@@ -221,7 +234,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
                 DatagramPacket receivePacket = new DatagramPacket(response, response.length);
                 socket.receive(receivePacket);
                 response = receivePacket.getData();
-//                socket.close();
                 logTrace("Receiving " + purpose + " complete (OK)");
                 return response;
             }
@@ -296,7 +308,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
                 outputStream.write(Utils.encrypt(Hex.fromHexString((String) properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
             }
         } catch (IOException e) {
-            logger.error("IOException while building message", e);
+            logError("IOException while building message", e);
             return null;
         }
         byte data[] = outputStream.toByteArray();
@@ -322,31 +334,31 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         }
     }
 
-		// Can be implemented by devices that should do something on being found; e.g. perform a first status query
-		protected boolean onBroadlinkDeviceBecomingReachable() {
-			return true;
-		}
+    // Can be implemented by devices that should do something on being found; e.g. perform a first status query
+    protected boolean onBroadlinkDeviceBecomingReachable() {
+        return true;
+    }
 
     public void updateItemStatus() {
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!isOnline()) {
-								if (!hasAuthenticated()) {
-										logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
-										if (authenticate()) {
-												logDebug("Authenticated with newly-detected device, will now get its status");
-										} else {
-												logError("Attempting to authenticate prior to getting device status FAILED");
-												return;
-										}
-								}
-								if (onBroadlinkDeviceBecomingReachable()) {
-										logDebug("updateItemStatus: Offline -> Online");
-										updateStatus(ThingStatus.ONLINE);
-								}
+                if (!hasAuthenticated()) {
+                    logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
+                    if (authenticate()) {
+                        logDebug("Authenticated with newly-detected device, will now get its status");
+                    } else {
+                        logError("Attempting to authenticate prior to getting device status FAILED");
+                        return;
+                    }
+                }
+                if (onBroadlinkDeviceBecomingReachable()) {
+                    logDebug("updateItemStatus: Offline -> Online");
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
         } else if (!isOffline()) {
             logError("updateItemStatus: Online -> Offline");
-						this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
+            this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
             updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
