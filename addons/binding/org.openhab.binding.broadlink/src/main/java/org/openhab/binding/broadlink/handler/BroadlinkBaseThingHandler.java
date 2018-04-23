@@ -19,7 +19,7 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BroadlinkBaseThingHandler extends BaseThingHandler {
+public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     public static final Set SUPPORTED_THING_TYPES;
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
     private DatagramSocket socket = null;
