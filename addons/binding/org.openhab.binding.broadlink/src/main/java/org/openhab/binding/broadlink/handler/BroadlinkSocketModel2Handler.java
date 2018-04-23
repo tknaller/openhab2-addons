@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   BroadlinkSocketModel2Handler.java
-
 package org.openhab.binding.broadlink.handler;
 
 import java.util.Map;
@@ -77,17 +72,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 				}
     }
 
-    public void updateItemStatus() {
-        if (getStatusFromDevice()) {
-            if (!isOnline()) {
-                updateStatus(ThingStatus.ONLINE);
-						}
-        } else if (!isOffline()) {
-            updateStatus(
-							ThingStatus.OFFLINE, 
-							ThingStatusDetail.COMMUNICATION_ERROR, 
-							"Could not control device at IP address " + thingConfig.getIpAddress()
-						)
-				}
+    protected boolean onBroadlinkDeviceBecomingReachable() { 
+        return getStatusFromDevice();
     }
 }

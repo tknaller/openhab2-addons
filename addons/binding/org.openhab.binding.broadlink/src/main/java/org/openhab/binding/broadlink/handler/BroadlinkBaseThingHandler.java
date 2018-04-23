@@ -48,7 +48,7 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         count = 0;
     }
 
-    protected boolean hasAuthenticated() {
+    private boolean hasAuthenticated() {
         return this.authenticated;
     }
 
@@ -322,14 +322,31 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
         }
     }
 
+		// Can be implemented by devices that should do something on being found; e.g. perform a first status query
+		protected boolean onBroadlinkDeviceBecomingReachable() {
+			return true;
+		}
+
     public void updateItemStatus() {
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!isOnline()) {
-                logDebug("updateItemStatus: Offline -> Online");
-                updateStatus(ThingStatus.ONLINE);
+								if (!hasAuthenticated()) {
+										logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
+										if (authenticate()) {
+												logDebug("Authenticated with newly-detected device, will now get its status");
+										} else {
+												logError("Attempting to authenticate prior to getting device status FAILED");
+												return;
+										}
+								}
+								if (onBroadlinkDeviceBecomingReachable()) {
+										logDebug("updateItemStatus: Offline -> Online");
+										updateStatus(ThingStatus.ONLINE);
+								}
             }
         } else if (!isOffline()) {
             logError("updateItemStatus: Online -> Offline");
+						this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
             updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
@@ -355,6 +372,4 @@ public class BroadlinkBaseThingHandler extends BaseThingHandler {
     protected boolean isOffline() {
         return thing.getStatus().equals(ThingStatus.OFFLINE);
     }
-
-
 }

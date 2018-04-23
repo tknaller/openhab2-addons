@@ -13,17 +13,9 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
         super(thing);
     }
 
-    public void updateItemStatus() {
-        if (getStatusFromDevice()) {
-            if (!isOnline()) {
-                updateStatus(ThingStatus.ONLINE);
-						}
-        } else {
-						if (!isOffline()) {
-								updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString());
-						}
-				}
-    }
+		protected boolean onBroadlinkDeviceBecomingReachable() {
+        return getStatusFromDevice();
+		}
 
     public boolean getStatusFromDevice() {
         byte payload[] = new byte[16];

@@ -18,17 +18,6 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
     }
 
     private boolean getStatusFromDevice() {
-
-        if (!hasAuthenticated()) {
-            logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
-            if (authenticate()) {
-                logDebug("Authenticated with newly-detected device, will now get its status");
-            } else {
-                logError("Attempting to authenticate prior to getting device status FAILED");
-                return false;
-            }
-        }
-
         byte payload[];
         payload = new byte[16];
         payload[0] = 1;
@@ -67,33 +56,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
         return true;
     }
 
-    public void updateItemStatus() {
-        if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
-            if (getStatusFromDevice()) {
-                if (!isOnline()) {
-                    logDebug("A1::updateItemStatus: Offline -> Online");
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } else {
-                if (!isOffline()) {
-                    logError("A1::updateItemStatus: Online -> Offline (error communicating)");
-                    updateStatus(
-                            ThingStatus.OFFLINE,
-                            ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Problem communicating with " + getThing().getUID()
-                    );
-                }
-            }
-        } else {
-            if (!isOffline()) {
-                logError("A1::updateItemStatus: Online -> Offline (host unavailable)");
-                updateStatus(
-                        ThingStatus.OFFLINE,
-                        ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Device " + getThing().getUID() + " seems offline"
-                );
-            }
-        }
-    }
-
+		protected boolean onBroadlinkDeviceBecomingReachable() {
+        return getStatusFromDevice();
+		}
 }
