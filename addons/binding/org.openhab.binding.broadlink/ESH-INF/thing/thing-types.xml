@@ -10,6 +10,8 @@
 		<description>The Broadlink SP1 is a smart socket with Wi-Fi connectivity.</description>
 		<channels>
 			<channel id="powerOn" typeId="powerOn" />
+			<channel id="online" typeId="online" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text">
@@ -53,6 +55,8 @@
 		<channels>
 			<channel id="powerOn" typeId="powerOn" />
 			<channel id="powerConsumption" typeId="powerConsumption" />
+			<channel id="online" typeId="online" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text">
@@ -102,6 +106,8 @@
         <channels>
             <channel id="powerOn" typeId="powerOn" />
             <channel id="powerConsumption" typeId="powerConsumption" />
+						<channel id="online" typeId="online" />
+						<channel id="lastseen" typeId="lastseen" />
         </channels>
         <config-description>
             <parameter name="ipAddress" type="text">
@@ -153,6 +159,8 @@
 			<channel id="s2powerOn" typeId="s2powerOn" />
 			<channel id="s3powerOn" typeId="s3powerOn" />
 			<channel id="s4powerOn" typeId="s4powerOn" />
+			<channel id="online" typeId="online" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text">
@@ -203,6 +211,8 @@
         <channels>
             <channel id="powerOn" typeId="powerOn" />
             <channel id="powerConsumption" typeId="powerConsumption" />
+						<channel id="online" typeId="online" />
+						<channel id="lastseen" typeId="lastseen" />
         </channels>
         <config-description>
             <parameter name="ipAddress" type="text">
@@ -255,6 +265,8 @@
 			<channel id="noise" typeId="noise" />
 			<channel id="light" typeId="light" />
 			<channel id="air" typeId="air" />
+			<channel id="online" typeId="online" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text">
@@ -303,6 +315,8 @@
 		<description>The Broadlink RM Home is a IR transmitter with Wi-Fi connectivity.</description>
 		<channels>
 			<channel id="command" typeId="command" />
+			<channel id="online" typeId="online" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text">
@@ -358,6 +372,8 @@
 		<channels>
 			<channel id="command" typeId="command" />
 			<channel id="temperature" typeId="temperature" />
+			<channel id="online" typeId="online" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text">
@@ -412,6 +428,8 @@
 		<description>The Broadlink RM Mini is a IR transmitter with Wi-Fi connectivity.</description>
 		<channels>
 			<channel id="command" typeId="command" />
+			<channel id="online" typeId="online" />
+			<channel id="lastseen" typeId="lastseen" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text">
@@ -529,6 +547,18 @@
 		<item-type>String</item-type>
 		<label>Air quality</label>
 		<description>Air quality conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="online">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>States whether a device is online or offline</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastseen">
+		<item-type>DateTime</item-type>
+		<label>Last seen</label>
+		<description>States the last seen date/time</description>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
