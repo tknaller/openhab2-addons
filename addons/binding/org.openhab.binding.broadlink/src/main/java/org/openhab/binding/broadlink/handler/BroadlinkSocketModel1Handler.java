@@ -11,16 +11,6 @@ public class BroadlinkSocketModel1Handler extends BroadlinkSocketHandler {
         super(thing);
     }
 
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals("powerOn")) {
-            if (command == OnOffType.ON) {
-                setStatusOnDevice(1);
-						} else if (command == OnOffType.OFF) {
-                setStatusOnDevice(0);
-						}
-				}
-    }
-
     public void setStatusOnDevice(int state) {
         byte payload[] = new byte[16];
         payload[0] = (byte) state;
