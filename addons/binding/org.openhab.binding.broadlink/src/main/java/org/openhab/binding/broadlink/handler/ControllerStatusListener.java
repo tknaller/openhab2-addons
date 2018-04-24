@@ -10,6 +10,11 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 
+/**
+ * Interface for something that is interested in being informed when a Thing's status changes 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public interface ControllerStatusListener {
 
     public abstract void controllerStatusChanged(ThingStatus thingstatus);

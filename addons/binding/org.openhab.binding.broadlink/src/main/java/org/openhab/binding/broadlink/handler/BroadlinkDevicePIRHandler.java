@@ -12,6 +12,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Motion detector device 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkDevicePIRHandler {
 
     public BroadlinkDevicePIRHandler(Thing thing) {

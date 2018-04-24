@@ -22,6 +22,11 @@ import org.openhab.binding.broadlink.internal.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Remote blaster handler 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BroadlinkRemoteHandler.class);
 

@@ -10,6 +10,11 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
 
+/**
+ * Multiple power socket strip device
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkStripModel2Handler extends BroadlinkSocketModel2Handler {
 
     public BroadlinkStripModel2Handler(Thing thing) {

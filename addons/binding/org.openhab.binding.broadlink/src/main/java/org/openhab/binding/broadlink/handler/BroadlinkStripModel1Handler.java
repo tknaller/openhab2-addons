@@ -20,6 +20,11 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Multiple power socket strip device 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkStripModel1Handler.class);

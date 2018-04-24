@@ -15,6 +15,11 @@ import org.eclipse.smarthome.core.thing.*;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 
+/**
+ * Remote blaster handler
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
 
     public BroadlinkRemoteModel2Handler(Thing thing) {

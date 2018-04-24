@@ -18,6 +18,11 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Smart power socket handler
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkSocketModel2Handler.class);

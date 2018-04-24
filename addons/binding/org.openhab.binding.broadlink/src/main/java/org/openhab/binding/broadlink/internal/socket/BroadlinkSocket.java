@@ -22,6 +22,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Threaded socket implementation 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkSocket {
     private static final int BUFFER_LENGTH = 1024;
     private static byte buffer[];

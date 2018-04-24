@@ -19,6 +19,11 @@ import org.openhab.binding.broadlink.internal.BroadlinkHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Home alarm bridge kit 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public class BroadlinkControllerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BroadlinkControllerHandler.class);
     public static final Set SUPPORTED_THING_TYPES_UIDS;

@@ -15,6 +15,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract superclass for power socket devices 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
     
     private final Logger logger = LoggerFactory.getLogger(BroadlinkSocketHandler.class);

@@ -10,6 +10,11 @@ package org.openhab.binding.broadlink.internal.socket;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
+/**
+ * Interface for something that is interested in being informed when data arrives on a socket 
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 public interface BroadlinkSocketListener {
 
     public abstract void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID);
