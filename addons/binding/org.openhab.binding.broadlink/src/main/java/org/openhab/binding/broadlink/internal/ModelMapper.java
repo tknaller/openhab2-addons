@@ -76,32 +76,36 @@ public class ModelMapper {
             return null;
     }
 
-    public static StringType getAirValue(byte b) {
-        int air = Byte.toUnsignedInt(b);
-        if (air == 0)
-            return new StringType("PERFECT");
-        if (air == 1)
-            return new StringType("GOOD");
-        if (air == 2)
-            return new StringType("NORMAL");
-        if (air == 3)
-            return new StringType("BAD");
-        else
+		private static StringType lookup(StringType[] values, byte b) {
+        int index = Byte.toUnsignedInt(b);
+        if (index < values.length) {
+            return values[index];
+        }
+        else {
             return UNKNOWN;
+        }
+		}
+
+		private static final StringType[] airValues = {
+        new StringType("PERFECT"),
+        new StringType("GOOD"),
+        new StringType("NORMAL"),
+        new StringType("BAD")
+		};
+
+    public static StringType getAirValue(byte b) {
+				return lookup(airValues, b);
     }
 
+		private static final StringType[] lightValues = {
+				new StringType("DARK"),
+				new StringType("DIM"),
+				new StringType("NORMAL"),
+				new StringType("BRIGHT")
+		};
+
     public static StringType getLightValue(byte b) {
-        int light = Byte.toUnsignedInt(b);
-        if (light == 0)
-            return new StringType("DARK");
-        if (light == 1)
-            return new StringType("DIM");
-        if (light == 2)
-            return new StringType("NORMAL");
-        if (light == 3)
-            return new StringType("BRIGHT");
-        else
-            return UNKNOWN;
+				return lookup(lightValues, b);
     }
 
     private static final StringType[] noiseValues = {
@@ -112,12 +116,6 @@ public class ModelMapper {
     };
 
     public static StringType getNoiseValue(byte b) {
-        int noise = Byte.toUnsignedInt(b);
-        if (noise < noiseValues.length) {
-            return noiseValues[noise];
-        }
-        else {
-            return UNKNOWN;
-        }
+				return lookup(noiseValues, b);
     }
 }
