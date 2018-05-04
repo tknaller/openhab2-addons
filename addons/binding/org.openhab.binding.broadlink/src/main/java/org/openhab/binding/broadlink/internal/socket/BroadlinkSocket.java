@@ -81,14 +81,14 @@ public class BroadlinkSocket {
         listeners.add(listener);
         if (socket == null) {
             setupSocket();
-				}
+        }
     }
 
     public static void unregisterListener(BroadlinkSocketListener listener) {
         listeners.remove(listener);
         if (listeners.isEmpty() && socket != null) {
             closeSocket();
-				}
+        }
     }
 
     private static void setupSocket() {
@@ -107,7 +107,7 @@ public class BroadlinkSocket {
         synchronized (BroadlinkSocket.class) {
             if (socketReceiveThread != null) {
                 socketReceiveThread.interrupt();
-						}
+            }
             if (socket != null) {
                 logger.info("Socket closed");
                 socket.close();

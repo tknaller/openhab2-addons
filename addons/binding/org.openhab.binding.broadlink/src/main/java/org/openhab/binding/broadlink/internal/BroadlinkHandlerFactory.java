@@ -53,31 +53,31 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if(logger.isDebugEnabled()) logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM)) return new BroadlinkRemoteModel2Handler(thing);
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM2)) {
-            if(logger.isDebugEnabled()) logger.debug("org.openhab.binding.broadlink.internal", "RM 2 handler requested created");
+        if (logger.isDebugEnabled()) logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM)) return new BroadlinkRemoteModel2Handler(thing);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM2)) {
+            if (logger.isDebugEnabled()) logger.debug("RM 2 handler requested created");
             return new BroadlinkRemoteModel2Handler(thing);
         }
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM3)) {
-            if(logger.isDebugEnabled()) logger.debug("org.openhab.binding.broadlink.internal", "RM 3 handler requested created");
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM3)) {
+            if (logger.isDebugEnabled()) logger.debug("RM 3 handler requested created");
             return new BroadlinkRemoteHandler(thing);
         }
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_A1)) {
-            if(logger.isDebugEnabled()) logger.debug("org.openhab.binding.broadlink.internal", "A1 handler requested created");
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_A1)) {
+            if (logger.isDebugEnabled()) logger.debug("A1 handler requested created");
             return new BroadlinkA1Handler(thing);
         }
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP1)) return new BroadlinkStripModel1Handler(thing);
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP1)) return new BroadlinkSocketModel1Handler(thing);
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP2)) return new BroadlinkSocketModel2Handler(thing);
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP3)) return new BroadlinkSocketModel3Handler(thing);
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP1)) return new BroadlinkStripModel1Handler(thing);
-        if(thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP2)) {
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP1)) return new BroadlinkStripModel1Handler(thing);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP1)) return new BroadlinkSocketModel1Handler(thing);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP2)) return new BroadlinkSocketModel2Handler(thing);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP3)) return new BroadlinkSocketModel3Handler(thing);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP1)) return new BroadlinkStripModel1Handler(thing);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP2)) {
             return new BroadlinkStripModel1Handler(thing);
         } else {
-            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_S1C);
-            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_PIR);
-            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MAGNET);
+//            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_S1C);
+//            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_PIR);
+//            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MAGNET);
             return null;
         }
     }

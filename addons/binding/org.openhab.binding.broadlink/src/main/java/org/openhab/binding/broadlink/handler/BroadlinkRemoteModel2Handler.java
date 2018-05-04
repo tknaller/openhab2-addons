@@ -26,9 +26,9 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
         super(thing);
     }
 
-		protected boolean onBroadlinkDeviceBecomingReachable() {
+    protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
-		}
+    }
 
     public boolean getStatusFromDevice() {
         byte payload[] = new byte[16];

@@ -67,17 +67,17 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     protected void logDebug(String msg, Object... args) {
         if (logger.isDebugEnabled()) {
-            logger.debug(getThing().getUID() + ": " + msg, args);
+            logger.debug("{} {}", getThing().getUID() + ": " + msg, args);
         }
     }
 
     protected void logError(String msg, Object... args) {
-        logger.error(getThing().getUID() + ": " + msg, args);
+        logger.error("{}: {} {}", getThing().getUID(), msg, args);
     }
 
     protected void logTrace(String msg, Object... args) {
         if (logger.isTraceEnabled()) {
-            logger.trace(getThing().getUID() + ": " + msg, args);
+            logger.trace("{}: {} {}", getThing().getUID(), msg, args);
         }
     }
 
@@ -372,7 +372,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
             InetAddress address = InetAddress.getByName(host);
             return address.isReachable(timeout);
         } catch (Exception e) {
-            logger.error("Host is not reachable:", e.getMessage());
+            logger.error("Exception while trying to determine reachability of {}", host, e);
         }
         return false;
     }

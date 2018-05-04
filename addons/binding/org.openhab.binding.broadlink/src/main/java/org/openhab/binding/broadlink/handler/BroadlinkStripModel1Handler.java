@@ -34,28 +34,35 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType)
+        if (command instanceof RefreshType) {
             updateItemStatus();
-        if (channelUID.getId().equals("s1powerOn"))
-            if (command == OnOffType.ON)
-                setStatusOnDevice((byte) 1, (byte) 1);
-            else if (command == OnOffType.OFF)
-                setStatusOnDevice((byte) 1, (byte) 0);
-        if (channelUID.getId().equals("s2powerOn"))
-            if (command == OnOffType.ON)
-                setStatusOnDevice((byte) 2, (byte) 1);
-            else if (command == OnOffType.OFF)
-                setStatusOnDevice((byte) 2, (byte) 1);
-        if (channelUID.getId().equals("s3powerOn")) {
-            if (command == OnOffType.ON)
-                setStatusOnDevice((byte) 3, (byte) 1);
-            else if (command == OnOffType.OFF)
-                setStatusOnDevice((byte) 3, (byte) 1);
-            if (channelUID.getId().equals("s4powerOn"))
-                if (command == OnOffType.ON)
-                    setStatusOnDevice((byte) 4, (byte) 1);
-                else if (command == OnOffType.OFF)
-                    setStatusOnDevice((byte) 4, (byte) 1);
+            return;
+        }
+
+        switch (channelUID.getId()) {
+            case "s1powerOn":
+                interpretCommandForSocket(1, command);
+                break;
+            case "s2powerOn":
+                interpretCommandForSocket(1, command);
+                break;
+            case "s3powerOn":
+                interpretCommandForSocket(1, command);
+                break;
+            case "s4powerOn":
+                interpretCommandForSocket(1, command);
+                break;
+            default:
+                break;
+
+        }
+    }
+
+    private void interpretCommandForSocket(int sid, Command command) {
+        if (command == OnOffType.ON) {
+            setStatusOnDevice((byte) sid, (byte) 1);
+        } else if (command == OnOffType.OFF) {
+            setStatusOnDevice((byte) sid, (byte) 0);
         }
     }
 
@@ -143,7 +150,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         return false;
     }
 
-		protected boolean onBroadlinkDeviceBecomingReachable() {
-				return getStatusFromDevice();
-		}
+    protected boolean onBroadlinkDeviceBecomingReachable() {
+        return getStatusFromDevice();
+    }
 }

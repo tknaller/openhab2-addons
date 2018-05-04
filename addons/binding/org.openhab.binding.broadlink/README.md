@@ -2,7 +2,9 @@ broadlink-openhab-binding
 =====
 
 Introduction
+
 ------------
+
 This is building on the work of Cato Sognen, who developed the original Broadlink OpenHAB binding, but 
 never placed his source code into the public domain.
 
@@ -10,6 +12,7 @@ This is ALPHA-quality software at this stage and should not be used for ANY impo
 
 
 Known Issues
+
 ------------
 
 The original binding worked extremely well but there were a couple of issues related to multiple-device support (especially after a restart) that need to be addressed before this can be considered a mature binding. Github's issue tracking will be used for the basic stuff (getting this library working at all) but the main aims of this library are:
@@ -22,6 +25,7 @@ These main aims are based on my own personal needs and from reading of the [rele
 
 
 Credits
+
 ---------
 
 - [Cato Sognen](https://community.openhab.org/u/cato_sognen)
