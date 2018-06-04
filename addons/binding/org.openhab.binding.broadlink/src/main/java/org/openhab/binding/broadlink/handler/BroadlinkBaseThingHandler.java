@@ -120,20 +120,24 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     public void thingUpdated(Thing thing) {
         logDebug("thingUpdated");
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
+            logTrace("thing IV / Key has changed; re-authenticating");
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
             if (authenticate()) {
+
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 resetPacketCounter();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
+        } else {
+            logTrace("thing IV / Key has not changed; will not re-authenticate");
         }
         updateItemStatus();
     }
 
     public void dispose() {
-        logError("'{}' is being disposed", getThing().getLabel());
+        logError(getThing().getLabel() + " is being disposed");
         super.dispose();
     }
 
@@ -204,7 +208,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     public boolean sendDatagram(byte message[], String purpose) {
         try {
-            logTrace("Sending " + purpose);
+            logTrace("Sending " + purpose + " to " + thingConfig.getIpAddress() + ":" + thingConfig.getPort());
             if (socket == null || socket.isClosed()) {
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);

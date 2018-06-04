@@ -29,13 +29,16 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
     public BroadlinkDiscoveryService() {
         super(SUPPORTED_THING_TYPES, 10, true);
+        logger.info("BroadlinkDiscoveryService - Constructed");
     }
 
     public void startScan() {
         BroadlinkSocket.registerListener(this);
-        logger.warn("BroadlinkDiscoveryService - Broadlink device scan currently not implemented.");
-        //discoverDevices();
-        //waitUntilEnded();
+        logger.warn("BroadlinkDiscoveryService - Beginning Broadlink device scan...");
+        discoverDevices();
+        waitUntilEnded();
+        logger.warn("BroadlinkDiscoveryService - Ended Broadlink device scan...");
+
         BroadlinkSocket.unregisterListener(this);
     }
 
@@ -44,7 +47,8 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(getTimestampOfLastScan());
     }
 
-//    private void waitUntilEnded() {
+    private void waitUntilEnded() {
+        // No idea what was going on here; JAD seems to have made quite a mess of it...
 //        final Semaphore discoveryEndedLock = new Semaphore(0);
 //        scheduler.schedule(new Runnable() {
 //
@@ -68,9 +72,20 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 //        } catch (InterruptedException e) {
 //            logger.error("Discovery problem {}", e.getMessage());
 //        }
-//    }
+
+
+        try {
+            logger.warn("BroadlinkDiscoveryService - Broadlink device scan waiting for 10 seconds to complete ...");
+            Thread.sleep(10000L);
+            logger.warn("BroadlinkDiscoveryService - 10 second wait complete ...");
+
+        } catch (InterruptedException e) {
+            logger.error("Discovery problem {}", e.getMessage());
+        }
+    }
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
+        logger.info("Data received during Broadlink device discovery: from " + remoteAddress + ":" + remotePort + "[" + remoteMAC + "]");
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
     }
 
@@ -121,19 +136,21 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
     private static InetAddress findNonLoopbackAddress() throws SocketException {
         Enumeration ifaces = NetworkInterface.getNetworkInterfaces();
-//        for (NetworkInterface iface : ifaces) {
-//            Enumeration inetAddrs = iface.getInetAddresses();
-//            for (InetAddress inetAddr : inetAddrs) {
-//                if (inetAddr.isLoopbackAddress()) {
-//                    continue; /* Loop/switch isn't completed */
-//                }
-//
-//                if (inetAddr.isSiteLocalAddress()) {
-//                    return inetAddr;
-//                }
-//
-//            }
-//        }
+        while (ifaces.hasMoreElements()) {
+            NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
+            Enumeration inetAddrs = iface.getInetAddresses();
+            while (inetAddrs.hasMoreElements()) {
+                InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+                if (inetAddr.isLoopbackAddress()) {
+                    continue; /* Loop/switch isn't completed */
+                }
+
+                if (inetAddr.isSiteLocalAddress()) {
+                    return inetAddr;
+                }
+            }
+        }
+
         return null;
     }
 
@@ -157,7 +174,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverDevices() {
+    private static void discoverDevices() {
         try {
             InetAddress localAddress = getLocalHostLANAddress();
             int localPort = nextFreePort(localAddress, 1024, 3000);
@@ -168,7 +185,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    public int nextFreePort(InetAddress host, int from, int to) {
+    public static int nextFreePort(InetAddress host, int from, int to) {
         int port = randInt(from, to);
         do {
             if (isLocalPortFree(host, port))
@@ -177,7 +194,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         } while (true);
     }
 
-    private boolean isLocalPortFree(InetAddress host, int port) {
+    private static boolean isLocalPortFree(InetAddress host, int port) {
         try {
             (new ServerSocket(port, 50, host)).close();
         } catch (IOException e) {
@@ -191,7 +208,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         return randomNum;
     }
 
-    private byte[] buildDisoveryPacket(String host, int port) {
+    private static byte[] buildDisoveryPacket(String host, int port) {
         String localAddress[] = null;
         localAddress = host.toString().split("\\.");
         int ipAddress[] = new int[4];
