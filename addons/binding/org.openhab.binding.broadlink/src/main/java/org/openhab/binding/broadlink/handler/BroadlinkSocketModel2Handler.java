@@ -39,7 +39,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         sendDatagram(message);
     }
 
-    public boolean getStatusFromDevice() {
+    protected boolean getStatusFromDevice() {
         try {
             byte payload[] = new byte[16];
             payload[0] = 1;

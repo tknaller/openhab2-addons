@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.crypto.spec.IvParameterSpec;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -41,6 +42,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     private String authenticationKey;
     private String iv;
     protected BroadlinkDeviceConfiguration thingConfig;
+    private ScheduledFuture<?> refreshHandle;
 
     static {
         SUPPORTED_THING_TYPES = new HashSet(Arrays.asList(new ThingTypeUID[]{
@@ -67,17 +69,29 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     protected void logDebug(String msg, Object... args) {
         if (logger.isDebugEnabled()) {
-            logger.debug("{} {}", getThing().getUID() + ": " + msg, args);
+            if (args.length > 0) {
+                logger.debug("{}: {} {}", getThing().getUID(), msg, args);
+            } else {
+                logger.debug("{}: {}", getThing().getUID(), msg);
+            }
         }
     }
 
     protected void logError(String msg, Object... args) {
-        logger.error("{}: {} {}", getThing().getUID(), msg, args);
+        if (args.length > 0) {
+            logger.error("{}: {} {}", getThing().getUID(), msg, args);
+        } else {
+            logger.error("{}: {}", getThing().getUID(), msg);
+        }
     }
 
     protected void logTrace(String msg, Object... args) {
         if (logger.isTraceEnabled()) {
-            logger.trace("{}: {} {}", getThing().getUID(), msg, args);
+            if (args.length > 0) {
+                logger.trace("{}: {} {}", getThing().getUID(), msg, args);
+            } else {
+                logger.trace("{}: {}", getThing().getUID(), msg);
+            }
         }
     }
 
@@ -103,7 +117,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         logDebug("initialization complete");
 
         if (thingConfig.getPollingInterval() != 0) {
-            scheduler.scheduleWithFixedDelay(
+            refreshHandle = scheduler.scheduleWithFixedDelay(
                 new Runnable() {
 
                 public void run() {
@@ -124,7 +138,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
             if (authenticate()) {
-
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 resetPacketCounter();
@@ -138,6 +151,11 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     public void dispose() {
         logError(getThing().getLabel() + " is being disposed");
+        if (refreshHandle != null && !refreshHandle.isDone()) {
+            logDebug("Cancelling refresh task");
+            boolean cancelled = refreshHandle.cancel(true);
+            logDebug("Refresh successful: " + cancelled);
+        }
         super.dispose();
     }
 
@@ -334,6 +352,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logDebug("handleCommand " + command.toString());
         if (command instanceof RefreshType) {
+            logTrace("Refresh requested, updating item status ...");
+
             updateItemStatus();
         }
     }
@@ -343,7 +363,15 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         return true;
     }
 
+    // Implemented by devices that can update the openHAB state
+    // model. Return false if something went wrong that requires
+    // a change in the device's online state
+    protected boolean getStatusFromDevice() {
+        return true;
+    }
+
     public void updateItemStatus() {
+        logTrace("updateItemStatus; checking host availability at {}", thingConfig.getIpAddress());
         if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!isOnline()) {
                 if (!hasAuthenticated()) {
@@ -359,6 +387,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
                     logDebug("updateItemStatus: Offline -> Online");
                     updateStatus(ThingStatus.ONLINE);
                 }
+            } else {
+                getStatusFromDevice();
             }
         } else if (!isOffline()) {
             logError("updateItemStatus: Online -> Offline");

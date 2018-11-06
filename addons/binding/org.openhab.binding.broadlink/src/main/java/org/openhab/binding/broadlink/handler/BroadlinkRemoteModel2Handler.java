@@ -30,7 +30,7 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
         return getStatusFromDevice();
     }
 
-    public boolean getStatusFromDevice() {
+    protected boolean getStatusFromDevice() {
         byte payload[] = new byte[16];
         payload[0] = 1;
         byte message[] = buildMessage((byte)106, payload);

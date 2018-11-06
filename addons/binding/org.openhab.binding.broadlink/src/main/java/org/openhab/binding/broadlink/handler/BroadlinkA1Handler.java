@@ -30,7 +30,8 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
         super(thing);
     }
 
-    private boolean getStatusFromDevice() {
+    protected boolean getStatusFromDevice() {
+        logTrace("A1 getStatusFromDevice");
         byte payload[];
         payload = new byte[16];
         payload[0] = 1;
@@ -57,6 +58,8 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
             Map properties = editProperties();
             byte decryptResponse[] = Utils.decrypt(Hex.fromHexString((String) properties.get("key")), ivSpec, Utils.slice(response, 56, 88));
             float temperature = (float) ((double) (decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
+            logTrace("A1 getStatusFromDevice got temperature " + temperature);
+
             updateState("temperature", new DecimalType(temperature));
             updateState("humidity", new DecimalType((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D));
             updateState("light", ModelMapper.getLightValue(decryptResponse[8]));

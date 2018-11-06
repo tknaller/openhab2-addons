@@ -24,6 +24,18 @@ The original binding worked extremely well but there were a couple of issues rel
 These main aims are based on my own personal needs and from reading of the [relevant OpenHAB forum post](https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768). As mentioned above, please use Github Issues to log additional bugs/feature requests.
 
 
+Building It
+-------------
+
+- `cd addons/binding/org.openhab.binding.broadlink`
+- `mvn clean package`
+- The binding JAR will be in the `target` directory
+- You can install it to your OpenHAB system by copying it (e.g. with `scp`) into the `addons` directory of the OpenHAB installation:
+  - `scp target/org.openhab.binding.broadlink-2.4.0-SNAPSHOT.jar openhab@rpi:/usr/share/openhab2/addons`
+  - The above command copies the jar to the default OpenHAB `addons` installation location for a Raspberry Pi running Debian
+
+
+
 Credits
 
 ---------

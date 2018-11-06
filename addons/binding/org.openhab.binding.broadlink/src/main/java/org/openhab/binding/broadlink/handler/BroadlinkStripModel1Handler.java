@@ -90,7 +90,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         sendDatagram(message);
     }
 
-    private boolean getStatusFromDevice() {
+    protected boolean getStatusFromDevice() {
         label0:
         {
             label1:
