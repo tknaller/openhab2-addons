@@ -1,6 +1,7 @@
 package org.openhab.binding.broadlink.internal.discovery;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -18,22 +19,22 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+// https://www.eclipse.org/smarthome/documentation/development/bindings/discovery-services.html
 import org.osgi.service.component.annotations.Component;
 
-// https://www.eclipse.org/smarthome/documentation/development/bindings/discovery-services.html
+/**
+ * Broadlink discovery implementation.
+ *
+ * @author John Marshall/Cato Sognen - Initial contribution
+ */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.broadlink")
 public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         implements BroadlinkSocketListener {
 
-    private static final Set SUPPORTED_THING_TYPES;
     private final Logger logger = LoggerFactory.getLogger(BroadlinkDiscoveryService.class);
 
-    static {
-        SUPPORTED_THING_TYPES = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-    }
-
     public BroadlinkDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, 10, true);
+        super(BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet(), 10, true);
         logger.info("BroadlinkDiscoveryService - Constructed");
     }
 
@@ -94,9 +95,12 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
     }
 
+	private
+
     private void discoveryResultSubmission(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("Adding new Broadlink device on {} with mac '{}' to Smarthome inbox", remoteAddress, remoteMAC);
+		}
         Map properties = new HashMap(6);
         properties.put("ipAddress", remoteAddress);
         properties.put("port", Integer.valueOf(remotePort));
@@ -137,6 +141,10 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
             thingDiscovered(result);
         }
     }
+
+	private static String buildLabel(String deviceName, String remoteAddress) {
+
+	}
 
     private static InetAddress findNonLoopbackAddress() throws SocketException {
         Enumeration ifaces = NetworkInterface.getNetworkInterfaces();
@@ -182,7 +190,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         try {
             InetAddress localAddress = getLocalHostLANAddress();
             int localPort = nextFreePort(localAddress, 1024, 3000);
-            byte message[] = buildDisoveryPacket(localAddress.getHostAddress(), localPort);
+            byte message[] = buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
             BroadlinkSocket.sendMessage(message, "255.255.255.255", 80);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -212,7 +220,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         return randomNum;
     }
 
-    private static byte[] buildDisoveryPacket(String host, int port) {
+    private static byte[] buildDiscoveryPacket(String host, int port) {
         String localAddress[] = null;
         localAddress = host.toString().split("\\.");
         int ipAddress[] = new int[4];
@@ -263,6 +271,4 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         packet[33] = (byte) (checksum >> 8);
         return packet;
     }
-
-
 }

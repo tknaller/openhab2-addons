@@ -11,6 +11,8 @@ package org.openhab.binding.broadlink;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -81,7 +83,6 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_S1C;
     public static final ThingTypeUID THING_TYPE_PIR;
     public static final ThingTypeUID THING_TYPE_MAGNET;
-    public static final Set SUPPORTED_THING_TYPES_UIDS;
     public static final String CHANNEL_COMMAND = "command";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
@@ -192,6 +193,8 @@ public class BroadlinkBindingConstants {
     public static final int CMD_RM2_SEND_ID = 134;
     public static final int CMD_EASY_CONFIG_ID = 10000;
 
+    public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP;
+
     static {
         THING_TYPE_RM = new ThingTypeUID("broadlink", "rm");
         THING_TYPE_RM2 = new ThingTypeUID("broadlink", "rm2");
@@ -205,19 +208,20 @@ public class BroadlinkBindingConstants {
         THING_TYPE_S1C = new ThingTypeUID("broadlink", "s1c");
         THING_TYPE_PIR = new ThingTypeUID("broadlink", "s1p");
         THING_TYPE_MAGNET = new ThingTypeUID("broadlink", "s1m");
-        SUPPORTED_THING_TYPES_UIDS = new HashSet();
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_RM);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_RM2);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_RM3);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_A1);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MP1);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MP2);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SP1);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SP2);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SP3);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_S1C);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_PIR);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MAGNET);
+
+    	SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<ThingTypeUID, String>();
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM, RM);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM2, RM2);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM3, RM3);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_A1, A1);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP1, MP1);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP2, MP2);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP1, SP1);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP2, SP2);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3, SP3);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_S1C, S1C);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_PIR, S1P);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MAGNET, S1M);
     }
 }
 

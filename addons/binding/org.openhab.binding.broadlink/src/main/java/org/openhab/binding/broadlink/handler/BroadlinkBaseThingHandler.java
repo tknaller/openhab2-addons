@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
-    public static final Set SUPPORTED_THING_TYPES;
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
     private DatagramSocket socket = null;
     private boolean authenticated = false;
@@ -43,20 +42,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     private String iv;
     protected BroadlinkDeviceConfiguration thingConfig;
     private ScheduledFuture<?> refreshHandle;
-
-    static {
-        SUPPORTED_THING_TYPES = new HashSet(Arrays.asList(new ThingTypeUID[]{
-                BroadlinkBindingConstants.THING_TYPE_A1,
-                BroadlinkBindingConstants.THING_TYPE_RM,
-                BroadlinkBindingConstants.THING_TYPE_RM2,
-                BroadlinkBindingConstants.THING_TYPE_RM3,
-                BroadlinkBindingConstants.THING_TYPE_SP1,
-                BroadlinkBindingConstants.THING_TYPE_SP2,
-                BroadlinkBindingConstants.THING_TYPE_MP1,
-                BroadlinkBindingConstants.THING_TYPE_MP2,
-                BroadlinkBindingConstants.THING_TYPE_SP3
-        }));
-    }
 
     public BroadlinkBaseThingHandler(Thing thing) {
         super(thing);
