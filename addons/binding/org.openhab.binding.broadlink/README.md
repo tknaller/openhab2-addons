@@ -29,6 +29,7 @@ Building It
 
 - `cd addons/binding/org.openhab.binding.broadlink`
 - `mvn clean package`
+- (Once you've downloaded all the dependency JARs, use the `-o` option to save time)
 - The binding JAR will be in the `target` directory
 - You can install it to your OpenHAB system by copying it (e.g. with `scp`) into the `addons` directory of the OpenHAB installation:
   - `scp target/org.openhab.binding.broadlink-2.4.0-SNAPSHOT.jar openhab@rpi:/usr/share/openhab2/addons`

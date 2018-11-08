@@ -70,7 +70,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     protected void logDebug(String msg, Object... args) {
         if (logger.isDebugEnabled()) {
             if (args.length > 0) {
-                logger.debug("{}: {} {}", getThing().getUID(), msg, args);
+                Object[] allArgs = new Object[args.length + 1];
+                allArgs[0] = getThing().getUID();
+                System.arraycopy(args, 0, allArgs, 1, args.length);
+                logger.debug("{}: " + msg, allArgs);
             } else {
                 logger.debug("{}: {}", getThing().getUID(), msg);
             }
@@ -79,7 +82,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     protected void logError(String msg, Object... args) {
         if (args.length > 0) {
-            logger.error("{}: {} {}", getThing().getUID(), msg, args);
+            logger.error("{}: " + msg, getThing().getUID(), args);
         } else {
             logger.error("{}: {}", getThing().getUID(), msg);
         }
@@ -88,7 +91,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     protected void logTrace(String msg, Object... args) {
         if (logger.isTraceEnabled()) {
             if (args.length > 0) {
-                logger.trace("{}: {} {}", getThing().getUID(), msg, args);
+                logger.trace("{}: " + msg, getThing().getUID(), args);
             } else {
                 logger.trace("{}: {}", getThing().getUID(), msg);
             }
@@ -103,10 +106,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
-            Map properties = editProperties();
-            properties.put("id", null);
-            properties.put("key", null);
-            updateProperties(properties);
+            setProperty("id", null);
+            setProperty("key", null);
             if (authenticate()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -150,11 +151,11 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     }
 
     public void dispose() {
-        logError(getThing().getLabel() + " is being disposed");
+        logDebug(getThing().getLabel() + " is being disposed");
         if (refreshHandle != null && !refreshHandle.isDone()) {
             logDebug("Cancelling refresh task");
             boolean cancelled = refreshHandle.cancel(true);
-            logDebug("Refresh successful: " + cancelled);
+            logDebug("Cancellation successful: " + cancelled);
         }
         super.dispose();
     }
@@ -168,15 +169,19 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         payload[7] = 49;
         payload[8] = 49;
         payload[9] = 49;
-        payload[10] = 49;
-        payload[11] = 49;
-        payload[12] = 49;
-        payload[13] = 49;
-        payload[14] = 49;
-        payload[15] = 49;
-        payload[16] = 49;
-        payload[17] = 49;
-        payload[18] = 49;
+        payload[0x0a] = 49;
+        payload[0x0b] = 49;
+        payload[0x0c] = 49;
+        payload[0x0d] = 49;
+        payload[0x0e] = 49;
+        payload[0x0f] = 49;
+        payload[0x10] = 49;
+        payload[0x11] = 49;
+        payload[0x12] = 49;
+
+        payload[0x13] = 0x01;
+
+
         payload[30] = 1;
         payload[45] = 1;
         payload[48] = 84;
@@ -187,8 +192,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         payload[53] = 32;
         payload[54] = 49;
 
+        logDebug("Authenticating with packet count = {}", this.count);
+
         authenticated = false;
-        if (!sendDatagram(buildMessage((byte) 101, payload), "authentication")) {
+        if (!sendDatagram(buildMessage((byte) 0x65, payload), "authentication")) {
             logError("Authenticate - failed to send.");
             return false;
         }
@@ -202,13 +209,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
             logError("Authenticated -received error '{}'", String.valueOf(error));
             return false;
         }
-        byte decryptResponse[] = Utils.decrypt(Hex.convertHexToBytes(authenticationKey), new IvParameterSpec(Hex.convertHexToBytes(iv)), Utils.slice(response, 56, 88));
+        byte decryptResponse[] = Utils.decrypt(
+                Hex.convertHexToBytes(authenticationKey),
+                new IvParameterSpec(Hex.convertHexToBytes(iv)), Utils.slice(response, 56, 88));
         byte deviceId[] = Utils.getDeviceId(decryptResponse);
         byte deviceKey[] = Utils.getDeviceKey(decryptResponse);
-        Map properties = editProperties();
-        properties.put("key", Hex.toHexString(deviceKey));
-        properties.put("id", Hex.toHexString(deviceId));
-        updateProperties(properties);
+        setProperty("id", Hex.toHexString(deviceId));
+        setProperty("key", Hex.toHexString(deviceKey));
         thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
         logDebug(
             "Authenticated with id '{}' and key '{}'.",
@@ -285,6 +292,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         } else {
             id = Hex.fromHexString((String) properties.get("id"));
         }
+        logTrace("Building message with id {}", id);
         packet[0] = 0x5a;
         packet[1] = (byte) 0xa5;
         packet[2] = (byte) 0xaa;
@@ -386,19 +394,40 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
                 if (onBroadlinkDeviceBecomingReachable()) {
                     logDebug("updateItemStatus: Offline -> Online");
                     updateStatus(ThingStatus.ONLINE);
+                } else {
+                    logError("Device became reachable but had trouble getting status. Marking as offline ...");
+                    forceOffline();
                 }
             } else {
-                getStatusFromDevice();
+                // Normal operation ...
+                boolean gotStatusOk = getStatusFromDevice();
+                if (!gotStatusOk) {
+                    logError("Problem getting status. Marking as offline ...");
+                    forceOffline();
+                }
             }
         } else if (!isOffline()) {
-            logError("updateItemStatus: Online -> Offline");
-            this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
-            updateStatus(
+            forceOffline();
+        }
+    }
+
+    private void forceOffline() {
+        logError("updateItemStatus: Online -> Offline");
+        this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
+        resetPacketCounter();
+        setProperty("id", null);
+        setProperty("key", null);
+        updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
                 (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString()
-            );
-        }
+        );
+    }
+
+    private void setProperty(String propName, String propValue) {
+        Map properties = editProperties();
+        properties.put(propName, propValue);
+        updateProperties(properties);
     }
 
     protected static boolean hostAvailabilityCheck(String host, int timeout) {
