@@ -95,12 +95,10 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
     }
 
-	private
-
     private void discoveryResultSubmission(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
         if (logger.isDebugEnabled()) {
             logger.debug("Adding new Broadlink device on {} with mac '{}' to Smarthome inbox", remoteAddress, remoteMAC);
-		}
+	}
         Map properties = new HashMap(6);
         properties.put("ipAddress", remoteAddress);
         properties.put("port", Integer.valueOf(remotePort));
@@ -109,41 +107,25 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         if (logger.isDebugEnabled()) {
             logger.debug("Device '{}' discovered at '{}'.", thingUID, remoteAddress);
         }
-        if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_RM) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("Broadlink RM [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_RM2) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("Broadlink RM2 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_RM3) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("Broadlink RM3 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_A1) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("Broadlink A1 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_SP1) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("SP1 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_SP2) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("SP2 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_SP3) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("SP3 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_MP1) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("Broadlink MP1 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_MP2) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties).withLabel((new StringBuilder("Broadlink MP2 [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        } else if (thingTypeUID == BroadlinkBindingConstants.THING_TYPE_S1C) {
-            org.eclipse.smarthome.config.discovery.DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(BroadlinkBindingConstants.THING_TYPE_S1C).withProperties(properties).withLabel((new StringBuilder("Smart One Controller [")).append(remoteAddress).append("]").toString()).build();
-            thingDiscovered(result);
-        }
+
+	if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
+		notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
+	} else {
+		logger.error("Discovered a " + thingTypeUID + " but do not know how to support it at this time :-(");
+	}
     }
 
-	private static String buildLabel(String deviceName, String remoteAddress) {
+	private void notifyThingDiscovered(ThingTypeUID thingTypeUID, ThingUID thingUID, String remoteAddress, Map properties) {
+		String deviceHumanName = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.get(thingTypeUID);
+		String label = deviceHumanName + " [" + remoteAddress + "]";
+	    DiscoveryResult result = DiscoveryResultBuilder
+		    .create(thingUID)
+		    .withThingType(thingTypeUID)
+		    .withProperties(properties)
+		    .withLabel(label)
+		    .build();
 
+	    thingDiscovered(result);
 	}
 
     private static InetAddress findNonLoopbackAddress() throws SocketException {

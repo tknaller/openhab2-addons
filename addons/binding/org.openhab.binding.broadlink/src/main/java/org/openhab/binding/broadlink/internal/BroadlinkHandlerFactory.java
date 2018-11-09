@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.handler.*;
-import org.openhab.binding.broadlink.internal.discovery.BroadlinkDeviceDiscoveryService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -48,7 +47,7 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
     }
 
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet().contains(thingTypeUID);
     }
 
     protected ThingHandler createHandler(Thing thing) {
@@ -92,15 +91,4 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private synchronized void registerBroadlinkDeviceDiscoveryService(BroadlinkControllerHandler broadlinkControllerHandler) {
-        BroadlinkDeviceDiscoveryService discoveryService = new BroadlinkDeviceDiscoveryService(broadlinkControllerHandler);
-        discoveryServiceRegs.put(
-            broadlinkControllerHandler.getThing().getUID(),
-            bundleContext.registerService(
-                DiscoveryService.class.getName(),
-                discoveryService,
-                new Hashtable()
-            )
-        );
-    }
 }
