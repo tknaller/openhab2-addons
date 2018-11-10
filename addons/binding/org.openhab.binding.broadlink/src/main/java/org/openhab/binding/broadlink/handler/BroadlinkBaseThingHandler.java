@@ -52,13 +52,17 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         return this.authenticated;
     }
 
+    private Object[] prependUID(Object... args) {
+        Object[] allArgs = new Object[args.length + 1];
+        allArgs[0] = getThing().getUID();
+        System.arraycopy(args, 0, allArgs, 1, args.length);
+        return allArgs;
+    }
+
     protected void logDebug(String msg, Object... args) {
         if (logger.isDebugEnabled()) {
             if (args.length > 0) {
-                Object[] allArgs = new Object[args.length + 1];
-                allArgs[0] = getThing().getUID();
-                System.arraycopy(args, 0, allArgs, 1, args.length);
-                logger.debug("{}: " + msg, allArgs);
+                logger.debug("{}: " + msg, prependUID(args));
             } else {
                 logger.debug("{}: {}", getThing().getUID(), msg);
             }
@@ -67,7 +71,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     protected void logError(String msg, Object... args) {
         if (args.length > 0) {
-            logger.error("{}: " + msg, getThing().getUID(), args);
+            logger.error("{}: " + msg, prependUID(args));
+
         } else {
             logger.error("{}: {}", getThing().getUID(), msg);
         }
@@ -76,7 +81,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     protected void logTrace(String msg, Object... args) {
         if (logger.isTraceEnabled()) {
             if (args.length > 0) {
-                logger.trace("{}: " + msg, getThing().getUID(), args);
+                logger.trace("{}: " + msg, prependUID(args));
             } else {
                 logger.trace("{}: {}", getThing().getUID(), msg);
             }
@@ -96,7 +101,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
             if (authenticate()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                resetPacketCounter();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
@@ -126,7 +130,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
             if (authenticate()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                resetPacketCounter();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         } else {
@@ -169,13 +172,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
         payload[30] = 1;
         payload[45] = 1;
-        payload[48] = 84;
-        payload[49] = 101;
-        payload[50] = 115;
-        payload[51] = 116;
-        payload[52] = 32;
-        payload[53] = 32;
-        payload[54] = 49;
+        payload[0x30] = 84;
+        payload[0x31] = 101;
+        payload[0x32] = 115;
+        payload[0x33] = 116;
+        payload[0x34] = 32;
+        payload[0x35] = 32;
+        payload[0x36] = 49;
 
         logDebug("Authenticating with packet count = {}", this.count);
 
@@ -220,6 +223,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         try {
             logTrace("Sending " + purpose + " to " + thingConfig.getIpAddress() + ":" + thingConfig.getPort());
             if (socket == null || socket.isClosed()) {
+                logTrace("No existing socket ... creating");
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
                 socket.setReuseAddress(true);
@@ -248,36 +252,28 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
                 DatagramPacket receivePacket = new DatagramPacket(response, response.length);
                 socket.receive(receivePacket);
                 response = receivePacket.getData();
-                logTrace("Receiving " + purpose + " complete (OK)");
                 return response;
             }
         } catch (SocketTimeoutException ste) {
             logDebug("No further " + purpose + " response received for device");
         } catch (Exception e) {
-            logger.error("While {} - IO Exception: '{}'", purpose, e.getMessage());
+            logError("While {} - IO Exception: '{}'", purpose, e.getMessage());
         }
 
         return null;
-    }
-
-    /** If initial auth fails, don't advance the counter */
-    private void resetPacketCounter() {
-        logDebug("Resetting packet counter to 0");
-        count = 0x0000;
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) {
         count = count + 1 & 0xffff;
         byte packet[] = new byte[56];
         byte mac[] = thingConfig.getMAC();
-        Map properties = editProperties();
+        Map<String, String> properties = editProperties();
         byte id[];
         if (properties.get("id") == null) {
             id = new byte[4];
         } else {
-            id = Hex.fromHexString((String) properties.get("id"));
+            id = Hex.fromHexString(properties.get("id"));
         }
-        logTrace("Building message with id {}", id);
         packet[0] = 0x5a;
         packet[1] = (byte) 0xa5;
         packet[2] = (byte) 0xaa;
@@ -320,7 +316,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
             if (properties.get("key") == null || properties.get("id") == null) {
                 outputStream.write(Utils.encrypt(Hex.convertHexToBytes(thingConfig.getAuthorizationKey()), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
             } else  {
-                outputStream.write(Utils.encrypt(Hex.fromHexString((String) properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
+                outputStream.write(Utils.encrypt(Hex.fromHexString(properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
             }
         } catch (IOException e) {
             logError("IOException while building message", e);
@@ -399,7 +395,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     private void forceOffline() {
         logError("updateItemStatus: Online -> Offline");
         this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
-        resetPacketCounter();
         setProperty("id", null);
         setProperty("key", null);
         updateStatus(
@@ -410,7 +405,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     }
 
     private void setProperty(String propName, String propValue) {
-        Map properties = editProperties();
+        Map<String, String> properties = editProperties();
         properties.put(propName, propValue);
         updateProperties(properties);
     }

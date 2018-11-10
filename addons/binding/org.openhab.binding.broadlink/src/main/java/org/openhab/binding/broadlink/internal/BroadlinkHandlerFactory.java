@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.broadlink")
-@NonNullByDefault
 public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkHandlerFactory.class);
@@ -49,6 +48,7 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet().contains(thingTypeUID);
     }
+
 
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();

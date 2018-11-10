@@ -45,16 +45,15 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         } catch (IOException e) {
             logError("Exception while sending code", e);
         }
-        if (outputStream.size() % 16 == 0)
-            sendDatagram(buildMessage((byte) 106, outputStream.toByteArray()));
+        if (outputStream.size() % 16 == 0) {
+            sendDatagram(buildMessage((byte) 106, outputStream.toByteArray()), "remote code");
+        } else {
+            logError("Will not send remote code because it has an incorrect length (" + outputStream.size() + ")");
+        }
+
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == null) {
-            if (logger.isDebugEnabled())
-                logDebug("Command passed to handler for thing {} is null");
-            return;
-        }
         if (!isOnline()) {
             if (logger.isDebugEnabled())
                 logDebug("Can't handle command {} because handler for thing {} is not ONLINE", command, getThing().getLabel());
@@ -65,8 +64,17 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             return;
         }
         Channel channel = thing.getChannel(channelUID.getId());
+        if (channel == null) {
+            logError("Unexpected null channel while handling command {}", command.toFullString());
+            return;
+        }
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        if (channelTypeUID == null) {
+            logError("Unexpected null channelTypeUID while handling command {}", command.toFullString());
+            return;
+        }
         String s;
-        switch ((s = channel.getChannelTypeUID().getId()).hashCode()) {
+        switch ((s = channelTypeUID.getId()).hashCode()) {
             case 950394699: // FIXME WTF?!?!
                 if (s.equals("command")) {
                     if (logger.isDebugEnabled())
@@ -82,7 +90,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
             default:
                 if (logger.isDebugEnabled())
-                    logDebug("Thing {} has unknown channel type {}", getThing().getLabel(), channel.getChannelTypeUID().getId());
+                    logDebug("Thing {} has unknown channel type {}", getThing().getLabel(), channelTypeUID.getId());
                 break;
         }
     }
