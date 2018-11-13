@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.broadlink.internal;
 
+import java.net.*;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -70,5 +71,15 @@ public class Utils {
             logger.error("Exception while decrypting", e);
         }
         return null;
+    }
+
+    public static boolean hostAvailabilityCheck(String host, int timeout) {
+        try {
+            InetAddress address = InetAddress.getByName(host);
+            return address.isReachable(timeout);
+        } catch (Exception e) {
+            logger.error("Exception while trying to determine reachability of {}", host, e);
+        }
+        return false;
     }
 }

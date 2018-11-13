@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -21,8 +20,8 @@ import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
+import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
@@ -148,42 +147,11 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    // https://github.com/mjg59/python-broadlink/blob/master/protocol.md
     protected boolean authenticate() {
-        byte payload[] = new byte[80];
-        payload[4] = 49;
-        payload[5] = 49;
-        payload[6] = 49;
-        payload[7] = 49;
-        payload[8] = 49;
-        payload[9] = 49;
-        payload[0x0a] = 49;
-        payload[0x0b] = 49;
-        payload[0x0c] = 49;
-        payload[0x0d] = 49;
-        payload[0x0e] = 49;
-        payload[0x0f] = 49;
-        payload[0x10] = 49;
-        payload[0x11] = 49;
-        payload[0x12] = 49;
-
-        payload[0x13] = 0x01;
-
-
-        payload[30] = 1;
-        payload[45] = 1;
-        payload[0x30] = 84;
-        payload[0x31] = 101;
-        payload[0x32] = 115;
-        payload[0x33] = 116;
-        payload[0x34] = 32;
-        payload[0x35] = 32;
-        payload[0x36] = 49;
-
         logDebug("Authenticating with packet count = {}", this.count);
 
         authenticated = false;
-        if (!sendDatagram(buildMessage((byte) 0x65, payload), "authentication")) {
+        if (!sendDatagram(buildMessage((byte) 0x65,  BroadlinkProtocol.buildAuthenticationPayload()), "authentication")) {
             logError("Authenticate - failed to send.");
             return false;
         }
@@ -264,78 +232,29 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) {
-        count = count + 1 & 0xffff;
-        byte packet[] = new byte[56];
-        byte mac[] = thingConfig.getMAC();
-        Map<String, String> properties = editProperties();
+    	Map<String, String> properties = editProperties();
         byte id[];
         if (properties.get("id") == null) {
             id = new byte[4];
         } else {
             id = Hex.fromHexString(properties.get("id"));
         }
-        packet[0] = 0x5a;
-        packet[1] = (byte) 0xa5;
-        packet[2] = (byte) 0xaa;
-        packet[3] = 0x55;
-        packet[4] = 0x5a;
-        packet[5] = (byte) 0xa5;
-        packet[6] = (byte) 0xaa;
-        packet[7] = 0x55;
-        packet[36] = 42;
-        packet[37] = 39;
-        packet[38] = command;
-        packet[40] = (byte) (count & 0xff);
-        packet[41] = (byte) (count >> 8);
-        packet[42] = mac[0];
-        packet[43] = mac[1];
-        packet[44] = mac[2];
-        packet[45] = mac[3];
-        packet[46] = mac[4];
-        packet[47] = mac[5];
-        packet[48] = id[0];
-        packet[49] = id[1];
-        packet[50] = id[2];
-        packet[51] = id[3];
-        int checksum = 0xBEAF;
-        int i = 0;
-        byte abyte0[];
-        int k = (abyte0 = payload).length;
-        for (int j = 0; j < k; j++) {
-            byte b = abyte0[j];
-            i = Byte.toUnsignedInt(b);
-            checksum += i;
-            checksum &= 0xffff;
-        }
-
-        packet[52] = (byte) (checksum & 0xff);
-        packet[53] = (byte) (checksum >> 8);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            outputStream.write(packet);
-            if (properties.get("key") == null || properties.get("id") == null) {
-                outputStream.write(Utils.encrypt(Hex.convertHexToBytes(thingConfig.getAuthorizationKey()), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
-            } else  {
-                outputStream.write(Utils.encrypt(Hex.fromHexString(properties.get("key")), new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV())), payload));
-            }
-        } catch (IOException e) {
-            logError("IOException while building message", e);
-            return null;
-        }
-        byte data[] = outputStream.toByteArray();
-        checksum = 0xBEAF;
-        byte abyte1[];
-        int i1 = (abyte1 = data).length;
-        for (int l = 0; l < i1; l++) {
-            byte b = abyte1[l];
-            i = Byte.toUnsignedInt(b);
-            checksum += i;
-            checksum &= 0xffff;
-        }
-
-        data[32] = (byte) (checksum & 0xff);
-        data[33] = (byte) (checksum >> 8);
-        return data;
+	byte key[];
+	if (properties.get("key") == null || properties.get("id") == null) {
+		key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
+	} else  {
+		key = Hex.fromHexString(properties.get("key"));
+	}
+        count = count + 1 & 0xffff;
+	return BroadlinkProtocol.buildMessage(
+		command,
+		payload,
+		count,
+        	thingConfig.getMAC(),
+		id,
+		Hex.convertHexToBytes(thingConfig.getIV()),
+		key
+       );	
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -361,7 +280,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     public void updateItemStatus() {
         logTrace("updateItemStatus; checking host availability at {}", thingConfig.getIpAddress());
-        if (hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
+        if (Utils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!isOnline()) {
                 if (!hasAuthenticated()) {
                     logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
@@ -408,16 +327,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         Map<String, String> properties = editProperties();
         properties.put(propName, propValue);
         updateProperties(properties);
-    }
-
-    protected static boolean hostAvailabilityCheck(String host, int timeout) {
-        try {
-            InetAddress address = InetAddress.getByName(host);
-            return address.isReachable(timeout);
-        } catch (Exception e) {
-            logger.error("Exception while trying to determine reachability of {}", host, e);
-        }
-        return false;
     }
 
     protected boolean isOnline() {

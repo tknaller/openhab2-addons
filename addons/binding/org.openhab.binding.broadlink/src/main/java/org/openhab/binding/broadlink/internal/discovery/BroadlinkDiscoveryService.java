@@ -7,6 +7,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
 import org.slf4j.Logger;
@@ -172,7 +173,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         try {
             InetAddress localAddress = getLocalHostLANAddress();
             int localPort = nextFreePort(localAddress, 1024, 3000);
-            byte message[] = buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
+            byte message[] = BroadlinkProtocol.buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
             BroadlinkSocket.sendMessage(message, "255.255.255.255", 80);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -202,55 +203,4 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         return randomNum;
     }
 
-    private static byte[] buildDiscoveryPacket(String host, int port) {
-        String localAddress[] = null;
-        localAddress = host.toString().split("\\.");
-        int ipAddress[] = new int[4];
-        for (int i = 0; i < 4; i++)
-            ipAddress[i] = Integer.parseInt(localAddress[i]);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setFirstDayOfWeek(2);
-        TimeZone timeZone = TimeZone.getDefault();
-        int timezone = timeZone.getRawOffset() / 0x36ee80;
-        byte packet[] = new byte[48];
-        if (timezone < 0) {
-            packet[8] = (byte) ((255 + timezone) - 1);
-            packet[9] = -1;
-            packet[10] = -1;
-            packet[11] = -1;
-        } else {
-            packet[8] = 8;
-            packet[9] = 0;
-            packet[10] = 0;
-            packet[11] = 0;
-        }
-        packet[12] = (byte) (calendar.get(1) & 0xff);
-        packet[13] = (byte) (calendar.get(1) >> 8);
-        packet[14] = (byte) calendar.get(12);
-        packet[15] = (byte) calendar.get(11);
-        packet[16] = (byte) (calendar.get(1) - 2000);
-        packet[17] = (byte) (calendar.get(7) + 1);
-        packet[18] = (byte) calendar.get(5);
-        packet[19] = (byte) (calendar.get(2) + 1);
-        packet[24] = (byte) ipAddress[0];
-        packet[25] = (byte) ipAddress[1];
-        packet[26] = (byte) ipAddress[2];
-        packet[27] = (byte) ipAddress[3];
-        packet[28] = (byte) (port & 0xff);
-        packet[29] = (byte) (port >> 8);
-        packet[38] = 6;
-        int checksum = 48815;
-        byte abyte0[];
-        int k = (abyte0 = packet).length;
-        for (int j = 0; j < k; j++) {
-            byte b = abyte0[j];
-            checksum += Byte.toUnsignedInt(b);
-        }
-
-        checksum &= 0xffff;
-        packet[32] = (byte) (checksum & 0xff);
-        packet[33] = (byte) (checksum >> 8);
-        return packet;
-    }
 }
