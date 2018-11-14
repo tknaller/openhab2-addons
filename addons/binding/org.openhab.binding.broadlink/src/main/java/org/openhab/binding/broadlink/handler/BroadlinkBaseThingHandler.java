@@ -100,7 +100,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
             if (authenticate()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
         logDebug("initialization complete");
