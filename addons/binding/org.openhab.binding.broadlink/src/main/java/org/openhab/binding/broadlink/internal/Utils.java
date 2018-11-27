@@ -72,14 +72,4 @@ public class Utils {
         }
         return null;
     }
-
-    public static boolean hostAvailabilityCheck(String host, int timeout) {
-        try {
-            InetAddress address = InetAddress.getByName(host);
-            return address.isReachable(timeout);
-        } catch (Exception e) {
-            logger.error("Exception while trying to determine reachability of {}", host, e);
-        }
-        return false;
-    }
 }

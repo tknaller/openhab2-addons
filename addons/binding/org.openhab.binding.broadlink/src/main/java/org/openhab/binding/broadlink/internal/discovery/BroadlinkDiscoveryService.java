@@ -10,6 +10,7 @@ import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
+import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 // https://www.eclipse.org/smarthome/documentation/development/bindings/discovery-services.html
@@ -129,50 +129,10 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 	    thingDiscovered(result);
 	}
 
-    private static InetAddress findNonLoopbackAddress() throws SocketException {
-        Enumeration ifaces = NetworkInterface.getNetworkInterfaces();
-        while (ifaces.hasMoreElements()) {
-            NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
-            Enumeration inetAddrs = iface.getInetAddresses();
-            while (inetAddrs.hasMoreElements()) {
-                InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
-                if (inetAddr.isLoopbackAddress()) {
-                    continue; /* Loop/switch isn't completed */
-                }
-
-                if (inetAddr.isSiteLocalAddress()) {
-                    return inetAddr;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static InetAddress getLocalHostLANAddress()
-            throws UnknownHostException {
-
-        try {
-            InetAddress candidateAddress = findNonLoopbackAddress();
-
-            if (candidateAddress != null) return candidateAddress;
-
-            InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
-            if (jdkSuppliedAddress == null)
-                throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
-            else
-                return jdkSuppliedAddress;
-        } catch (Exception e) {
-            UnknownHostException unknownHostException = new UnknownHostException((new StringBuilder("Failed to determine LAN address: ")).append(e).toString());
-            unknownHostException.initCause(e);
-            throw unknownHostException;
-        }
-    }
-
     private static void discoverDevices() {
         try {
-            InetAddress localAddress = getLocalHostLANAddress();
-            int localPort = nextFreePort(localAddress, 1024, 3000);
+            InetAddress localAddress = NetworkUtils.getLocalHostLANAddress();
+            int localPort = NetworkUtils.nextFreePort(localAddress, 1024, 3000);
             byte message[] = BroadlinkProtocol.buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
             BroadlinkSocket.sendMessage(message, "255.255.255.255", 80);
         } catch (UnknownHostException e) {
@@ -180,27 +140,5 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    public static int nextFreePort(InetAddress host, int from, int to) {
-        int port = randInt(from, to);
-        do {
-            if (isLocalPortFree(host, port))
-                return port;
-            port = ThreadLocalRandom.current().nextInt(from, to);
-        } while (true);
-    }
-
-    private static boolean isLocalPortFree(InetAddress host, int port) {
-        try {
-            (new ServerSocket(port, 50, host)).close();
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
-
-    public static int randInt(int min, int max) {
-        int randomNum = ThreadLocalRandom.current().nextInt((max - min) + 1) + min;
-        return randomNum;
-    }
 
 }

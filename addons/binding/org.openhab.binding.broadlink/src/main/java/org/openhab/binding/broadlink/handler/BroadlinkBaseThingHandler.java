@@ -24,6 +24,7 @@ import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
+import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +72,16 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
     protected void logError(String msg, Object... args) {
         if (args.length > 0) {
             logger.error("{}: " + msg, prependUID(args));
-
         } else {
             logger.error("{}: {}", getThing().getUID(), msg);
+        }
+    }
+
+    protected void logInfo(String msg, Object... args) {
+        if (args.length > 0) {
+            logger.info("{}: " + msg, prependUID(args));
+        } else {
+            logger.info("{}: {}", getThing().getUID(), msg);
         }
     }
 
@@ -280,7 +288,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
 
     public void updateItemStatus() {
         logTrace("updateItemStatus; checking host availability at {}", thingConfig.getIpAddress());
-        if (Utils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
+        if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!isOnline()) {
                 if (!hasAuthenticated()) {
                     logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
