@@ -44,32 +44,42 @@ public class ModelMapper {
             return BroadlinkBindingConstants.THING_TYPE_SP2; // OEM-branded SPMini2
         if (model == 0x2736)
             return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMiniPlus
-        if (model == 10002)
+        if (model == 0x2712)
             return BroadlinkBindingConstants.THING_TYPE_RM2;
-        if (model == 10039)
-            return BroadlinkBindingConstants.THING_TYPE_RM3;
-        if (model == 10045)
-            return BroadlinkBindingConstants.THING_TYPE_RM;
-        if (model == 10115)
-            return BroadlinkBindingConstants.THING_TYPE_RM2;
-        if (model == 10108)
-            return BroadlinkBindingConstants.THING_TYPE_RM2;
-        if (model == 10026)
-            return BroadlinkBindingConstants.THING_TYPE_RM2;
-        if (model == 10119)
-            return BroadlinkBindingConstants.THING_TYPE_RM2;
-        if (model == 10123)
-            return BroadlinkBindingConstants.THING_TYPE_RM2;
-        if (model == 10127)
-            return BroadlinkBindingConstants.THING_TYPE_RM;
-        if (model == 10004)
+        if (model == 0x2737)
+            return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini
+        if (model == 0x273d)
+            return BroadlinkBindingConstants.THING_TYPE_RM; // RM Pro Phicomm
+        if (model == 0x2783)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Home Plus
+        if (model == 0x277c)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Home Plus GDT
+        if (model == 0x272a)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus
+        if (model == 0x2787)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus2
+        if (model == 0x279d)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus3
+        if (model == 0x27a9)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus_300
+        if (model == 0x278b)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus BL
+        if (model == 0x2797)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus HYC
+        if (model == 0x27a1)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus R1
+        if (model == 0x27a6)
+            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro PP
+        if (model == 0x278f)
+            return BroadlinkBindingConstants.THING_TYPE_RM; // RM Mini Shate
+        if (model == 0x2714)
             return BroadlinkBindingConstants.THING_TYPE_A1;
-        if (model == 20149)
+        if (model == 0x4eb5)
             return BroadlinkBindingConstants.THING_TYPE_MP1;
         if (model == 20251)
             return BroadlinkBindingConstants.THING_TYPE_MP2;
-        if (model == 20215)
-            return BroadlinkBindingConstants.THING_TYPE_MP1;
+        if (model == 0x4ef7)
+            return BroadlinkBindingConstants.THING_TYPE_MP1; // Honyar OEM MP1
         if (model == 10018)
             return BroadlinkBindingConstants.THING_TYPE_S1C;
         if (model == 20045)
