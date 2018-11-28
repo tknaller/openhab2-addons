@@ -24,7 +24,7 @@ public class ModelMapper {
     public static ThingTypeUID getThingType(int model) {
         if (model == 0)
             return BroadlinkBindingConstants.THING_TYPE_SP1;
-        if (model == 10001)
+        if (model == 0x2711)
             return BroadlinkBindingConstants.THING_TYPE_SP2;
         if (model == 10009 || model == 31001 || model == 10010 || model == 31002)
             return BroadlinkBindingConstants.THING_TYPE_SP2;
@@ -42,6 +42,8 @@ public class ModelMapper {
             return BroadlinkBindingConstants.THING_TYPE_SP2;
         if (model == 30014)
             return BroadlinkBindingConstants.THING_TYPE_SP3;
+        if (model == 0x947a || model == 0x9479)
+            return BroadlinkBindingConstants.THING_TYPE_SP3; // NB: this is ACTUALLY an SP3S - see https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
         if (model == 10002)
             return BroadlinkBindingConstants.THING_TYPE_RM2;
         if (model == 10039)
