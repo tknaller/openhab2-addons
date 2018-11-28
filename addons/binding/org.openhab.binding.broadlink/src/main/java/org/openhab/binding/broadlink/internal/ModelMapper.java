@@ -26,24 +26,24 @@ public class ModelMapper {
             return BroadlinkBindingConstants.THING_TYPE_SP1;
         if (model == 0x2711)
             return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model == 10009 || model == 31001 || model == 10010 || model == 31002)
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model == 10016)
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model == 30014)
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model == 10024)
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model == 10035 || model == 10046)
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model >= 30000 && model <= 31000)
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model == 10038)
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        if (model == 30014)
-            return BroadlinkBindingConstants.THING_TYPE_SP3;
+        if (model == 0x2719 || model == 0x7919 || model == 0x271a || model == 0x791a) 
+            return BroadlinkBindingConstants.THING_TYPE_SP2; // Honeywell SP2
+        if (model == 0x2720)
+            return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMini
+        if (model == 0x753e)
+            return BroadlinkBindingConstants.THING_TYPE_SP3; // SP3
+        if (model == 0x7d00)
+            return BroadlinkBindingConstants.THING_TYPE_SP3; // OEM-branded SP3
         if (model == 0x947a || model == 0x9479)
             return BroadlinkBindingConstants.THING_TYPE_SP3; // NB: this is ACTUALLY an SP3S - see https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
+        if (model == 0x2728)
+            return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMini2
+        if (model == 0x2733 || model == 0x273e)
+            return BroadlinkBindingConstants.THING_TYPE_SP2; // OEM-branded SPMini
+        if (model >= 0x7530 && model <= 0x7918)
+            return BroadlinkBindingConstants.THING_TYPE_SP2; // OEM-branded SPMini2
+        if (model == 0x2736)
+            return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMiniPlus
         if (model == 10002)
             return BroadlinkBindingConstants.THING_TYPE_RM2;
         if (model == 10039)
