@@ -11,6 +11,9 @@ package org.openhab.binding.broadlink.internal;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mappings of internal values to user-visible ones.
@@ -20,6 +23,8 @@ import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 public class ModelMapper {
 
     private static final StringType UNKNOWN = new StringType("UNKNOWN");
+    private static final Logger logger = LoggerFactory.getLogger(ModelMapper.class);
+
 
     public static ThingTypeUID getThingType(int model) {
         if (model == 0)
@@ -80,12 +85,14 @@ public class ModelMapper {
             return BroadlinkBindingConstants.THING_TYPE_MP2;
         if (model == 0x4ef7)
             return BroadlinkBindingConstants.THING_TYPE_MP1; // Honyar OEM MP1
-        if (model == 10018)
+        if (model == 0x2722)
             return BroadlinkBindingConstants.THING_TYPE_S1C;
-        if (model == 20045)
-            return null;
-        else
-            return null;
+//        if (model == 0x4e4d)
+//            return null;
+
+        logger.error("Device identifying itself as '" + model + "' is not currently supported. Please report this to the developer!");
+        logger.error("Join the discussion at https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768/616");
+        return null;
     }
 
     private static StringType lookup(StringType[] values, byte b) {
