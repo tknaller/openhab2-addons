@@ -30,9 +30,10 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.broadlink")
 public class BroadlinkDiscoveryService extends AbstractDiscoveryService
-        implements BroadlinkSocketListener {
+        implements BroadlinkSocketListener, DiscoveryFinishedListener {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkDiscoveryService.class);
+	private int foundCount = 0;
 
     public BroadlinkDiscoveryService() {
         super(BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet(), 10, true);
@@ -40,59 +41,24 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
     }
 
     public void startScan() {
-        BroadlinkSocket.registerListener(this);
+		foundCount = 0;
         logger.warn("BroadlinkDiscoveryService - Beginning Broadlink device scan...");
-        discoverDevices();
-        waitUntilEnded();
-        logger.warn("BroadlinkDiscoveryService - Ended Broadlink device scan...");
-
-        BroadlinkSocket.unregisterListener(this);
+        DiscoveryProtocol.beginAsync(this, 10000L, this);
     }
+
+
+	public void onDiscoveryFinished() {
+		logger.info("Discovery complete. Found " + foundCount + " Broadlink devices");
+	}
 
     protected synchronized void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
 
-    private void waitUntilEnded() {
-        // No idea what was going on here; JAD seems to have made quite a mess of it...
-//        final Semaphore discoveryEndedLock = new Semaphore(0);
-//        scheduler.schedule(new Runnable() {
-//
-//            public void run() {
-//                discoveryEndedLock.release();
-//            }
-//
-//            final BroadlinkDiscoveryService this$0;
-//            private final Semaphore val$discoveryEndedLock;
-//
-//
-//            {
-//                this$0 = BroadlinkDiscoveryService.this;
-//                discoveryEndedLock = semaphore;
-//                super();
-//            }
-//        }
-//                , 10L, TimeUnit.SECONDS);
-//        try {
-//            discoveryEndedLock.acquire();
-//        } catch (InterruptedException e) {
-//            logger.error("Discovery problem {}", e.getMessage());
-//        }
-
-
-        try {
-            logger.warn("BroadlinkDiscoveryService - Broadlink device scan waiting for 10 seconds to complete ...");
-            Thread.sleep(10000L);
-            logger.warn("BroadlinkDiscoveryService - 10 second wait complete ...");
-
-        } catch (InterruptedException e) {
-            logger.error("Discovery problem {}", e.getMessage());
-        }
-    }
-
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
         logger.info("Data received during Broadlink device discovery: from " + remoteAddress + ":" + remotePort + "[" + remoteMAC + "]");
+		foundCount++;
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
     }
 
@@ -109,11 +75,11 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
             logger.debug("Device '{}' discovered at '{}'.", thingUID, remoteAddress);
         }
 
-	if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
-		notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
-	} else {
-		logger.error("Discovered a " + thingTypeUID + " but do not know how to support it at this time :-(");
-	}
+		if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
+			notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
+		} else {
+			logger.error("Discovered a " + thingTypeUID + " but do not know how to support it at this time :-(");
+		}
     }
 
 	private void notifyThingDiscovered(ThingTypeUID thingTypeUID, ThingUID thingUID, String remoteAddress, Map properties) {
@@ -128,17 +94,4 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
 	    thingDiscovered(result);
 	}
-
-    private static void discoverDevices() {
-        try {
-            InetAddress localAddress = NetworkUtils.getLocalHostLANAddress();
-            int localPort = NetworkUtils.nextFreePort(localAddress, 1024, 3000);
-            byte message[] = BroadlinkProtocol.buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
-            BroadlinkSocket.sendMessage(message, "255.255.255.255", 80);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 }

@@ -15,6 +15,7 @@ package org.openhab.binding.broadlink.config;
  */
 public class BroadlinkDeviceConfiguration {
     private String ipAddress;
+    private boolean staticIp;
     private int port;
     private String mac;
     private int pollingInterval;
@@ -24,6 +25,7 @@ public class BroadlinkDeviceConfiguration {
 
     public BroadlinkDeviceConfiguration() {
         pollingInterval = 30;
+	staticIp = true;
     }
 
     public String getIpAddress() {
@@ -32,6 +34,14 @@ public class BroadlinkDeviceConfiguration {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public boolean isStaticIp () {
+        return staticIp;
+    }
+
+    public void setStaticIp(boolean staticIp) {
+        this.staticIp = staticIp;
     }
 
     public void setPort(int port) {
@@ -57,6 +67,10 @@ public class BroadlinkDeviceConfiguration {
 
         return configMac;
     }
+
+    public String getMACAsString() {
+		return mac;
+	}
 
     public int getPollingInterval() {
         return pollingInterval;
@@ -91,7 +105,24 @@ public class BroadlinkDeviceConfiguration {
     }
 
     public String toString() {
-        return (new StringBuilder("BroadlinkDeviceConfiguration [ipAddress=")).append(ipAddress).append(", port=").append(port).append(", mac=").append(mac).append(", pollingInterval=").append(pollingInterval).append(", mapFilename=").append(mapFilename).append(", authorizationKey=").append(authorizationKey).append(", iv=").append(iv).append("]").toString();
+        return (
+		new StringBuilder("BroadlinkDeviceConfiguration [ipAddress="))
+			.append(ipAddress)
+			.append(" (static: ")
+			.append(staticIp)
+			.append("), port=")
+			.append(port)
+			.append(", mac=")
+			.append(mac)
+			.append(", pollingInterval=")
+			.append(pollingInterval)
+			.append(", mapFilename=")
+			.append(mapFilename)
+			.append(", authorizationKey=")
+			.append(authorizationKey)
+			.append(", iv=")
+			.append(iv)
+			.append("]").toString();
     }
 
 }

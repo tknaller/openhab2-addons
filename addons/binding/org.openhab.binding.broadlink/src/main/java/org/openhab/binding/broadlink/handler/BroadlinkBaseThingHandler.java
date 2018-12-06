@@ -25,6 +25,8 @@ import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
+import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
+import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
-public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
+public abstract class BroadlinkBaseThingHandler extends BaseThingHandler implements DeviceRediscoveryListener {
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
     private DatagramSocket socket = null;
     private boolean authenticated = false;
@@ -290,22 +292,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         logTrace("updateItemStatus; checking host availability at {}", thingConfig.getIpAddress());
         if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!isOnline()) {
-                if (!hasAuthenticated()) {
-                    logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
-                    if (authenticate()) {
-                        logDebug("Authenticated with newly-detected device, will now get its status");
-                    } else {
-                        logError("Attempting to authenticate prior to getting device status FAILED");
-                        return;
-                    }
-                }
-                if (onBroadlinkDeviceBecomingReachable()) {
-                    logDebug("updateItemStatus: Offline -> Online");
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    logError("Device became reachable but had trouble getting status. Marking as offline ...");
-                    forceOffline();
-                }
+				transitionToOnline();
             } else {
                 // Normal operation ...
                 boolean gotStatusOk = getStatusFromDevice();
@@ -314,10 +301,52 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
                     forceOffline();
                 }
             }
-        } else if (!isOffline()) {
-            forceOffline();
+        } else {
+			if (thingConfig.isStaticIp()) {
+				if (!isOffline()) {
+					logDebug("Statically-IP-addressed device not found at {}", thingConfig.getIpAddress());
+            		forceOffline();
+				}
+			} else {
+				logDebug("Dynamic IP device not found at {}, will search...", thingConfig.getIpAddress());
+				DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
+				dra.attemptRediscovery();
+				logDebug("Asynchronous dynamic IP device search initiated..."); 
+			}
         }
     }
+
+	public void onDeviceRediscovered(String newIpAddress) {
+		logInfo("Rediscovered this device at IP {}", newIpAddress);
+		thingConfig.setIpAddress(newIpAddress);
+		transitionToOnline();
+	}
+
+	public void onDeviceRediscoveryFailure() {
+		if (!isOffline()) {
+			logDebug("Dynamically-IP-addressed device not found after network scan. Marking offline");
+			forceOffline();
+		}
+	}
+
+	private void transitionToOnline() {
+		if (!hasAuthenticated()) {
+			logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
+			if (authenticate()) {
+				logDebug("Authenticated with newly-detected device, will now get its status");
+			} else {
+				logError("Attempting to authenticate prior to getting device status FAILED");
+				return;
+			}
+		}
+		if (onBroadlinkDeviceBecomingReachable()) {
+			logDebug("updateStatus: Offline -> Online");
+			updateStatus(ThingStatus.ONLINE);
+		} else {
+			logError("Device became reachable but had trouble getting status. Marking as offline ...");
+			forceOffline();
+		}
+	}
 
     private void forceOffline() {
         logError("updateItemStatus: Online -> Offline");
@@ -325,9 +354,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler {
         setProperty("id", null);
         setProperty("key", null);
         updateStatus(
-                ThingStatus.OFFLINE,
-                ThingStatusDetail.COMMUNICATION_ERROR,
-                (new StringBuilder("Could not control device at IP address ")).append(thingConfig.getIpAddress()).toString()
+			ThingStatus.OFFLINE,
+			ThingStatusDetail.COMMUNICATION_ERROR,
+			(new StringBuilder("Could not find device at IP address ")).append(thingConfig.getIpAddress()).toString()
         );
     }
 
