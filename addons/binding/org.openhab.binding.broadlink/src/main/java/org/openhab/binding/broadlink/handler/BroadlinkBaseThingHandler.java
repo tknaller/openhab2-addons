@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
-public abstract class BroadlinkBaseThingHandler extends BaseThingHandler implements DeviceRediscoveryListener {
+public abstract class BroadlinkBaseThingHandler extends AbstractLoggingThingHandler implements DeviceRediscoveryListener {
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkBaseThingHandler.class);
     private DatagramSocket socket = null;
     private boolean authenticated = false;
@@ -52,49 +52,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     private boolean hasAuthenticated() {
         return this.authenticated;
-    }
-
-    private Object[] prependUID(Object... args) {
-        Object[] allArgs = new Object[args.length + 1];
-        allArgs[0] = getThing().getUID();
-        System.arraycopy(args, 0, allArgs, 1, args.length);
-        return allArgs;
-    }
-
-    protected void logDebug(String msg, Object... args) {
-        if (logger.isDebugEnabled()) {
-            if (args.length > 0) {
-                logger.debug("{}: " + msg, prependUID(args));
-            } else {
-                logger.debug("{}: {}", getThing().getUID(), msg);
-            }
-        }
-    }
-
-    protected void logError(String msg, Object... args) {
-        if (args.length > 0) {
-            logger.error("{}: " + msg, prependUID(args));
-        } else {
-            logger.error("{}: {}", getThing().getUID(), msg);
-        }
-    }
-
-    protected void logInfo(String msg, Object... args) {
-        if (args.length > 0) {
-            logger.info("{}: " + msg, prependUID(args));
-        } else {
-            logger.info("{}: {}", getThing().getUID(), msg);
-        }
-    }
-
-    protected void logTrace(String msg, Object... args) {
-        if (logger.isTraceEnabled()) {
-            if (args.length > 0) {
-                logger.trace("{}: " + msg, prependUID(args));
-            } else {
-                logger.trace("{}: {}", getThing().getUID(), msg);
-            }
-        }
     }
 
     public void initialize() {
@@ -154,6 +111,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             boolean cancelled = refreshHandle.cancel(true);
             logDebug("Cancellation successful: " + cancelled);
         }
+        if (socket != null) {
+            socket.close();
+            socket = null;
+        }
         super.dispose();
     }
 
@@ -212,7 +173,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
             socket.send(sendPacket);
         } catch (IOException e) {
-            logger.error("IO error for device '{}' during UDP command sending: {}", getThing().getUID(), e.getMessage());
+            logError("IO error for device '{}' during UDP command sending: {}", getThing().getUID(), e.getMessage());
             return false;
         }
         logTrace("Sending " + purpose + " complete");
@@ -249,22 +210,23 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         } else {
             id = Hex.fromHexString(properties.get("id"));
         }
-	byte key[];
-	if (properties.get("key") == null || properties.get("id") == null) {
-		key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
-	} else  {
-		key = Hex.fromHexString(properties.get("key"));
-	}
+        byte key[];
+        if (properties.get("key") == null || properties.get("id") == null) {
+            key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
+        } else  {
+            key = Hex.fromHexString(properties.get("key"));
+        }
         count = count + 1 & 0xffff;
-	return BroadlinkProtocol.buildMessage(
-		command,
-		payload,
-		count,
-        	thingConfig.getMAC(),
-		id,
-		Hex.convertHexToBytes(thingConfig.getIV()),
-		key
-       );	
+        logTrace("building message with count: {}, id: {}, key: {}", count, Hex.toHexString(id), Hex.toHexString(key));
+	    return BroadlinkProtocol.buildMessage(
+            command,
+            payload,
+            count,
+            thingConfig.getMAC(),
+            id,
+            Hex.convertHexToBytes(thingConfig.getIV()),
+            key
+        );
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -335,8 +297,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 			if (authenticate()) {
 				logDebug("Authenticated with newly-detected device, will now get its status");
 			} else {
-				logError("Attempting to authenticate prior to getting device status FAILED");
-				return;
+				logError("Attempting to authenticate prior to getting device status FAILED. Will mark as offline");
+                forceOffline();
+                return;
 			}
 		}
 		if (onBroadlinkDeviceBecomingReachable()) {
@@ -358,19 +321,15 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 			ThingStatusDetail.COMMUNICATION_ERROR,
 			(new StringBuilder("Could not find device at IP address ")).append(thingConfig.getIpAddress()).toString()
         );
+        if (socket != null) {
+            socket.close();
+            socket = null;
+        }
     }
 
     private void setProperty(String propName, String propValue) {
         Map<String, String> properties = editProperties();
         properties.put(propName, propValue);
         updateProperties(properties);
-    }
-
-    protected boolean isOnline() {
-        return thing.getStatus().equals(ThingStatus.ONLINE);
-    }
-
-    protected boolean isOffline() {
-        return thing.getStatus().equals(ThingStatus.OFFLINE);
     }
 }
