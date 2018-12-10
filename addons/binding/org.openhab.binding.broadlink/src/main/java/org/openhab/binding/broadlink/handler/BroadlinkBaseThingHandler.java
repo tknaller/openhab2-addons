@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import java.io.IOException;
-import java.net.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.crypto.spec.IvParameterSpec;
@@ -28,6 +26,7 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
+import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
 import org.slf4j.Logger;
 
 /**
@@ -36,13 +35,13 @@ import org.slf4j.Logger;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 public abstract class BroadlinkBaseThingHandler extends BaseThingHandler implements DeviceRediscoveryListener {
-    private DatagramSocket socket = null;
+    private RetryableSocket socket;
     private boolean authenticated = false;
     private int count;
     private String authenticationKey;
     private String iv;
     protected BroadlinkDeviceConfiguration thingConfig;
-    protected ThingLogger thingLogger;
+    protected final ThingLogger thingLogger;
     private ScheduledFuture<?> refreshHandle;
 
     public BroadlinkBaseThingHandler(Thing thing, Logger logger) {
@@ -60,6 +59,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
         count = (new Random()).nextInt(65535);
         thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
+        this.socket = new RetryableSocket(thingConfig, thingLogger);
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
@@ -146,9 +146,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         setProperty("key", Hex.toHexString(deviceKey));
         thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
         thingLogger.logDebug(
-            "Authenticated with id '{}' and key '{}'.",
-            Hex.toHexString(deviceId),
-            Hex.toHexString(deviceKey)
+                "Authenticated with id '{}' and key '{}'.",
+                Hex.toHexString(deviceId),
+                Hex.toHexString(deviceKey)
         );
         authenticated = true;
         return true;
@@ -160,47 +160,11 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
 
     public boolean sendDatagram(byte message[], String purpose) {
-        try {
-            thingLogger.logTrace("Sending " + purpose + " to " + thingConfig.getIpAddress() + ":" + thingConfig.getPort());
-            if (socket == null || socket.isClosed()) {
-                thingLogger.logTrace("No existing socket ... creating");
-                socket = new DatagramSocket();
-                socket.setBroadcast(true);
-                socket.setReuseAddress(true);
-                socket.setSoTimeout(5000);
-            }
-            InetAddress host = InetAddress.getByName(thingConfig.getIpAddress());
-            int port = thingConfig.getPort();
-            DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
-            socket.send(sendPacket);
-        } catch (IOException e) {
-            thingLogger.logError("IO error for device '{}' during UDP command sending: {}", getThing().getUID(), e.getMessage());
-            return false;
-        }
-        thingLogger.logTrace("Sending " + purpose + " complete");
-        return true;
+        return socket.sendDatagram(message, purpose);
     }
 
     public byte[] receiveDatagram(String purpose) {
-        thingLogger.logTrace("Receiving " + purpose);
-
-        try {
-            if (socket == null) {
-                thingLogger.logError("receiveDatagram " + purpose + " for socket was unexpectedly null");
-            } else {
-                byte response[] = new byte[1024];
-                DatagramPacket receivePacket = new DatagramPacket(response, response.length);
-                socket.receive(receivePacket);
-                response = receivePacket.getData();
-                return response;
-            }
-        } catch (SocketTimeoutException ste) {
-            thingLogger.logDebug("No further " + purpose + " response received for device");
-        } catch (Exception e) {
-            thingLogger.logError("While {} - IO Exception: '{}'", purpose, e.getMessage());
-        }
-
-        return null;
+        return socket.receiveDatagram(purpose);
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) {
