@@ -25,10 +25,12 @@ import org.slf4j.LoggerFactory;
  */
 public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkSocketModel2Handler.class);
-
     public BroadlinkSocketModel2Handler(Thing thing) {
-        super(thing);
+        super(thing, LoggerFactory.getLogger(BroadlinkSocketModel2Handler.class));
+    }
+
+    public BroadlinkSocketModel2Handler(Thing thing, Logger logger) {
+        super(thing, logger);
     }
 
     protected void setStatusOnDevice(int status) {
@@ -37,7 +39,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         payload[4] = (byte) status;
         byte message[] = buildMessage((byte) 106, payload);
         sendDatagram(message);
-	receiveDatagram("acknowledgment packet");
+	    receiveDatagram("acknowledgment packet");
     }
 
     protected boolean getStatusFromDevice() {
@@ -48,26 +50,26 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
             sendDatagram(message, "status for socket");
             byte response[] = receiveDatagram("status for socket");
             if (response == null) {
-                    logError("null response from model 2 status request");
-                    return false;
+                thingLogger.logError("null response from model 2 status request");
+                return false;
             }
             int error = response[34] | response[35] << 8;
             if (error != 0) {
-                    logError("Error response from model 2 status request; code: " + error);
-                    return false;
+                thingLogger.logError("Error response from model 2 status request; code: " + error);
+                return false;
             }
             IvParameterSpec ivSpec = new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV()));
             Map properties = editProperties();
             byte decodedPayload[] = Utils.decrypt(Hex.fromHexString((String) properties.get("key")), ivSpec, Utils.slice(response, 56, 88));
             if (decodedPayload == null) {
-                logError("Null payload in response from model 2 status request");
+                thingLogger.logError("Null payload in response from model 2 status request");
                 return false;
             }
             updateState("powerOn", deriveOnOffStateFromPayload(decodedPayload));
             return true;
         } catch (Exception ex) {
-                logError("Exception while getting status from device", ex);
-                return false;
+            thingLogger.logError("Exception while getting status from device", ex);
+            return false;
         }
     }
 

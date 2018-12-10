@@ -9,11 +9,13 @@
 package org.openhab.binding.broadlink.internal;
 
 import java.net.*;
+import org.eclipse.smarthome.core.thing.*;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * Utilities for working with the Broadlink devices.
@@ -29,6 +31,14 @@ public class Utils {
 
     public static byte[] getDeviceKey(byte response[]) {
         return slice(response, 4, 20);
+    }
+
+    public static boolean isOnline(Thing thing) {
+        return thing.getStatus().equals(ThingStatus.ONLINE);
+    }
+
+    public static boolean isOffline(Thing thing) {
+        return thing.getStatus().equals(ThingStatus.OFFLINE);
     }
 
     public static byte[] slice(byte source[], int from, int to) {

@@ -22,10 +22,12 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
     
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkSocketHandler.class);
-
     public BroadlinkSocketHandler(Thing thing) {
-        super(thing);
+        super(thing, LoggerFactory.getLogger(BroadlinkSocketHandler.class));
+    }
+
+    public BroadlinkSocketHandler(Thing thing, Logger logger) {
+        super(thing, logger);
     }
 
     protected abstract void setStatusOnDevice(int state);

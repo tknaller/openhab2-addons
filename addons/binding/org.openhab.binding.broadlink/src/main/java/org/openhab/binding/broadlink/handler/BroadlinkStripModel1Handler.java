@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -27,10 +26,8 @@ import org.slf4j.LoggerFactory;
  */
 public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkStripModel1Handler.class);
-
     public BroadlinkStripModel1Handler(Thing thing) {
-        super(thing);
+        super(thing, LoggerFactory.getLogger(BroadlinkStripModel1Handler.class));
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -138,7 +135,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
                         else
                             updateState("s4powerOn", OnOffType.OFF);
                     } catch (Exception ex) {
-                        logger.error("Exception while getting status from device", ex);
+                        thingLogger.logError("Exception while getting status from device", ex);
                         return false;
                     }
                     return true;

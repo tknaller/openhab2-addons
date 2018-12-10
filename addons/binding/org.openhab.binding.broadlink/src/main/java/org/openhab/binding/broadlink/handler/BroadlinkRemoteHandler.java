@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.transform.*;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.broadlink.internal.Hex;
+import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +29,13 @@ import org.slf4j.LoggerFactory;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkRemoteHandler.class);
 
     public BroadlinkRemoteHandler(Thing thing) {
-        super(thing);
+        super(thing, LoggerFactory.getLogger(BroadlinkRemoteHandler.class));
+    }
+
+    public BroadlinkRemoteHandler(Thing thing, Logger logger) {
+        super(thing, logger);
     }
 
     protected void sendCode(byte code[]) {
@@ -43,20 +47,19 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             outputStream.write(abyte0);
             outputStream.write(code);
         } catch (IOException e) {
-            logError("Exception while sending code", e);
+            thingLogger.logError("Exception while sending code", e);
         }
         if (outputStream.size() % 16 == 0) {
             sendDatagram(buildMessage((byte) 106, outputStream.toByteArray()), "remote code");
         } else {
-            logError("Will not send remote code because it has an incorrect length (" + outputStream.size() + ")");
+            thingLogger.logError("Will not send remote code because it has an incorrect length (" + outputStream.size() + ")");
         }
 
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!isOnline()) {
-            if (logger.isDebugEnabled())
-                logDebug("Can't handle command {} because handler for thing {} is not ONLINE", command, getThing().getLabel());
+        if (!Utils.isOnline(getThing())) {
+            thingLogger.logDebug("Can't handle command {} because handler for thing {} is not ONLINE", command, getThing().getLabel());
             return;
         }
         if (command instanceof RefreshType) {
@@ -65,20 +68,19 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
         Channel channel = thing.getChannel(channelUID.getId());
         if (channel == null) {
-            logError("Unexpected null channel while handling command {}", command.toFullString());
+            thingLogger.logError("Unexpected null channel while handling command {}", command.toFullString());
             return;
         }
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeUID == null) {
-            logError("Unexpected null channelTypeUID while handling command {}", command.toFullString());
+            thingLogger.logError("Unexpected null channelTypeUID while handling command {}", command.toFullString());
             return;
         }
         String s;
         switch ((s = channelTypeUID.getId()).hashCode()) {
             case 950394699: // FIXME WTF?!?!
                 if (s.equals("command")) {
-                    if (logger.isDebugEnabled())
-                        logDebug("Handling ir/rf command {} on channel {} of thing {}", new Object[]{
+                    thingLogger.logDebug("Handling ir/rf command {} on channel {} of thing {}", new Object[]{
                                 command, channelUID.getId(), getThing().getLabel()
                         });
                     byte code[] = lookupCode(command, channelUID);
@@ -89,27 +91,24 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 // fall through
 
             default:
-                if (logger.isDebugEnabled())
-                    logDebug("Thing {} has unknown channel type {}", getThing().getLabel(), channelTypeUID.getId());
+                thingLogger.logDebug("Thing {} has unknown channel type {}", getThing().getLabel(), channelTypeUID.getId());
                 break;
         }
     }
 
     private byte[] lookupCode(Command command, ChannelUID channelUID) {
         if (command.toString() == null) {
-            if (logger.isDebugEnabled())
-                logDebug("Unable to perform transform on null command string");
+            thingLogger.logDebug("Unable to perform transform on null command string");
             return null;
         }
         String mapFile = (String) thing.getConfiguration().get("mapFilename");
         if (StringUtils.isEmpty(mapFile)) {
-            if (logger.isDebugEnabled())
-                logDebug("MAP file is not defined in configuration of thing {}", getThing().getLabel());
+            thingLogger.logDebug("MAP file is not defined in configuration of thing {}", getThing().getLabel());
             return null;
         }
         TransformationService transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
         if (transformService == null) {
-            logError("Failed to get MAP transformation service for thing {}; is bundle installed?", getThing().getLabel());
+            thingLogger.logError("Failed to get MAP transformation service for thing {}; is bundle installed?", getThing().getLabel());
             return null;
         }
         byte code[] = null;
@@ -118,19 +117,18 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             value = transformService.transform(mapFile, command.toString());
             code = Hex.convertHexToBytes(value);
         } catch (TransformationException e) {
-            logError("Failed to transform {} for thing {} using map file '{}', exception={}", new Object[]{
+            thingLogger.logError("Failed to transform {} for thing {} using map file '{}', exception={}", new Object[]{
                     command, getThing().getLabel(), mapFile, e.getMessage()
             });
             return null;
         }
         if (StringUtils.isEmpty(value)) {
-            logError("No entry for {} in map file '{}' for thing {}", new Object[]{
+            thingLogger.logError("No entry for {} in map file '{}' for thing {}", new Object[]{
                     command, mapFile, getThing().getLabel()
             });
             return null;
         }
-        if (logger.isDebugEnabled())
-            logDebug("Transformed {} for thing {} with map file '{}'", new Object[]{
+        thingLogger.logDebug("Transformed {} for thing {} with map file '{}'", new Object[]{
                     command, getThing().getLabel(), mapFile
             });
         return code;

@@ -1,36 +1,30 @@
 package org.openhab.binding.broadlink.handler;
 
+import org.openhab.binding.broadlink.internal.Utils;
 import org.eclipse.smarthome.core.thing.*;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract superclass of all Broadlink devices that handles logging.
+ * Handles logging on behalf of a given Thing.
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
-public abstract class AbstractLoggingThingHandler extends BaseThingHandler {
+public final class ThingLogger  {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractLoggingThingHandler.class);
+    private final Thing thing;
+    private final Logger logger;
 
-    public AbstractLoggingThingHandler(Thing thing) {
-        super(thing);
-    }
-
-    protected boolean isOnline() {
-        return thing.getStatus().equals(ThingStatus.ONLINE);
-    }
-
-    protected boolean isOffline() {
-        return thing.getStatus().equals(ThingStatus.OFFLINE);
+    public ThingLogger(Thing thing, Logger logger) {
+        this.thing = thing;
+        this.logger = logger;
     }
 
     private String describeStatus() {
-        if (isOnline()) {
+        if (Utils.isOnline(thing)) {
             return "^";
         }
-        if (isOffline()) {
+        if (Utils.isOffline(thing)) {
             return "v";
         }
         return "?";
@@ -38,27 +32,27 @@ public abstract class AbstractLoggingThingHandler extends BaseThingHandler {
 
     private Object[] prependUID(Object... args) {
         Object[] allArgs = new Object[args.length + 2];
-        allArgs[0] = getThing().getUID();
+        allArgs[0] = thing.getUID();
         allArgs[1] = describeStatus();
         System.arraycopy(args, 0, allArgs, 2, args.length);
         return allArgs;
     }
 
-    protected void logDebug(String msg, Object... args) {
+    public void logDebug(String msg, Object... args) {
         if (logger.isDebugEnabled()) {
             logger.debug("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
         }
     }
 
-    protected void logError(String msg, Object... args) {
+    public void logError(String msg, Object... args) {
         logger.error("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
     }
 
-    protected void logInfo(String msg, Object... args) {
+    public void logInfo(String msg, Object... args) {
         logger.info("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
     }
 
-    protected void logTrace(String msg, Object... args) {
+    public void logTrace(String msg, Object... args) {
         if (logger.isTraceEnabled()) {
             logger.trace("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
         }

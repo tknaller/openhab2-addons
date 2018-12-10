@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.*;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -24,9 +23,8 @@ import org.slf4j.LoggerFactory;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkSocketModel3Handler.class);
 
     public BroadlinkSocketModel3Handler(Thing thing) {
-        super(thing);
+        super(thing, LoggerFactory.getLogger(BroadlinkSocketModel3Handler.class));
     }
 }
