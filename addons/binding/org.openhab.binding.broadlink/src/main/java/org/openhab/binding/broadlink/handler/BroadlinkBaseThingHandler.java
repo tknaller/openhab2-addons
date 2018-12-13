@@ -146,14 +146,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     }
 
-    protected boolean sendDatagram(byte message[], String purpose) {
-        return socket.sendDatagram(message, purpose);
-    }
-
-    protected byte[] receiveDatagram(String purpose) {
-        return socket.receiveDatagram(purpose);
-    }
-
     protected byte[] sendAndReceiveDatagram(byte message[], String purpose) {
         return socket.sendAndReceive(message, purpose);
     }

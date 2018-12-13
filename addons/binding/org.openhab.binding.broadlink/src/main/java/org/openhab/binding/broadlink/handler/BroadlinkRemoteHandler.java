@@ -51,22 +51,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             thingLogger.logError("Exception while sending code", e);
         }
         if (outputStream.size() % 16 == 0) {
-            sendDatagram(buildMessage((byte) 106, outputStream.toByteArray()), "remote code");
-            byte[] rxBytes = receiveDatagram("anything there");
-            if (rxBytes != null) {
-                thingLogger.logDebug("After sending remote code, got back " + Hex.toHexString(rxBytes));
-
-                try {
-                    byte[] decrypted = BroadlinkProtocol.decodePacket(rxBytes, thingConfig, editProperties());
-                    thingLogger.logDebug("After decrypted, got back " + Hex.toHexString(decrypted));
-
-
-                } catch (Exception e) {
-
-                }
-
-
-            }
+            sendAndReceiveDatagram(buildMessage((byte) 106, outputStream.toByteArray()), "remote code");
         } else {
             thingLogger.logError("Will not send remote code because it has an incorrect length (" + outputStream.size() + ")");
         }

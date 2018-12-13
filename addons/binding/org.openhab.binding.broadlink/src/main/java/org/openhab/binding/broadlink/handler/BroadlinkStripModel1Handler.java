@@ -85,7 +85,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         else
             payload[14] = 0;
         byte message[] = buildMessage((byte) 106, payload);
-        sendDatagram(message, "Setting MPx status");
+        sendAndReceiveDatagram(message, "Setting MPx status");
     }
 
     protected boolean getStatusFromDevice() {

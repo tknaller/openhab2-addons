@@ -25,6 +25,6 @@ public class BroadlinkSocketModel1Handler extends BroadlinkSocketHandler {
         byte payload[] = new byte[16];
         payload[0] = (byte) state;
         byte message[] = buildMessage((byte) 102, payload);
-        sendDatagram(message, "Setting SP1 status");
+        sendAndReceiveDatagram(message, "Setting SP1 status");
     }
 }
