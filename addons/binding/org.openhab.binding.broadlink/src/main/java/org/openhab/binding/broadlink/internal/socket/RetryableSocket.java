@@ -1,7 +1,7 @@
 package org.openhab.binding.broadlink.internal.socket;
 
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
-import org.openhab.binding.broadlink.handler.ThingLogger;
+import org.openhab.binding.broadlink.internal.ThingLogger;
 
 import java.io.IOException;
 import java.net.*;

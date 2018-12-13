@@ -92,7 +92,7 @@
         <required>true</required>
         <advanced>true</advanced>
       </parameter>
-      <parameter name="pollingInterval" type="integer" min="30" step="1">
+      <parameter name="pollingInterval" type="integer" min="1" step="1">
         <label>Polling Interval</label>
         <description>The interval in seconds for polling the status of the device.</description>
         <required>true</required>
@@ -149,7 +149,7 @@
                 <required>true</required>
                 <advanced>true</advanced>
             </parameter>
-            <parameter name="pollingInterval" type="integer" min="30" step="1">
+            <parameter name="pollingInterval" type="integer" min="1" step="1">
                 <label>Polling Interval</label>
                 <description>The interval in seconds for polling the status of the device.</description>
                 <required>true</required>
@@ -208,7 +208,7 @@
         <required>true</required>
         <advanced>true</advanced>
       </parameter>
-      <parameter name="pollingInterval" type="integer" min="30" step="1">
+      <parameter name="pollingInterval" type="integer" min="1" step="1">
         <label>Polling Interval</label>
         <description>The interval in seconds for polling the status of the device.</description>
         <required>true</required>
@@ -266,7 +266,7 @@
                 <required>true</required>
                 <advanced>true</advanced>
             </parameter>
-            <parameter name="pollingInterval" type="integer" min="30" step="1">
+            <parameter name="pollingInterval" type="integer" min="1" step="1">
                 <label>Polling Interval</label>
                 <description>The interval in seconds for polling the status of the device.</description>
                 <required>true</required>

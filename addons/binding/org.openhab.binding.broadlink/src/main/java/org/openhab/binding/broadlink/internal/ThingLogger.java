@@ -1,4 +1,4 @@
-package org.openhab.binding.broadlink.handler;
+package org.openhab.binding.broadlink.internal;
 
 import org.openhab.binding.broadlink.internal.Utils;
 import org.eclipse.smarthome.core.thing.*;

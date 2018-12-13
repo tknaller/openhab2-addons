@@ -38,8 +38,8 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         payload[0] = 2;
         payload[4] = (byte) status;
         byte message[] = buildMessage((byte) 106, payload);
-        sendDatagram(message);
-	    receiveDatagram("acknowledgment packet");
+        sendDatagram(message, "Setting SP2 status");
+	    receiveDatagram("SP2 acknowledgment packet");
     }
 
     protected boolean getStatusFromDevice() {

@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
+import org.openhab.binding.broadlink.internal.ThingLogger;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
@@ -153,11 +154,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         authenticated = true;
         return true;
     }
-
-    public boolean sendDatagram(byte message[]) {
-        return sendDatagram(message, "Normal Operation");
-    }
-
 
     public boolean sendDatagram(byte message[], String purpose) {
         return socket.sendDatagram(message, purpose);
