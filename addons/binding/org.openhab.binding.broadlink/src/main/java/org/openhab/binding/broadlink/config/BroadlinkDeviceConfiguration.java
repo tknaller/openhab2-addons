@@ -22,10 +22,11 @@ public class BroadlinkDeviceConfiguration {
     private String mapFilename;
     private String authorizationKey;
     private String iv;
+    private int retries = 0;
 
     public BroadlinkDeviceConfiguration() {
         pollingInterval = 30;
-	staticIp = true;
+	    staticIp = true;
     }
 
     public String getIpAddress() {
@@ -102,6 +103,14 @@ public class BroadlinkDeviceConfiguration {
 
     public void setIV(String iv) {
         this.iv = iv;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public int getRetries() {
+        return this.retries;
     }
 
     public String toString() {

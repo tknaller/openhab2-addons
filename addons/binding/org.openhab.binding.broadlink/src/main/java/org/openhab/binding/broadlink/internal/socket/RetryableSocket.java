@@ -16,7 +16,35 @@ public class RetryableSocket {
         this.thingLogger = thingLogger;
     }
 
-    public boolean sendDatagram(byte message[], String purpose) {
+    /**
+     * Send a packet to the device, and expect a response.
+     * If retries in the thingConfig is > 0, we will send
+     * and receive repeatedly if we fail to get any response.
+     */
+    public byte[] sendAndReceive(byte message[], String purpose) {
+        byte[] firstAttempt = sendAndReceiveOneTime(message, purpose);
+
+        if (firstAttempt != null) {
+            return firstAttempt;
+        }
+
+        if (thingConfig.getRetries() > 0) {
+            // Not yet
+            return sendAndReceiveOneTime(message, purpose);
+        }
+
+        return null;
+    }
+
+    private byte[] sendAndReceiveOneTime(byte message[], String purpose) {
+        if (sendDatagram(message, purpose)) {
+            return receiveDatagram(purpose);
+        }
+
+        return null;
+    }
+
+    private boolean sendDatagram(byte message[], String purpose) {
         try {
             thingLogger.logTrace("Sending " + purpose + " to " + thingConfig.getIpAddress() + ":" + thingConfig.getPort());
             if (socket == null || socket.isClosed()) {
@@ -30,15 +58,15 @@ public class RetryableSocket {
             int port = thingConfig.getPort();
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
             socket.send(sendPacket);
+            thingLogger.logTrace("Sending " + purpose + " complete");
+            return true;
         } catch (IOException e) {
             thingLogger.logError("IO error during UDP command sending: {}", e.getMessage());
             return false;
         }
-        thingLogger.logTrace("Sending " + purpose + " complete");
-        return true;
     }
 
-    public byte[] receiveDatagram(String purpose) {
+    private byte[] receiveDatagram(String purpose) {
         thingLogger.logTrace("Receiving " + purpose);
 
         try {
@@ -55,23 +83,6 @@ public class RetryableSocket {
             thingLogger.logDebug("No further " + purpose + " response received for device");
         } catch (Exception e) {
             thingLogger.logError("While {} - IO Exception: '{}'", purpose, e.getMessage());
-        }
-
-        return null;
-    }
-
-    /**
-     * Send a packet to the device, and expect a response.
-     * If retries in the thingConfig is > 0, we will send
-     * and receive repeatedly if we fail to get any response.
-     */
-    public byte[] sendAndReceive(byte message[], String purpose) {
-        return sendAndReceiveOneTime(message, purpose);
-    }
-
-    private byte[] sendAndReceiveOneTime(byte message[], String purpose) {
-        if (sendDatagram(message, purpose)) {
-            return receiveDatagram(purpose);
         }
 
         return null;
