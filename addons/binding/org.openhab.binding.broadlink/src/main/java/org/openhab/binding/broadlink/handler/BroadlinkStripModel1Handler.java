@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.LoggerFactory;
@@ -88,63 +89,41 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
     }
 
     protected boolean getStatusFromDevice() {
-        label0:
-        {
-            label1:
-            {
-                label2:
-                {
-                    byte payload[] = new byte[16];
-                    payload[0] = 10;
-                    payload[2] = -91;
-                    payload[3] = -91;
-                    payload[4] = 90;
-                    payload[5] = 90;
-                    payload[6] = -82;
-                    payload[7] = -64;
-                    payload[8] = 1;
-                    try {
-                        byte message[] = buildMessage((byte) 106, payload);
-                        sendDatagram(message, "status for strip");
-                        byte response[] = receiveDatagram("status for strip");
-                        if (response == null)
-                            break label0;
-                        int error = response[34] | response[35] << 8;
-                        if (error != 0)
-                            break label1;
-                        IvParameterSpec ivSpec = new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV()));
-                        Map properties = editProperties();
-                        byte decodedPayload[] = Utils.decrypt(Hex.fromHexString((String) properties.get("key")), ivSpec, Utils.slice(response, 56, 88));
-                        if (decodedPayload == null)
-                            break label2;
-                        int status = payload[14];
-                        if (status == 1)
-                            updateState("s1powerOn", OnOffType.ON);
-                        else
-                            updateState("s1powerOn", OnOffType.OFF);
-                        if (status == 2)
-                            updateState("s2powerOn", OnOffType.ON);
-                        else
-                            updateState("s2powerOn", OnOffType.OFF);
-                        if (status == 4)
-                            updateState("s3powerOn", OnOffType.ON);
-                        else
-                            updateState("s3powerOn", OnOffType.OFF);
-                        if (status == 8)
-                            updateState("s4powerOn", OnOffType.ON);
-                        else
-                            updateState("s4powerOn", OnOffType.OFF);
-                    } catch (Exception ex) {
-                        thingLogger.logError("Exception while getting status from device", ex);
-                        return false;
-                    }
-                    return true;
-                }
-                return false;
-            }
+        byte payload[] = new byte[16];
+        payload[0] = 10;
+        payload[2] = -91;
+        payload[3] = -91;
+        payload[4] = 90;
+        payload[5] = 90;
+        payload[6] = -82;
+        payload[7] = -64;
+        payload[8] = 1;
+        try {
+            byte message[] = buildMessage((byte) 106, payload);
+            byte response[] = sendAndReceiveDatagram(message, "status for strip");
+            byte decodedPayload[] = BroadlinkProtocol.decodePacket(response, thingConfig, editProperties());
+            int status = decodedPayload[14];
+            if (status == 1)
+                updateState("s1powerOn", OnOffType.ON);
+            else
+                updateState("s1powerOn", OnOffType.OFF);
+            if (status == 2)
+                updateState("s2powerOn", OnOffType.ON);
+            else
+                updateState("s2powerOn", OnOffType.OFF);
+            if (status == 4)
+                updateState("s3powerOn", OnOffType.ON);
+            else
+                updateState("s3powerOn", OnOffType.OFF);
+            if (status == 8)
+                updateState("s4powerOn", OnOffType.ON);
+            else
+                updateState("s4powerOn", OnOffType.OFF);
+        } catch (Exception ex) {
+            thingLogger.logError("Exception while getting status from device", ex);
             return false;
         }
-        return false;
+        return true;
     }
 
     protected boolean onBroadlinkDeviceBecomingReachable() {

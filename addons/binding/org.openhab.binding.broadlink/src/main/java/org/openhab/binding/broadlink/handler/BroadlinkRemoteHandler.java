@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.transform.*;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
@@ -51,6 +52,21 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
         if (outputStream.size() % 16 == 0) {
             sendDatagram(buildMessage((byte) 106, outputStream.toByteArray()), "remote code");
+            byte[] rxBytes = receiveDatagram("anything there");
+            if (rxBytes != null) {
+                thingLogger.logDebug("After sending remote code, got back " + Hex.toHexString(rxBytes));
+
+                try {
+                    byte[] decrypted = BroadlinkProtocol.decodePacket(rxBytes, thingConfig, editProperties());
+                    thingLogger.logDebug("After decrypted, got back " + Hex.toHexString(decrypted));
+
+
+                } catch (Exception e) {
+
+                }
+
+
+            }
         } else {
             thingLogger.logError("Will not send remote code because it has an incorrect length (" + outputStream.size() + ")");
         }

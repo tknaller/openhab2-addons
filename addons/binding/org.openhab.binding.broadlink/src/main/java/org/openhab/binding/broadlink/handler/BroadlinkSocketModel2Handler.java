@@ -8,12 +8,9 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import java.util.Map;
-import javax.crypto.spec.IvParameterSpec;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.*;
-import org.openhab.binding.broadlink.internal.Hex;
+import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +35,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         payload[0] = 2;
         payload[4] = (byte) status;
         byte message[] = buildMessage((byte) 106, payload);
-        sendDatagram(message, "Setting SP2 status");
-	    receiveDatagram("SP2 acknowledgment packet");
+	    sendAndReceiveDatagram(message, "Setting SP2 status");
     }
 
     protected boolean getStatusFromDevice() {
@@ -47,24 +43,8 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
             byte payload[] = new byte[16];
             payload[0] = 1;
             byte message[] = buildMessage((byte) 106, payload);
-            sendDatagram(message, "status for socket");
-            byte response[] = receiveDatagram("status for socket");
-            if (response == null) {
-                thingLogger.logError("null response from model 2 status request");
-                return false;
-            }
-            int error = response[34] | response[35] << 8;
-            if (error != 0) {
-                thingLogger.logError("Error response from model 2 status request; code: " + error);
-                return false;
-            }
-            IvParameterSpec ivSpec = new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV()));
-            Map properties = editProperties();
-            byte decodedPayload[] = Utils.decrypt(Hex.fromHexString((String) properties.get("key")), ivSpec, Utils.slice(response, 56, 88));
-            if (decodedPayload == null) {
-                thingLogger.logError("Null payload in response from model 2 status request");
-                return false;
-            }
+            byte response[] = sendAndReceiveDatagram(message, "status for socket");
+            byte decodedPayload[] = BroadlinkProtocol.decodePacket(response, thingConfig, editProperties());
             updateState("powerOn", deriveOnOffStateFromPayload(decodedPayload));
             return true;
         } catch (Exception ex) {
@@ -83,7 +63,6 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 		}
 		return OnOffType.OFF;
     }
-
 
     protected boolean onBroadlinkDeviceBecomingReachable() { 
         return getStatusFromDevice();

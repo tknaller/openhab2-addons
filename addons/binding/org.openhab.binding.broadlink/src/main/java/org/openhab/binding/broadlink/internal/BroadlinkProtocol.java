@@ -15,6 +15,8 @@ import java.io.IOException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,5 +182,32 @@ public class BroadlinkProtocol {
         packet[32] = (byte) (checksum & 0xff);
         packet[33] = (byte) (checksum >> 8);
         return packet;
+    }
+
+    public static byte[] decodePacket(byte[] packet, BroadlinkDeviceConfiguration thingConfig, Map<String, String> properties) throws IOException {
+        // if a properties map is supplied, use it.
+        // During initial thing startup we don't have one yet, so use the auth key from the config.
+        final String key = (properties == null) ? thingConfig.getAuthorizationKey() : properties.get("key");
+
+        if (packet == null) {
+            throw new ProtocolException("Incoming packet from device is null.");
+        }
+
+        int error = packet[34] | packet[35] << 8;
+        if (error != 0) {
+            throw new ProtocolException("Response from device is not valid. (Error code " + error + " )");
+        }
+
+        try {
+            IvParameterSpec ivSpec = new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV()));
+            return Utils.decrypt(
+                Hex.fromHexString(key),
+                ivSpec,
+                Utils.slice(packet, 56, 88)
+            );
+        } catch (Exception ex) {
+            throw new IOException("Failed while getting device status", ex);
+        }
+
     }
 }

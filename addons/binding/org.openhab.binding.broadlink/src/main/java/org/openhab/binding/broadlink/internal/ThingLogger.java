@@ -32,7 +32,7 @@ public final class ThingLogger  {
 
     private Object[] prependUID(Object... args) {
         Object[] allArgs = new Object[args.length + 2];
-        allArgs[0] = thing.getUID();
+        allArgs[0] = thing.getUID().toString().replaceFirst("^broadlink:", "");;
         allArgs[1] = describeStatus();
         System.arraycopy(args, 0, allArgs, 2, args.length);
         return allArgs;

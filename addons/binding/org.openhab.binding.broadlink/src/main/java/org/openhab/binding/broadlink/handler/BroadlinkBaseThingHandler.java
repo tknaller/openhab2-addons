@@ -124,43 +124,38 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         thingLogger.logDebug("Authenticating with packet count = {}", this.count);
 
         authenticated = false;
-        if (!sendDatagram(buildMessage((byte) 0x65,  BroadlinkProtocol.buildAuthenticationPayload()), "authentication")) {
-            thingLogger.logError("Authenticate - failed to send.");
+        byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload());
+        byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
+        try {
+            byte decryptResponse[] = BroadlinkProtocol.decodePacket(response, thingConfig, null);
+            byte deviceId[] = Utils.getDeviceId(decryptResponse);
+            byte deviceKey[] = Utils.getDeviceKey(decryptResponse);
+            setProperty("id", Hex.toHexString(deviceId));
+            setProperty("key", Hex.toHexString(deviceKey));
+            thingLogger.logDebug(
+                    "Authenticated with id '{}' and key '{}'.",
+                    Hex.toHexString(deviceId),
+                    Hex.toHexString(deviceKey)
+            );
+            authenticated = true;
+            return true;
+        } catch (Exception e) {
+            thingLogger.logError("Authentication failed: {}", e);
             return false;
         }
-        byte response[] = receiveDatagram("authentication");
-        if (response == null) {
-            thingLogger.logError("Authenticate - failed to receive.");
-            return false;
-        }
-        int error = response[34] | response[35] << 8;
-        if (error != 0) {
-            thingLogger.logError("Authenticated -received error '{}'", String.valueOf(error));
-            return false;
-        }
-        byte decryptResponse[] = Utils.decrypt(
-                Hex.convertHexToBytes(authenticationKey),
-                new IvParameterSpec(Hex.convertHexToBytes(iv)), Utils.slice(response, 56, 88));
-        byte deviceId[] = Utils.getDeviceId(decryptResponse);
-        byte deviceKey[] = Utils.getDeviceKey(decryptResponse);
-        setProperty("id", Hex.toHexString(deviceId));
-        setProperty("key", Hex.toHexString(deviceKey));
-        thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
-        thingLogger.logDebug(
-                "Authenticated with id '{}' and key '{}'.",
-                Hex.toHexString(deviceId),
-                Hex.toHexString(deviceKey)
-        );
-        authenticated = true;
-        return true;
+
     }
 
-    public boolean sendDatagram(byte message[], String purpose) {
+    protected boolean sendDatagram(byte message[], String purpose) {
         return socket.sendDatagram(message, purpose);
     }
 
-    public byte[] receiveDatagram(String purpose) {
+    protected byte[] receiveDatagram(String purpose) {
         return socket.receiveDatagram(purpose);
+    }
+
+    protected byte[] sendAndReceiveDatagram(byte message[], String purpose) {
+        return socket.sendAndReceive(message, purpose);
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) {
