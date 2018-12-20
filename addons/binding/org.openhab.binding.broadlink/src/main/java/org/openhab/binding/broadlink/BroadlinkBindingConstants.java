@@ -32,18 +32,18 @@ public class BroadlinkBindingConstants {
     public static final int TIMEOUT = 5000;
     public static final int DISCOVERY_TIMEOUT = 10;
     public static final int POLLING_TIME = 30;
-    public static final ThingTypeUID THING_TYPE_RM;
-    public static final ThingTypeUID THING_TYPE_RM2;
-    public static final ThingTypeUID THING_TYPE_RM3;
-    public static final ThingTypeUID THING_TYPE_A1;
-    public static final ThingTypeUID THING_TYPE_MP1;
-    public static final ThingTypeUID THING_TYPE_MP2;
-    public static final ThingTypeUID THING_TYPE_SP1;
-    public static final ThingTypeUID THING_TYPE_SP2;
-    public static final ThingTypeUID THING_TYPE_SP3;
-    public static final ThingTypeUID THING_TYPE_S1C;
-    public static final ThingTypeUID THING_TYPE_PIR;
-    public static final ThingTypeUID THING_TYPE_MAGNET;
+    public static final ThingTypeUID THING_TYPE_RM = new ThingTypeUID("broadlink", "rm");
+    public static final ThingTypeUID THING_TYPE_RM2 = new ThingTypeUID("broadlink", "rm2");
+    public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");
+    public static final ThingTypeUID THING_TYPE_A1 = new ThingTypeUID("broadlink", "a1");
+    public static final ThingTypeUID THING_TYPE_MP1 = new ThingTypeUID("broadlink", "mp1");
+    public static final ThingTypeUID THING_TYPE_MP2 = new ThingTypeUID("broadlink", "mp2");
+    public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID("broadlink", "sp1");
+    public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID("broadlink", "sp2");
+    public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID("broadlink", "sp3");
+    public static final ThingTypeUID THING_TYPE_S1C = new ThingTypeUID("broadlink", "s1c");
+    public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID("broadlink", "s1p");
+    public static final ThingTypeUID THING_TYPE_MAGNET = new ThingTypeUID("broadlink", "s1m");
     public static final String CHANNEL_COMMAND = "command";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
@@ -154,23 +154,9 @@ public class BroadlinkBindingConstants {
     public static final int CMD_RM2_SEND_ID = 134;
     public static final int CMD_EASY_CONFIG_ID = 10000;
 
-    public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP;
+    public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<ThingTypeUID, String>();
 
     static {
-        THING_TYPE_RM = new ThingTypeUID("broadlink", "rm");
-        THING_TYPE_RM2 = new ThingTypeUID("broadlink", "rm2");
-        THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");
-        THING_TYPE_A1 = new ThingTypeUID("broadlink", "a1");
-        THING_TYPE_MP1 = new ThingTypeUID("broadlink", "mp1");
-        THING_TYPE_MP2 = new ThingTypeUID("broadlink", "mp2");
-        THING_TYPE_SP1 = new ThingTypeUID("broadlink", "sp1");
-        THING_TYPE_SP2 = new ThingTypeUID("broadlink", "sp2");
-        THING_TYPE_SP3 = new ThingTypeUID("broadlink", "sp3");
-        THING_TYPE_S1C = new ThingTypeUID("broadlink", "s1c");
-        THING_TYPE_PIR = new ThingTypeUID("broadlink", "s1p");
-        THING_TYPE_MAGNET = new ThingTypeUID("broadlink", "s1m");
-
-    	SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<ThingTypeUID, String>();
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM, RM);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM2, RM2);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM3, RM3);
