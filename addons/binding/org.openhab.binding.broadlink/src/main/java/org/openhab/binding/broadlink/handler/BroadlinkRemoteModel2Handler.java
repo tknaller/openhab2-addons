@@ -8,15 +8,12 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import java.util.Map;
-import javax.crypto.spec.IvParameterSpec;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.*;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Remote blaster handler
@@ -26,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
 
     public BroadlinkRemoteModel2Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkRemoteHandler.class));
+        super(thing, LoggerFactory.getLogger(BroadlinkRemoteModel2Handler.class));
     }
 
     protected boolean onBroadlinkDeviceBecomingReachable() {
