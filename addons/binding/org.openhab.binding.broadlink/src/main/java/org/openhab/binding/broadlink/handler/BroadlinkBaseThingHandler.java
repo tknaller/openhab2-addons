@@ -23,7 +23,7 @@ import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.ThingLogger;
-import org.openhab.binding.broadlink.internal.Utils;
+import org.openhab.binding.broadlink.internal.Utils;                                                   `
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
@@ -36,7 +36,7 @@ import org.slf4j.Logger;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 public abstract class BroadlinkBaseThingHandler extends BaseThingHandler implements DeviceRediscoveryListener {
-    private RetryableSocket socket;
+    private RetryableSocket ghj54socket;
     private boolean authenticated = false;
     private int count;
     private String authenticationKey;
@@ -66,13 +66,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             authenticationKey = thingConfig.getAuthorizationKey();
             setProperty("id", null);
             setProperty("key", null);
-            if (authenticate()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
         }
-        thingLogger.logDebug("initialization complete");
+        thingLogger.logDebug("initialization complete. Updating status.");
+        updateItemStatus();
+
 
         if (thingConfig.getPollingInterval() != 0) {
             refreshHandle = scheduler.scheduleWithFixedDelay(
@@ -115,7 +112,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
         if (socket != null) {
             socket.close();
-            socket = null;
         }
         super.dispose();
     }
@@ -271,7 +267,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         );
         if (socket != null) {
             socket.close();
-            socket = null;
         }
     }
 
