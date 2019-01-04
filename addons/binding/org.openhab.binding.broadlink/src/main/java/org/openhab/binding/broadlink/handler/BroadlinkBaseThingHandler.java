@@ -23,7 +23,7 @@ import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.ThingLogger;
-import org.openhab.binding.broadlink.internal.Utils;                                                   `
+import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
@@ -36,7 +36,7 @@ import org.slf4j.Logger;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 public abstract class BroadlinkBaseThingHandler extends BaseThingHandler implements DeviceRediscoveryListener {
-    private RetryableSocket ghj54socket;
+    private RetryableSocket socket;
     private boolean authenticated = false;
     private int count;
     private String authenticationKey;
