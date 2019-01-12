@@ -68,8 +68,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             setProperty("key", null);
         }
         thingLogger.logDebug("initialization complete. Updating status.");
-        updateItemStatus();
-
 
         if (thingConfig.getPollingInterval() != 0) {
             refreshHandle = scheduler.scheduleWithFixedDelay(
@@ -83,6 +81,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 thingConfig.getPollingInterval(),
                 TimeUnit.SECONDS
             );
+        } else {
+            updateItemStatus();
         }
     }
 

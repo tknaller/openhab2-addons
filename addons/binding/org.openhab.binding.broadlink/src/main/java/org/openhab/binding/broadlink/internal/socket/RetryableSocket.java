@@ -77,7 +77,7 @@ public class RetryableSocket {
                 DatagramPacket receivePacket = new DatagramPacket(response, response.length);
                 socket.receive(receivePacket);
                 response = receivePacket.getData();
-                thingLogger.logTrace("Received " + purpose);
+                thingLogger.logTrace("Received " + purpose + " (" + receivePacket.getLength() + " bytes)");
 
                 return response;
             }
