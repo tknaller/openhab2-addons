@@ -53,6 +53,8 @@ public class ModelMapper {
             return BroadlinkBindingConstants.THING_TYPE_RM2;
         if (model == 0x2737)
             return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini
+        if (model == 0x27c2)
+            return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini 3, firmware rev v40
         if (model == 0x273d)
             return BroadlinkBindingConstants.THING_TYPE_RM; // RM Pro Phicomm
         if (model == 0x2783)
