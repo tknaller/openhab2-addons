@@ -42,13 +42,13 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
                 interpretCommandForSocket(1, command);
                 break;
             case "s2powerOn":
-                interpretCommandForSocket(1, command);
+                interpretCommandForSocket(2, command);
                 break;
             case "s3powerOn":
-                interpretCommandForSocket(1, command);
+                interpretCommandForSocket(3, command);
                 break;
             case "s4powerOn":
-                interpretCommandForSocket(1, command);
+                interpretCommandForSocket(4, command);
                 break;
             default:
                 break;
@@ -75,7 +75,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         if (state == 1)
             payload[6] = (byte) (178 + (sid_mask << 1));
         else
-            payload[6] = (byte) sid_mask;
+            payload[6] = (byte) (byte) (178 + sid_mask);
         payload[7] = -64;
         payload[8] = 2;
         payload[10] = 3;
@@ -102,23 +102,12 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             byte message[] = buildMessage((byte) 106, payload);
             byte response[] = sendAndReceiveDatagram(message, "status for strip");
             byte decodedPayload[] = BroadlinkProtocol.decodePacket(response, thingConfig, editProperties());
-            int status = decodedPayload[14];
-            if (status == 1)
-                updateState("s1powerOn", OnOffType.ON);
-            else
-                updateState("s1powerOn", OnOffType.OFF);
-            if (status == 2)
-                updateState("s2powerOn", OnOffType.ON);
-            else
-                updateState("s2powerOn", OnOffType.OFF);
-            if (status == 4)
-                updateState("s3powerOn", OnOffType.ON);
-            else
-                updateState("s3powerOn", OnOffType.OFF);
-            if (status == 8)
-                updateState("s4powerOn", OnOffType.ON);
-            else
-                updateState("s4powerOn", OnOffType.OFF);
+            final int status = decodedPayload[14];
+
+            this.updateState("s1powerOn", (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s2powerOn", (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s3powerOn", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s4powerOn", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             thingLogger.logError("Exception while getting status from device", ex);
             return false;
