@@ -53,6 +53,13 @@
                 <description>Initialization vector</description>
                 <required>true</required>
             </parameter>      
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
     </config-description>
   </thing-type>
   <thing-type id="sp2">
@@ -110,6 +117,13 @@
                 <description>Initialization Vector</description>
                 <required>true</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
     </config-description>
   </thing-type>
   <thing-type id="sp3">
@@ -167,6 +181,13 @@
                 <description>Initialization Vector</description>
                 <required>true</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
         </config-description>
     </thing-type>
   <thing-type id="mp1">
@@ -227,6 +248,13 @@
                 <description>Initialization Vector</description>
                 <required>false</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
     </config-description>
   </thing-type>
   <thing-type id="mp2">
@@ -284,6 +312,13 @@
                 <description>Initialization Vector</description>
                 <required>true</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
         </config-description>
     </thing-type>
   <thing-type id="a1">
@@ -344,6 +379,13 @@
                 <description>Initialization Vector</description>
                 <required>false</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
     </config-description>
   </thing-type>
   <thing-type id="rm">
@@ -406,6 +448,13 @@
                 <default>broadlink.map</default>
                 <required>true</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
     </config-description>
   </thing-type>
   <thing-type id="rm2">
@@ -469,6 +518,13 @@
                 <description>Initialization Vector</description>
                 <required>true</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
     </config-description>
   </thing-type>
   <thing-type id="rm3">
@@ -531,6 +587,13 @@
                 <description>Initialization Vector</description>
                 <required>true</required>
             </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
     </config-description>
   </thing-type>
 

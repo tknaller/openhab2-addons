@@ -29,7 +29,7 @@ public class RetryableSocket {
         }
 
         if (thingConfig.getRetries() > 0) {
-            // Not yet
+			thingLogger.logTrace("Retrying sendAndReceive ONE time before giving up...");
             return sendAndReceiveOneTime(message, purpose);
         }
 

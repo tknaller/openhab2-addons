@@ -22,7 +22,7 @@ public class BroadlinkDeviceConfiguration {
     private String mapFilename;
     private String authorizationKey;
     private String iv;
-    private int retries = 0;
+    private int retries = 1;
 
     public BroadlinkDeviceConfiguration() {
         pollingInterval = 30;
