@@ -257,6 +257,74 @@
       </parameter>
     </config-description>
   </thing-type>
+  <thing-type id="mp13k2u">
+    <label>Broadlink MP1 3K2U</label>
+    <description>The Broadlink MP1 3K2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
+    <channels>
+      <channel id="s1powerOn" typeId="s1powerOn" />
+      <channel id="s2powerOn" typeId="s2powerOn" />
+      <channel id="s3powerOn" typeId="s3powerOn" />
+      <channel id="u1powerOn" typeId="u1powerOn" />
+      <channel id="u2powerOn" typeId="u2powerOn" />
+    </channels>
+    <config-description>
+      <parameter name="ipAddress" type="text">
+        <context>network-address</context>
+        <label>Network Address</label>
+        <description>Network address of the device.</description>
+        <required>true</required>
+        <advanced>true</advanced>
+      </parameter>
+      <parameter name="staticIp" type="boolean">
+        <context>static-ip</context>
+        <label>Static IP</label>
+        <description>Will the device always be given this network address?</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>true</default>
+      </parameter>
+      <parameter name="port" type="integer">
+        <context>network-port</context>
+        <label>Network Port</label>
+        <description>Network port of the device.</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        </parameter>
+      <parameter name="mac" type="text">
+        <context>mac-address</context>
+        <label>MAC Address</label>
+        <description>MAC address of the device.</description>
+        <required>true</required>
+        <advanced>true</advanced>
+      </parameter>
+      <parameter name="pollingInterval" type="integer" min="1" step="1">
+        <label>Polling Interval</label>
+        <description>The interval in seconds for polling the status of the device.</description>
+        <required>true</required>
+        <default>30</default>
+      </parameter>
+               <parameter name="authorizationKey" type="text">
+                <context>password</context>
+                <label>Authentication Key</label>
+                <description>Authentication key of the device.</description>
+                <required>true</required>
+        
+            </parameter>
+            <parameter name="iv" type="text">
+                <context>password</context>
+                <label>IV</label>
+                <description>Initialization Vector</description>
+                <required>false</required>
+            </parameter>
+      <parameter name="retries" type="integer" min="0" max="1">
+        <label>Retries</label>
+        <description>The number of times to retry a network request before declaring the device Offline</description>
+        <required>true</required>
+        <advanced>true</advanced>
+        <default>1</default>
+      </parameter>
+    </config-description>
+  </thing-type>
   <thing-type id="mp2">
         <label>Broadlink MP2</label>
         <description>The Broadlink MP2 is a smart socket with Wi-Fi connectivity. It does not support switching by individual ports.</description>
