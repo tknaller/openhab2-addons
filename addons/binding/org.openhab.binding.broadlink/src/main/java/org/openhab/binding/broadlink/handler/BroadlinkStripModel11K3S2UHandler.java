@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
-public class BroadlinkStripModel13K2UHandler extends BroadlinkBaseThingHandler {
+public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler {
 
-    public BroadlinkStripModel13K2UHandler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkStripModel13K2UHandler.class));
+    public BroadlinkStripModel11K3S2UHandler(Thing thing) {
+        super(thing, LoggerFactory.getLogger(BroadlinkStripModel11K3S2UHandler.class));
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -47,11 +47,8 @@ public class BroadlinkStripModel13K2UHandler extends BroadlinkBaseThingHandler {
             case "s3powerOn":
                 interpretCommandForSocket(3, command);
                 break;
-            case "u1powerOn":
+            case "usbPowerOn":
                 interpretCommandForSocket(4, command);
-                break;
-            case "u2powerOn":
-                interpretCommandForSocket(5, command);
                 break;
             default:
                 break;
@@ -110,8 +107,7 @@ public class BroadlinkStripModel13K2UHandler extends BroadlinkBaseThingHandler {
             this.updateState("s1powerOn", (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
             this.updateState("s2powerOn", (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
             this.updateState("s3powerOn", (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("u1powerOn", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("u2powerOn", (status & 0x10) == 0x10 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("usbPowerOn", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             thingLogger.logError("Exception while getting status from device", ex);
             return false;

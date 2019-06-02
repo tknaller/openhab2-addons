@@ -37,7 +37,7 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");
     public static final ThingTypeUID THING_TYPE_A1 = new ThingTypeUID("broadlink", "a1");
     public static final ThingTypeUID THING_TYPE_MP1 = new ThingTypeUID("broadlink", "mp1");
-    public static final ThingTypeUID THING_TYPE_MP1_3K2U = new ThingTypeUID("broadlink", "mp1_3k2u");
+    public static final ThingTypeUID THING_TYPE_MP1_1K3S2U = new ThingTypeUID("broadlink", "mp1_1k3s2u");
     public static final ThingTypeUID THING_TYPE_MP2 = new ThingTypeUID("broadlink", "mp2");
     public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID("broadlink", "sp1");
     public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID("broadlink", "sp2");
@@ -98,7 +98,7 @@ public class BroadlinkBindingConstants {
     public static final String TC1 = "Broadlink TC1";
     public static final String TC2 = "Broadlink TC2";
     public static final String MP1 = "Broadlink MP1";
-    public static final String MP1_3K2U = "Broadlink MP1 3K2U";
+    public static final String MP1_1K3S2U = "Broadlink MP1 1K3S2U";
     public static final String MP2 = "Broadlink MP2";
     public static final String SPMini = "SPMini";
     public static final String SP1 = "SP1";
@@ -164,7 +164,7 @@ public class BroadlinkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM3, RM3);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_A1, A1);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP1, MP1);
-        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP1_3K2U, MP1_3K2U);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP1_1K3S2U, MP1_1K3S2U);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP2, MP2);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP1, SP1);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP2, SP2);

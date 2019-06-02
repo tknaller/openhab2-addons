@@ -84,7 +84,7 @@ public class ModelMapper {
         if (model == 0x4eb5)
             return BroadlinkBindingConstants.THING_TYPE_MP1;
         if (model == 0x4f65)
-            return BroadlinkBindingConstants.THING_TYPE_MP1_3K2U;
+            return BroadlinkBindingConstants.THING_TYPE_MP1_1K3S2U;
         if (model == 20251)
             return BroadlinkBindingConstants.THING_TYPE_MP2;
         if (model == 0x4ef7)

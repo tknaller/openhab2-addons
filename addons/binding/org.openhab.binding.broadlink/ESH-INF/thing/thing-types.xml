@@ -257,15 +257,14 @@
       </parameter>
     </config-description>
   </thing-type>
-  <thing-type id="mp13k2u">
-    <label>Broadlink MP1 3K2U</label>
-    <description>The Broadlink MP1 3K2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
+  <thing-type id="mp1_1k3s2u">
+    <label>Broadlink MP1 1K3S2U</label>
+    <description>The Broadlink MP1 1K3S2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
     <channels>
       <channel id="s1powerOn" typeId="s1powerOn" />
       <channel id="s2powerOn" typeId="s2powerOn" />
       <channel id="s3powerOn" typeId="s3powerOn" />
-      <channel id="u1powerOn" typeId="u1powerOn" />
-      <channel id="u2powerOn" typeId="u2powerOn" />
+      <channel id="usbPowerOn" typeId="usbPowerOn" />
     </channels>
     <config-description>
       <parameter name="ipAddress" type="text">

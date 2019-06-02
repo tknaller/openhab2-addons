@@ -67,7 +67,7 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
             return new BroadlinkA1Handler(thing);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP1)) return new BroadlinkStripModel1Handler(thing);
-        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP1_3K2U)) return new BroadlinkStripModel13K2UHandler(thing);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP1_1K3S2U)) return new BroadlinkStripModel11K3S2UHandler(thing);
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP1)) return new BroadlinkSocketModel1Handler(thing);
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP2)) return new BroadlinkSocketModel2Handler(thing);
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP3)) return new BroadlinkSocketModel3Handler(thing);
