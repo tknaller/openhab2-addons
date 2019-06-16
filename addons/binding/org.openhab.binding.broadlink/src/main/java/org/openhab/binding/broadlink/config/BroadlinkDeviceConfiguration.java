@@ -23,6 +23,7 @@ public class BroadlinkDeviceConfiguration {
     private String authorizationKey;
     private String iv;
     private int retries = 1;
+    private boolean ignoreFailedUpdates = false;
 
     public BroadlinkDeviceConfiguration() {
         pollingInterval = 30;
@@ -111,6 +112,14 @@ public class BroadlinkDeviceConfiguration {
 
     public int getRetries() {
         return this.retries;
+    }
+
+    public void setIgnoreFailedUpdates(boolean ignore) {
+        this.ignoreFailedUpdates = ignore;
+    }
+
+    public boolean isIgnoreFailedUpdates() {
+        return this.ignoreFailedUpdates;
     }
 
     public String toString() {

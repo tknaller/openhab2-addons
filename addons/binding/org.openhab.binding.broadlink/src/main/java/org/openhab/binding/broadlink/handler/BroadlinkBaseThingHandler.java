@@ -203,8 +203,12 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 // Normal operation ...
                 boolean gotStatusOk = getStatusFromDevice();
                 if (!gotStatusOk) {
-                    thingLogger.logError("Problem getting status. Marking as offline ...");
-                    forceOffline();
+					if (thingConfig.isIgnoreFailedUpdates()) {
+						thingLogger.logWarn("Problem getting status. Not marking offline because configured to ignore failed updates ...");
+					} else {
+						thingLogger.logError("Problem getting status. Marking as offline ...");
+						forceOffline();
+					}
                 }
             }
         } else {

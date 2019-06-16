@@ -48,6 +48,10 @@ public final class ThingLogger  {
         logger.error("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
     }
 
+    public void logWarn(String msg, Object... args) {
+        logger.warn("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
+    }
+
     public void logInfo(String msg, Object... args) {
         logger.info("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
     }
