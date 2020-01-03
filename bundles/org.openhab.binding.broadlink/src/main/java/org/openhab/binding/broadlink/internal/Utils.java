@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.broadlink.internal;
 
-import java.net.*;
 import org.eclipse.smarthome.core.thing.*;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;

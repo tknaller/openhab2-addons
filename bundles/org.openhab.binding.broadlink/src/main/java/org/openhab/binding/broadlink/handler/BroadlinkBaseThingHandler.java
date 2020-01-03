@@ -10,14 +10,12 @@ package org.openhab.binding.broadlink.handler;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import javax.crypto.spec.IvParameterSpec;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;

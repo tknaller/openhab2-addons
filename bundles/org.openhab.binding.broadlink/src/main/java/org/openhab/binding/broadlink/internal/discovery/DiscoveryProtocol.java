@@ -6,10 +6,7 @@ import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 import java.net.*;
-import java.util.*;
 
  /* 
  * @author John Marshall

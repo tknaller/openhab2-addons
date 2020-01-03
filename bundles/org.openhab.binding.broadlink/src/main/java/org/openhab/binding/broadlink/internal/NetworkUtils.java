@@ -35,12 +35,12 @@ public class NetworkUtils {
     }
 
     public static InetAddress findNonLoopbackAddress() throws SocketException {
-        Enumeration ifaces = NetworkInterface.getNetworkInterfaces();
+        Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
         while (ifaces.hasMoreElements()) {
-            NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
-            Enumeration inetAddrs = iface.getInetAddresses();
+            NetworkInterface iface = ifaces.nextElement();
+            Enumeration<InetAddress> inetAddrs = iface.getInetAddresses();
             while (inetAddrs.hasMoreElements()) {
-                InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+                InetAddress inetAddr = inetAddrs.nextElement();
                 if (inetAddr.isLoopbackAddress()) {
                     continue; /* Loop/switch isn't completed */
                 }

@@ -8,20 +8,18 @@
  */
 package org.openhab.binding.broadlink.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.handler.*;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+//import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +33,14 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkHandlerFactory.class);
-    private Map discoveryServiceRegs;
-    private List channelTypes;
-    private List channelGroupTypes;
+    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs;
+//    private List channelTypes;
+//    private List channelGroupTypes;
 
     public BroadlinkHandlerFactory() {
-        discoveryServiceRegs = new HashMap();
-        channelTypes = new CopyOnWriteArrayList();
-        channelGroupTypes = new CopyOnWriteArrayList();
+        discoveryServiceRegs = new HashMap<ThingUID, ServiceRegistration<?>>();
+//        channelTypes = new CopyOnWriteArrayList();
+//        channelGroupTypes = new CopyOnWriteArrayList();
     }
 
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -83,7 +81,7 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if(thingHandler instanceof BroadlinkControllerHandler) {
-            ServiceRegistration serviceReg = (ServiceRegistration)discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if(serviceReg != null) {
                 serviceReg.unregister();
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());

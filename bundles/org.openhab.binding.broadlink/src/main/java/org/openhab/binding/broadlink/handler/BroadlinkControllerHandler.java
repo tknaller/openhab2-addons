@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BroadlinkControllerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BroadlinkControllerHandler.class);
-    public static final Set SUPPORTED_THING_TYPES_UIDS;
-    private final BroadlinkHandlerFactory factory;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
 
     static {
         SUPPORTED_THING_TYPES_UIDS = Collections.singleton(BroadlinkBindingConstants.THING_TYPE_S1C);
@@ -35,7 +34,6 @@ public class BroadlinkControllerHandler extends BaseBridgeHandler {
 
     public BroadlinkControllerHandler(Bridge bridge, BroadlinkHandlerFactory factory) {
         super(bridge);
-        this.factory = factory;
     }
 
     public void handleCommand(ChannelUID channeluid, Command command1) {

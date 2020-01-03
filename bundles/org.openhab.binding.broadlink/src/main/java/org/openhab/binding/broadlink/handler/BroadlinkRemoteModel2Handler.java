@@ -11,8 +11,6 @@ package org.openhab.binding.broadlink.handler;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.*;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
-import org.openhab.binding.broadlink.internal.Hex;
-import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.LoggerFactory;
 
 /**
