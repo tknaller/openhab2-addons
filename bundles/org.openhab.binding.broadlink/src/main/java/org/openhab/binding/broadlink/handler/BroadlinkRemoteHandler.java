@@ -109,6 +109,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             thingLogger.logDebug("MAP file is not defined in configuration of thing {}", getThing().getLabel());
             return null;
         }
+        BundleContext bundleContext = FrameworkUtil.getBundle(BroadlinkRemoteHandler.class).getBundleContext();
         TransformationService transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
         if (transformService == null) {
             thingLogger.logError("Failed to get MAP transformation service for thing {}; is bundle installed?", getThing().getLabel());
