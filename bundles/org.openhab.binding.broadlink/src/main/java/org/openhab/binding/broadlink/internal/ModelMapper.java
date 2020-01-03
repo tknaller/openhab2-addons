@@ -11,7 +11,6 @@ package org.openhab.binding.broadlink.internal;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
-import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

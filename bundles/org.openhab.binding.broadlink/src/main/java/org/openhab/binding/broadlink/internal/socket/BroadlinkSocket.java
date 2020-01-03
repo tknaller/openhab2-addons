@@ -28,12 +28,11 @@ import java.util.List;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 public class BroadlinkSocket {
-    private static final int BUFFER_LENGTH = 1024;
     private static byte buffer[];
     private static DatagramPacket datagramPacket;
     private static MulticastSocket socket = null;
     private static Thread socketReceiveThread;
-    private static List listeners = new ArrayList();
+    private static List<BroadlinkSocketListener> listeners = new ArrayList<BroadlinkSocketListener>();
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkSocket.class);
 
     static {
@@ -53,8 +52,8 @@ public class BroadlinkSocket {
                     BroadlinkSocketListener listener;
                     byte remoteMAC[];
                     org.eclipse.smarthome.core.thing.ThingTypeUID deviceType;
-                    for (Iterator iterator = (new ArrayList(BroadlinkSocket.listeners)).iterator(); iterator.hasNext(); listener.onDataReceived(dgram.getAddress().getHostAddress(), dgram.getPort(), Hex.decodeMAC(remoteMAC), deviceType)) {
-                        listener = (BroadlinkSocketListener) iterator.next();
+                    for (Iterator<BroadlinkSocketListener> iterator = (new ArrayList<BroadlinkSocketListener>(BroadlinkSocket.listeners)).iterator(); iterator.hasNext(); listener.onDataReceived(dgram.getAddress().getHostAddress(), dgram.getPort(), Hex.decodeMAC(remoteMAC), deviceType)) {
+                        listener = iterator.next();
                         byte receivedPacket[] = dgram.getData();
                         remoteMAC = Arrays.copyOfRange(receivedPacket, 58, 64);
                         int model = Byte.toUnsignedInt(receivedPacket[52]) | Byte.toUnsignedInt(receivedPacket[53]) << 8;

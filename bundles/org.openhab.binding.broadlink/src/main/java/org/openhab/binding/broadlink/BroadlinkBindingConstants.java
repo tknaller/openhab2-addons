@@ -13,8 +13,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The {@link BroadlinkBindingConstants} class defines common constants, which are

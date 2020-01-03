@@ -1,9 +1,7 @@
 package org.openhab.binding.broadlink.internal;
 
-import org.openhab.binding.broadlink.internal.Utils;
 import org.eclipse.smarthome.core.thing.*;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handles logging on behalf of a given Thing.

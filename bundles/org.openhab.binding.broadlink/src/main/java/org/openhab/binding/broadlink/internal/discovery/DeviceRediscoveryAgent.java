@@ -1,21 +1,10 @@
 package org.openhab.binding.broadlink.internal.discovery;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
-import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
-import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
-import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.*;
-import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This agent exploits the well-known Broadlink device discovery process

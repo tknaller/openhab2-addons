@@ -12,9 +12,7 @@ import java.net.*;
 import java.util.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.slf4j.Logger;

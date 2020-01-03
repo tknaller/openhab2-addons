@@ -9,12 +9,6 @@
 package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import java.util.Map;
-import javax.crypto.spec.IvParameterSpec;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.*;
-import org.openhab.binding.broadlink.internal.Hex;
-import org.openhab.binding.broadlink.internal.Utils;
 import org.slf4j.LoggerFactory;
 
 /**

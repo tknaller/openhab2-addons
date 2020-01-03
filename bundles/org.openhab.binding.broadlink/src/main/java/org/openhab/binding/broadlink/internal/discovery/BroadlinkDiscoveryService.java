@@ -7,18 +7,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
-import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
-import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
-import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.*;
 import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 // https://www.eclipse.org/smarthome/documentation/development/bindings/discovery-services.html
 import org.osgi.service.component.annotations.Component;
@@ -66,7 +59,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         if (logger.isDebugEnabled()) {
             logger.debug("Adding new Broadlink device on {} with mac '{}' to Smarthome inbox", remoteAddress, remoteMAC);
 	}
-        Map properties = new HashMap(6);
+        Map<String, Object> properties = new HashMap<String, Object>(6);
         properties.put("ipAddress", remoteAddress);
         properties.put("port", Integer.valueOf(remotePort));
         properties.put("mac", remoteMAC);
@@ -82,7 +75,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 		}
     }
 
-	private void notifyThingDiscovered(ThingTypeUID thingTypeUID, ThingUID thingUID, String remoteAddress, Map properties) {
+	private void notifyThingDiscovered(ThingTypeUID thingTypeUID, ThingUID thingUID, String remoteAddress, Map<String, Object> properties) {
 		String deviceHumanName = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.get(thingTypeUID);
 		String label = deviceHumanName + " [" + remoteAddress + "]";
 	    DiscoveryResult result = DiscoveryResultBuilder
