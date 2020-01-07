@@ -41,7 +41,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
 
 	public void onDiscoveryFinished() {
-		logger.info("Discovery complete. Found " + foundCount + " Broadlink devices");
+		logger.info("Discovery complete. Found {} Broadlink devices", foundCount);
 	}
 
     protected synchronized void stopScan() {
@@ -50,8 +50,8 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
     }
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
-        logger.info("Data received during Broadlink device discovery: from " + remoteAddress + ":" + remotePort + "[" + remoteMAC + "]");
-		foundCount++;
+        logger.info("Data received during Broadlink device discovery: from {}:{} [{}]", remoteAddress, remotePort, remoteMAC);
+				foundCount++;
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
     }
 
@@ -71,7 +71,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 		if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
 			notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
 		} else {
-			logger.error("Discovered a " + thingTypeUID + " but do not know how to support it at this time :-(");
+			logger.error("Discovered a {} but do not know how to support it at this time :-(", thingTypeUID );
 		}
     }
 

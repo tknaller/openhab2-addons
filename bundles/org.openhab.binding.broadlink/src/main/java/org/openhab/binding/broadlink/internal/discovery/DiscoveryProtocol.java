@@ -31,14 +31,14 @@ public class DiscoveryProtocol {
         	DiscoveryProtocol.waitUntilEnded(timeoutMillis);
         	logger.warn("Ended Broadlink device scan...");
         	BroadlinkSocket.unregisterListener(listener);
-			finishedListener.onDiscoveryFinished();
+					finishedListener.onDiscoveryFinished();
         }
 	}
 
     public static void beginAsync(BroadlinkSocketListener listener, long discoveryTimeoutMillis, DiscoveryFinishedListener discoveryFinishedListener) {
-        logger.warn("Beginning async Broadlink device scan; will wait " + discoveryTimeoutMillis + "ms for responses");
+        logger.warn("Beginning async Broadlink device scan; will wait {} ms for responses", discoveryTimeoutMillis );
         AsyncDiscoveryThread adt = new AsyncDiscoveryThread(listener, discoveryTimeoutMillis, discoveryFinishedListener);
-		adt.start();
+				adt.start();
     }
 
     public static void discoverDevices() {
@@ -48,13 +48,13 @@ public class DiscoveryProtocol {
             byte message[] = BroadlinkProtocol.buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
             BroadlinkSocket.sendMessage(message, "255.255.255.255", 80);
         } catch (UnknownHostException e) {
-	    	logger.error("Failed to initiate discovery", e);
+	    			logger.error("Failed to initiate discovery", e);
         }
     }
 
     private static void waitUntilEnded(long discoveryTimeoutMillis) {
         try {
-            logger.warn("Broadlink device scan waiting for " + discoveryTimeoutMillis + " ms to complete ...");
+            logger.warn("Broadlink device scan waiting for {} ms to complete ...", discoveryTimeoutMillis);
             Thread.sleep(discoveryTimeoutMillis);
             logger.warn("Device scan: wait complete ...");
 
