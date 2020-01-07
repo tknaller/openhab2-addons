@@ -1,13 +1,19 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink.internal.socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.ModelMapper;
 import org.slf4j.Logger;
@@ -27,10 +33,14 @@ import java.util.List;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+
+@NonNullByDefault
 public class BroadlinkSocket {
     private static byte buffer[];
     private static DatagramPacket datagramPacket;
+    @Nullable
     private static MulticastSocket socket = null;
+    @Nullable
     private static Thread socketReceiveThread;
     private static List<BroadlinkSocketListener> listeners = new ArrayList<BroadlinkSocketListener>();
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkSocket.class);
@@ -45,7 +55,7 @@ public class BroadlinkSocket {
             receiveData(BroadlinkSocket.socket, BroadlinkSocket.datagramPacket);
         }
 
-        private void receiveData(MulticastSocket socket, DatagramPacket dgram) {
+        private void receiveData(@Nullable MulticastSocket socket, DatagramPacket dgram) {
             try {
                 while (true) {
                     socket.receive(dgram);
@@ -70,10 +80,6 @@ public class BroadlinkSocket {
 
         private ReceiverThread() {
         }
-
-        ReceiverThread(ReceiverThread receiverthread) {
-            this();
-        }
     }
 
     public static void registerListener(BroadlinkSocketListener listener) {
@@ -97,7 +103,7 @@ public class BroadlinkSocket {
             } catch (IOException e) {
                 logger.error("Setup socket error '{}'.", e.getMessage());
             }
-            socketReceiveThread = new ReceiverThread(null);
+            socketReceiveThread = new ReceiverThread();
             socketReceiveThread.start();
         }
     }
