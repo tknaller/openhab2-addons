@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * <p>
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ * <p>
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ * <p>
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink.internal;
 
@@ -14,6 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.crypto.spec.IvParameterSpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,17 +29,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 public class BroadlinkProtocol {
 
-    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final Logger logger = LoggerFactory.getLogger(BroadlinkProtocol.class);
 
-    public static byte[] buildMessage(byte command, 
-		    		byte[] payload,
-				int count,
-				byte[] mac,
-				byte[] id,
-				byte[] iv,
-				byte[] key) {
+    public static byte[] buildMessage(byte command,
+                                      byte[] payload,
+                                      int count,
+                                      byte[] mac,
+                                      byte[] id,
+                                      byte[] iv,
+                                      byte[] key) {
         byte packet[] = new byte[56];
         packet[0] = 0x5a;
         packet[1] = (byte) 0xa5;
@@ -77,7 +84,7 @@ public class BroadlinkProtocol {
             outputStream.write(Utils.encrypt(key, new IvParameterSpec(iv), payload));
         } catch (IOException e) {
             logger.error("IOException while building message", e);
-            return null;
+            return packet;
         }
         byte data[] = outputStream.toByteArray();
         checksum = 0xBEAF;
@@ -96,7 +103,7 @@ public class BroadlinkProtocol {
     }
 
     public static byte[] buildAuthenticationPayload() {
-    	// https://github.com/mjg59/python-broadlink/blob/master/protocol.md
+        // https://github.com/mjg59/python-broadlink/blob/master/protocol.md
         byte payload[] = new byte[80];
         payload[4] = 49;
         payload[5] = 49;
@@ -127,8 +134,8 @@ public class BroadlinkProtocol {
         payload[0x35] = 32;
         payload[0x36] = 49;
 
-	return payload;
-	}
+        return payload;
+    }
 
     public static byte[] buildDiscoveryPacket(String host, int port) {
         String localAddress[] = null;
@@ -182,7 +189,7 @@ public class BroadlinkProtocol {
         return packet;
     }
 
-    public static byte[] decodePacket(byte[] packet, BroadlinkDeviceConfiguration thingConfig, Map<String, String> properties) throws IOException {
+    public static byte[] decodePacket(byte[] packet, BroadlinkDeviceConfiguration thingConfig, @Nullable Map<String, String> properties) throws IOException {
         // if a properties map is supplied, use it.
         // During initial thing startup we don't have one yet, so use the auth key from the config.
         final String key = (properties == null) ? thingConfig.getAuthorizationKey() : properties.get("key");
@@ -199,9 +206,9 @@ public class BroadlinkProtocol {
         try {
             IvParameterSpec ivSpec = new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV()));
             return Utils.decrypt(
-                Hex.fromHexString(key),
-                ivSpec,
-                Utils.slice(packet, 56, 88)
+                    Hex.fromHexString(key),
+                    ivSpec,
+                    Utils.slice(packet, 56, 88)
             );
         } catch (Exception ex) {
             throw new IOException("Failed while getting device status", ex);

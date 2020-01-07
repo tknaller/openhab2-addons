@@ -20,31 +20,31 @@ import org.slf4j.LoggerFactory;
 public class DeviceRediscoveryAgent implements BroadlinkSocketListener, DiscoveryFinishedListener {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceRediscoveryAgent.class);
-	private final BroadlinkDeviceConfiguration missingThingConfig;
-	private final DeviceRediscoveryListener drl;
-	private boolean foundDevice = false;
+		private final BroadlinkDeviceConfiguration missingThingConfig;
+		private final DeviceRediscoveryListener drl;
+		private boolean foundDevice = false;
 
     public DeviceRediscoveryAgent(BroadlinkDeviceConfiguration missingThingConfig, DeviceRediscoveryListener drl) {
-		this.missingThingConfig = missingThingConfig;
-		this.drl = drl;
+			this.missingThingConfig = missingThingConfig;
+			this.drl = drl;
     }
 
     public void attemptRediscovery() {
-        logger.warn("DeviceRediscoveryAgent - Beginning Broadlink device scan for missing " + missingThingConfig.toString());
-		DiscoveryProtocol.beginAsync(this, 5000L, this);
+      logger.warn("DeviceRediscoveryAgent - Beginning Broadlink device scan for missing {}", missingThingConfig.toString());
+			DiscoveryProtocol.beginAsync(this, 5000L, this);
     }
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
-        logger.trace("Data received during Broadlink device rediscovery: from " + remoteAddress + ":" + remotePort + "[" + remoteMAC + "]");
+			logger.trace("Data received during Broadlink device rediscovery: from {}:{} [{}]", remoteAddress, remotePort, remoteMAC);
 	
-		// if this thing matches the missingThingConfig, we've found it!
-		logger.trace("Comparing with desired mac: " + missingThingConfig.getMACAsString());
+			// if this thing matches the missingThingConfig, we've found it!
+			logger.trace("Comparing with desired mac: {}", missingThingConfig.getMACAsString());
 
-		if (missingThingConfig.getMACAsString().equals(remoteMAC)) {
-			logger.info("We have a match for target MAC " + remoteMAC + " at " + remoteAddress + " - reassociate!");
-			foundDevice = true;
-			this.drl.onDeviceRediscovered(remoteAddress);
-		}
+			if (missingThingConfig.getMACAsString().equals(remoteMAC)) {
+				logger.info("We have a match for target MAC {} at {} - reassociate!", remoteMAC, remoteAddress);
+				foundDevice = true;
+				this.drl.onDeviceRediscovered(remoteAddress);
+			}
     }
 
 	public void onDiscoveryFinished() {

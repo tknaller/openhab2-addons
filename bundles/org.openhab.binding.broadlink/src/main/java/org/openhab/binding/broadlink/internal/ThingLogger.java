@@ -28,35 +28,36 @@ public final class ThingLogger  {
         return "?";
     }
 
-    private Object[] prependUID(Object... args) {
-        Object[] allArgs = new Object[args.length + 2];
+    private Object[] prependUID(String msg, Object... args) {
+        Object[] allArgs = new Object[args.length + 3];
         allArgs[0] = thing.getUID().toString().replaceFirst("^broadlink:", "");;
         allArgs[1] = describeStatus();
         System.arraycopy(args, 0, allArgs, 2, args.length);
+        allArgs[allArgs.length - 1] = msg;
         return allArgs;
     }
 
     public void logDebug(String msg, Object... args) {
         if (logger.isDebugEnabled()) {
-            logger.debug("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
+            logger.debug("{}[{}]: {}", prependUID(msg, args == null ? new Object[0] : args));
         }
     }
 
     public void logError(String msg, Object... args) {
-        logger.error("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
+        logger.error("{}[{}]: {}", prependUID(msg, args == null ? new Object[0] : args));
     }
 
     public void logWarn(String msg, Object... args) {
-        logger.warn("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
+        logger.warn("{}[{}]: {}", prependUID(msg, args == null ? new Object[0] : args));
     }
 
     public void logInfo(String msg, Object... args) {
-        logger.info("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
+        logger.info("{}[{}]: {}", prependUID(msg, args == null ? new Object[0] : args));
     }
 
     public void logTrace(String msg, Object... args) {
         if (logger.isTraceEnabled()) {
-            logger.trace("{}[{}]: " + msg, prependUID(args == null ? new Object[0] : args));
+            logger.trace("{}[{}]: {}", prependUID(msg, args == null ? new Object[0] : args));
         }
     }
 }
