@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink;
 
@@ -40,7 +44,7 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID("broadlink", "sp1");
     public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID("broadlink", "sp2");
     public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID("broadlink", "sp3");
-    public static final ThingTypeUID THING_TYPE_S1C = new ThingTypeUID("broadlink", "s1c");
+//    public static final ThingTypeUID THING_TYPE_S1C = new ThingTypeUID("broadlink", "s1c");
     public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID("broadlink", "s1p");
     public static final ThingTypeUID THING_TYPE_MAGNET = new ThingTypeUID("broadlink", "s1m");
     public static final String CHANNEL_COMMAND = "command";
@@ -167,7 +171,7 @@ public class BroadlinkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP1, SP1);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP2, SP2);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3, SP3);
-        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_S1C, S1C);
+//        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_S1C, S1C);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_PIR, S1P);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MAGNET, S1M);
     }
