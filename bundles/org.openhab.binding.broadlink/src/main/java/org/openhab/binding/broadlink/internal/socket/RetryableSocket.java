@@ -20,6 +20,9 @@ import org.openhab.binding.broadlink.internal.ThingLogger;
 import java.io.IOException;
 import java.net.*;
 
+/*
+ * @author John Marshall
+ */
 @NonNullByDefault
 public class RetryableSocket {
     @Nullable
@@ -45,7 +48,7 @@ public class RetryableSocket {
         }
 
         if (thingConfig.getRetries() > 0) {
-			thingLogger.logTrace("Retrying sendAndReceive ONE time before giving up...");
+            thingLogger.logTrace("Retrying sendAndReceive ONE time before giving up...");
             return sendAndReceiveOneTime(message, purpose);
         }
 

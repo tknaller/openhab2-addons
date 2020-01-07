@@ -49,6 +49,8 @@ public class BroadlinkSocket {
         buffer = new byte[1024];
         datagramPacket = new DatagramPacket(buffer, buffer.length);
     }
+
+    @NonNullByDefault
     private static class ReceiverThread extends Thread {
 
         public void run() {
