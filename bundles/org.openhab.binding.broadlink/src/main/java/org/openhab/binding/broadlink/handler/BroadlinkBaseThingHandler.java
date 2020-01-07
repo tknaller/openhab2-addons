@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink.handler;
 
@@ -12,6 +16,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -33,19 +39,26 @@ import org.slf4j.Logger;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 public abstract class BroadlinkBaseThingHandler extends BaseThingHandler implements DeviceRediscoveryListener {
+
+    @Nullable
     private RetryableSocket socket;
     private boolean authenticated = false;
     private int count;
+    @Nullable
     private String authenticationKey;
+    @Nullable
     private String iv;
     protected BroadlinkDeviceConfiguration thingConfig;
     protected final ThingLogger thingLogger;
+    @Nullable
     private ScheduledFuture<?> refreshHandle;
 
     public BroadlinkBaseThingHandler(Thing thing, Logger logger) {
         super(thing);
         this.thingLogger = new ThingLogger(thing, logger);
+        this.thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
         count = 0;
     }
 
@@ -57,27 +70,27 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         thingLogger.logDebug("initializing");
 
         count = (new Random()).nextInt(65535);
-        thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(BroadlinkDeviceConfiguration.class);
+
         this.socket = new RetryableSocket(thingConfig, thingLogger);
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
-            setProperty("id", null);
-            setProperty("key", null);
+            clearProperty("id");
+            clearProperty("key");
         }
         thingLogger.logDebug("initialization complete. Updating status.");
 
         if (thingConfig.getPollingInterval() != 0) {
             refreshHandle = scheduler.scheduleWithFixedDelay(
-                new Runnable() {
+                    new Runnable() {
 
-                public void run() {
-                    updateItemStatus();
-                }
-            },
-                1L,
-                thingConfig.getPollingInterval(),
-                TimeUnit.SECONDS
+                        public void run() {
+                            updateItemStatus();
+                        }
+                    },
+                    1L,
+                    thingConfig.getPollingInterval(),
+                    TimeUnit.SECONDS
             );
         } else {
             updateItemStatus();
@@ -140,12 +153,12 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     }
 
-    protected byte[] sendAndReceiveDatagram(byte message[], String purpose) {
+    protected byte @Nullable [] sendAndReceiveDatagram(byte message[], String purpose) {
         return socket.sendAndReceive(message, purpose);
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) {
-    	Map<String, String> properties = editProperties();
+        Map<String, String> properties = editProperties();
         byte id[];
         if (properties.get("id") == null) {
             id = new byte[4];
@@ -155,19 +168,19 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         byte key[];
         if (properties.get("key") == null || properties.get("id") == null) {
             key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
-        } else  {
+        } else {
             key = Hex.fromHexString(properties.get("key"));
         }
         count = count + 1 & 0xffff;
         thingLogger.logTrace("building message with count: {}, id: {}, key: {}", count, Hex.toHexString(id), Hex.toHexString(key));
-	    return BroadlinkProtocol.buildMessage(
-            command,
-            payload,
-            count,
-            thingConfig.getMAC(),
-            id,
-            Hex.convertHexToBytes(thingConfig.getIV()),
-            key
+        return BroadlinkProtocol.buildMessage(
+                command,
+                payload,
+                count,
+                thingConfig.getMAC(),
+                id,
+                Hex.convertHexToBytes(thingConfig.getIV()),
+                key
         );
     }
 
@@ -196,76 +209,76 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         thingLogger.logTrace("updateItemStatus; checking host availability at {}", thingConfig.getIpAddress());
         if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000)) {
             if (!Utils.isOnline(getThing())) {
-				transitionToOnline();
+                transitionToOnline();
             } else {
                 // Normal operation ...
                 boolean gotStatusOk = getStatusFromDevice();
                 if (!gotStatusOk) {
-					if (thingConfig.isIgnoreFailedUpdates()) {
-						thingLogger.logWarn("Problem getting status. Not marking offline because configured to ignore failed updates ...");
-					} else {
-						thingLogger.logError("Problem getting status. Marking as offline ...");
-						forceOffline();
-					}
+                    if (thingConfig.isIgnoreFailedUpdates()) {
+                        thingLogger.logWarn("Problem getting status. Not marking offline because configured to ignore failed updates ...");
+                    } else {
+                        thingLogger.logError("Problem getting status. Marking as offline ...");
+                        forceOffline();
+                    }
                 }
             }
         } else {
-			if (thingConfig.isStaticIp()) {
-				if (!Utils.isOffline(getThing())) {
+            if (thingConfig.isStaticIp()) {
+                if (!Utils.isOffline(getThing())) {
                     thingLogger.logDebug("Statically-IP-addressed device not found at {}", thingConfig.getIpAddress());
-            		forceOffline();
-				}
-			} else {
+                    forceOffline();
+                }
+            } else {
                 thingLogger.logDebug("Dynamic IP device not found at {}, will search...", thingConfig.getIpAddress());
-				DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
-				dra.attemptRediscovery();
+                DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
+                dra.attemptRediscovery();
                 thingLogger.logDebug("Asynchronous dynamic IP device search initiated...");
-			}
+            }
         }
     }
 
-	public void onDeviceRediscovered(String newIpAddress) {
+    public void onDeviceRediscovered(String newIpAddress) {
         thingLogger.logInfo("Rediscovered this device at IP {}", newIpAddress);
-		thingConfig.setIpAddress(newIpAddress);
-		transitionToOnline();
-	}
+        thingConfig.setIpAddress(newIpAddress);
+        transitionToOnline();
+    }
 
-	public void onDeviceRediscoveryFailure() {
-		if (!Utils.isOffline(getThing())) {
+    public void onDeviceRediscoveryFailure() {
+        if (!Utils.isOffline(getThing())) {
             thingLogger.logDebug("Dynamically-IP-addressed device not found after network scan. Marking offline");
-			forceOffline();
-		}
-	}
+            forceOffline();
+        }
+    }
 
-	private void transitionToOnline() {
-		if (!hasAuthenticated()) {
+    private void transitionToOnline() {
+        if (!hasAuthenticated()) {
             thingLogger.logDebug("We've never actually successfully authenticated with this device in this session. Doing so now");
-			if (authenticate()) {
+            if (authenticate()) {
                 thingLogger.logDebug("Authenticated with newly-detected device, will now get its status");
-			} else {
+            } else {
                 thingLogger.logError("Attempting to authenticate prior to getting device status FAILED. Will mark as offline");
                 forceOffline();
                 return;
-			}
-		}
-		if (onBroadlinkDeviceBecomingReachable()) {
+            }
+        }
+        if (onBroadlinkDeviceBecomingReachable()) {
             thingLogger.logDebug("updateStatus: Offline -> Online");
-			updateStatus(ThingStatus.ONLINE);
-		} else {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
             thingLogger.logError("Device became reachable but had trouble getting status. Marking as offline ...");
-			forceOffline();
-		}
-	}
+            forceOffline();
+        }
+    }
 
     private void forceOffline() {
         thingLogger.logError("updateItemStatus: Online -> Offline");
         this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
-        setProperty("id", null);
-        setProperty("key", null);
+        clearProperty("id");
+        clearProperty("key");
         updateStatus(
-			ThingStatus.OFFLINE,
-			ThingStatusDetail.COMMUNICATION_ERROR,
-			(new StringBuilder("Could not find device at IP address ")).append(thingConfig.getIpAddress()).toString()
+                ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR,
+                (new StringBuilder("Could not find device at IP address ")).append(thingConfig.getIpAddress()).toString()
         );
         if (socket != null) {
             socket.close();
@@ -275,6 +288,12 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     private void setProperty(String propName, String propValue) {
         Map<String, String> properties = editProperties();
         properties.put(propName, propValue);
+        updateProperties(properties);
+    }
+
+    private void clearProperty(String propName) {
+        Map<String, String> properties = editProperties();
+        properties.remove(propName);
         updateProperties(properties);
     }
 }

@@ -1,36 +1,44 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink.config;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Device configuration for the supported Broadlink devices.
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 public class BroadlinkDeviceConfiguration {
-    private String ipAddress;
+    @Nullable private String ipAddress;
     private boolean staticIp;
     private int port;
-    private String mac;
+    @Nullable private String mac;
     private int pollingInterval;
-    private String mapFilename;
-    private String authorizationKey;
-    private String iv;
+    @Nullable private String mapFilename;
+    @Nullable private String authorizationKey;
+    @Nullable private String iv;
     private int retries = 1;
     private boolean ignoreFailedUpdates = false;
 
     public BroadlinkDeviceConfiguration() {
         pollingInterval = 30;
-	    staticIp = true;
+        staticIp = true;
     }
 
-    public String getIpAddress() {
+    public @Nullable String getIpAddress() {
         return ipAddress;
     }
 
@@ -38,7 +46,7 @@ public class BroadlinkDeviceConfiguration {
         this.ipAddress = ipAddress;
     }
 
-    public boolean isStaticIp () {
+    public boolean isStaticIp() {
         return staticIp;
     }
 
@@ -61,18 +69,17 @@ public class BroadlinkDeviceConfiguration {
     public byte[] getMAC() {
         byte configMac[] = new byte[6];
         String elements[] = mac.split(":");
-        for(int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             String element = elements[i];
-            configMac[i] = (byte)Integer.parseInt(element, 16);
+            configMac[i] = (byte) Integer.parseInt(element, 16);
         }
 
         return configMac;
     }
 
-    public String getMACAsString() {
-		return mac;
-	}
+    public @Nullable String getMACAsString() {
+        return mac;
+    }
 
     public int getPollingInterval() {
         return pollingInterval;
@@ -82,7 +89,7 @@ public class BroadlinkDeviceConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
-    public String getMapFilename() {
+    public @Nullable String getMapFilename() {
         return mapFilename;
     }
 
@@ -90,7 +97,7 @@ public class BroadlinkDeviceConfiguration {
         this.mapFilename = mapFilename;
     }
 
-    public String getAuthorizationKey() {
+    public @Nullable String getAuthorizationKey() {
         return authorizationKey;
     }
 
@@ -98,7 +105,7 @@ public class BroadlinkDeviceConfiguration {
         this.authorizationKey = authorizationKey;
     }
 
-    public String getIV() {
+    public @Nullable String getIV() {
         return iv;
     }
 
@@ -124,23 +131,23 @@ public class BroadlinkDeviceConfiguration {
 
     public String toString() {
         return (
-		new StringBuilder("BroadlinkDeviceConfiguration [ipAddress="))
-			.append(ipAddress)
-			.append(" (static: ")
-			.append(staticIp)
-			.append("), port=")
-			.append(port)
-			.append(", mac=")
-			.append(mac)
-			.append(", pollingInterval=")
-			.append(pollingInterval)
-			.append(", mapFilename=")
-			.append(mapFilename)
-			.append(", authorizationKey=")
-			.append(authorizationKey)
-			.append(", iv=")
-			.append(iv)
-			.append("]").toString();
+                new StringBuilder("BroadlinkDeviceConfiguration [ipAddress="))
+                .append(ipAddress)
+                .append(" (static: ")
+                .append(staticIp)
+                .append("), port=")
+                .append(port)
+                .append(", mac=")
+                .append(mac)
+                .append(", pollingInterval=")
+                .append(pollingInterval)
+                .append(", mapFilename=")
+                .append(mapFilename)
+                .append(", authorizationKey=")
+                .append(authorizationKey)
+                .append(", iv=")
+                .append(iv)
+                .append("]").toString();
     }
 
 }

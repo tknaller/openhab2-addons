@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink.handler;
 
@@ -12,6 +16,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.transform.*;
@@ -29,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     public BroadlinkRemoteHandler(Thing thing) {
@@ -97,7 +104,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
     }
 
-    private byte[] lookupCode(Command command, ChannelUID channelUID) {
+    private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
         if (command.toString() == null) {
             thingLogger.logDebug("Unable to perform transform on null command string");
             return null;

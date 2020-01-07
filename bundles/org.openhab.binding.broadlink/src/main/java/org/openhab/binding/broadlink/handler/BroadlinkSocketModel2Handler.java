@@ -40,7 +40,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         payload[0] = 2;
         payload[4] = (byte) status;
         byte message[] = buildMessage((byte) 106, payload);
-	    sendAndReceiveDatagram(message, "Setting SP2/3 status");
+        sendAndReceiveDatagram(message, "Setting SP2/3 status");
     }
 
     protected boolean getStatusFromDevice() {
@@ -59,17 +59,17 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     }
 
     private OnOffType deriveOnOffStateFromPayload(byte[] payload) {
-		// Credit to the Python Broadlink implementation for this:
-		// https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
-		// Function check_power does more than just check if payload[4] == 1 !
-		byte powerByte = payload[4];
-		if (powerByte == 1 || powerByte == 3 || powerByte == 0xFD) {
-			return OnOffType.ON;
-		}
-		return OnOffType.OFF;
+        // Credit to the Python Broadlink implementation for this:
+        // https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
+        // Function check_power does more than just check if payload[4] == 1 !
+        byte powerByte = payload[4];
+        if (powerByte == 1 || powerByte == 3 || powerByte == 0xFD) {
+            return OnOffType.ON;
+        }
+        return OnOffType.OFF;
     }
 
-    protected boolean onBroadlinkDeviceBecomingReachable() { 
+    protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }
 }
