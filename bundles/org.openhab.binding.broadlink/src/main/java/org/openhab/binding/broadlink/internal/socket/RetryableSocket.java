@@ -20,7 +20,7 @@ import org.openhab.binding.broadlink.internal.ThingLogger;
 import java.io.IOException;
 import java.net.*;
 
-/*
+/**
  * @author John Marshall
  */
 @NonNullByDefault

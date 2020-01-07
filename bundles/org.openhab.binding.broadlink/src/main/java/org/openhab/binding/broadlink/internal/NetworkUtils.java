@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink.internal;
 
@@ -12,6 +16,9 @@ import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.net.*;
 import java.util.*;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,11 +27,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 public class NetworkUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
 
-    public static boolean hostAvailabilityCheck(String host, int timeout) {
+    public static boolean hostAvailabilityCheck(@Nullable String host, int timeout) {
+        if (host == null) {
+            logger.warn("Can't check availability of a null host");
+            return false;
+        }
         try {
             InetAddress address = InetAddress.getByName(host);
             return address.isReachable(timeout);
@@ -34,7 +46,7 @@ public class NetworkUtils {
         return false;
     }
 
-    public static InetAddress findNonLoopbackAddress() throws SocketException {
+    public static @Nullable InetAddress findNonLoopbackAddress() throws SocketException {
         Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
         while (ifaces.hasMoreElements()) {
             NetworkInterface iface = ifaces.nextElement();
