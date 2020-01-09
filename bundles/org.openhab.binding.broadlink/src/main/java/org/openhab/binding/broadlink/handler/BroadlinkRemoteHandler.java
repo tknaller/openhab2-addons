@@ -46,7 +46,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         super(thing, logger);
     }
 
-    protected void sendCode(byte code[]) {
+    protected void sendCode(byte code[]) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte abyte0[];
         try {
@@ -85,22 +85,26 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             return;
         }
         String s;
-        switch ((s = channelTypeUID.getId()).hashCode()) {
-            case 950394699: // FIXME WTF?!?!
-                if (s.equals("command")) {
-                    thingLogger.logDebug("Handling ir/rf command {} on channel {} of thing {}", new Object[]{
+        try {
+            switch ((s = channelTypeUID.getId()).hashCode()) {
+                case 950394699: // FIXME WTF?!?!
+                    if (s.equals("command")) {
+                        thingLogger.logDebug("Handling ir/rf command {} on channel {} of thing {}", new Object[]{
                                 command, channelUID.getId(), getThing().getLabel()
                         });
-                    byte code[] = lookupCode(command, channelUID);
-                    if (code != null)
-                        sendCode(code);
-                    break;
-                }
-                // fall through
+                        byte code[] = lookupCode(command, channelUID);
+                        if (code != null)
+                            sendCode(code);
+                        break;
+                    }
+                    // fall through
 
-            default:
-                thingLogger.logDebug("Thing {} has unknown channel type {}", getThing().getLabel(), channelTypeUID.getId());
-                break;
+                default:
+                    thingLogger.logDebug("Thing {} has unknown channel type {}", getThing().getLabel(), channelTypeUID.getId());
+                    break;
+            }
+        } catch (IOException e) {
+            thingLogger.logError("Exception while trying to send code", e);
         }
     }
 

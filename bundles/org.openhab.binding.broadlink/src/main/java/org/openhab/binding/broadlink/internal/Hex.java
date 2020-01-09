@@ -1,14 +1,22 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.broadlink.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 /**
@@ -16,12 +24,15 @@ import java.util.regex.Pattern;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 public class Hex {
     private static final Pattern validPattern = Pattern.compile("0000( +[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])+");
     private static final String HEXES = "0123456789ABCDEF";
 
-    public static String decodeMAC(byte mac[]) {
-        if (mac == null) return null;
+    public static String decodeMAC(byte mac[]) throws IOException {
+        if (mac == null) {
+            throw new IOException("No MAC provided, cannot decode it");
+        }
 
         StringBuilder sb = new StringBuilder(18);
         for(int i = 5; i >= 0; i--)
@@ -59,8 +70,10 @@ public class Hex {
         return result;
     }
 
-    public static String toHexString(byte raw[]) {
-        if (raw == null) return null;
+    public static String toHexString(byte raw[]) throws IOException {
+        if (raw == null) {
+            throw new IOException("Cannot convert a null byte array to a hex string");
+        }
         StringBuilder hex = new StringBuilder(2 * raw.length);
         byte abyte0[];
         int j = (abyte0 = raw).length;

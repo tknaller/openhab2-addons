@@ -14,7 +14,12 @@ package org.openhab.binding.broadlink.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * Broadlink discovery implementation.
+ *
+ * @author John Marshall - Initial contribution
+ */
 @NonNullByDefault
 public interface DiscoveryFinishedListener {
-	public void onDiscoveryFinished();
+    void onDiscoveryFinished();
 }

@@ -15,6 +15,8 @@ package org.openhab.binding.broadlink.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 
+import java.io.IOException;
+
 /**
  * Smart power socket handler 
  *
@@ -27,7 +29,7 @@ public class BroadlinkSocketModel1Handler extends BroadlinkSocketHandler {
         super(thing);
     }
 
-    public void setStatusOnDevice(int state) {
+    public void setStatusOnDevice(int state) throws IOException {
         byte payload[] = new byte[16];
         payload[0] = (byte) state;
         byte message[] = buildMessage((byte) 102, payload);
