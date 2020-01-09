@@ -1,5 +1,18 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.broadlink.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
@@ -15,41 +28,42 @@ import org.slf4j.LoggerFactory;
  * It is explicitly initiated when a dynamically-addressed Broadlink device
  * appears to have dropped off the network.
  *
- * @author John Marshall
+ * @author John Marshall - Initial contribution
  */
+@NonNullByDefault
 public class DeviceRediscoveryAgent implements BroadlinkSocketListener, DiscoveryFinishedListener {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceRediscoveryAgent.class);
-		private final BroadlinkDeviceConfiguration missingThingConfig;
-		private final DeviceRediscoveryListener drl;
-		private boolean foundDevice = false;
+    private final BroadlinkDeviceConfiguration missingThingConfig;
+    private final DeviceRediscoveryListener drl;
+    private boolean foundDevice = false;
 
     public DeviceRediscoveryAgent(BroadlinkDeviceConfiguration missingThingConfig, DeviceRediscoveryListener drl) {
-			this.missingThingConfig = missingThingConfig;
-			this.drl = drl;
+        this.missingThingConfig = missingThingConfig;
+        this.drl = drl;
     }
 
     public void attemptRediscovery() {
-      logger.warn("DeviceRediscoveryAgent - Beginning Broadlink device scan for missing {}", missingThingConfig.toString());
-			DiscoveryProtocol.beginAsync(this, 5000L, this);
+        logger.warn("DeviceRediscoveryAgent - Beginning Broadlink device scan for missing {}", missingThingConfig.toString());
+        DiscoveryProtocol.beginAsync(this, 5000L, this);
     }
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
-			logger.trace("Data received during Broadlink device rediscovery: from {}:{} [{}]", remoteAddress, remotePort, remoteMAC);
-	
-			// if this thing matches the missingThingConfig, we've found it!
-			logger.trace("Comparing with desired mac: {}", missingThingConfig.getMACAsString());
+        logger.trace("Data received during Broadlink device rediscovery: from {}:{} [{}]", remoteAddress, remotePort, remoteMAC);
 
-			if (missingThingConfig.getMACAsString().equals(remoteMAC)) {
-				logger.info("We have a match for target MAC {} at {} - reassociate!", remoteMAC, remoteAddress);
-				foundDevice = true;
-				this.drl.onDeviceRediscovered(remoteAddress);
-			}
+        // if this thing matches the missingThingConfig, we've found it!
+        logger.trace("Comparing with desired mac: {}", missingThingConfig.getMACAsString());
+
+        if (missingThingConfig.getMACAsString().equals(remoteMAC)) {
+            logger.info("We have a match for target MAC {} at {} - reassociate!", remoteMAC, remoteAddress);
+            foundDevice = true;
+            this.drl.onDeviceRediscovered(remoteAddress);
+        }
     }
 
-	public void onDiscoveryFinished() {
-		if (!foundDevice) {
-			this.drl.onDeviceRediscoveryFailure();
-		}
-	}
+    public void onDiscoveryFinished() {
+        if (!foundDevice) {
+            this.drl.onDeviceRediscoveryFailure();
+        }
+    }
 }

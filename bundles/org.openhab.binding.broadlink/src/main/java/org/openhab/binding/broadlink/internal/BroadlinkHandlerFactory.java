@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.broadlink")
 public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
@@ -51,8 +54,8 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet().contains(thingTypeUID);
     }
 
-
-    protected ThingHandler createHandler(Thing thing) {
+    // FIXME: This function envies the ModelMapper and should be unified with it...
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (logger.isDebugEnabled()) logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM)) return new BroadlinkRemoteModel2Handler(thing);
@@ -79,7 +82,8 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 //            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_S1C);
 //            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_PIR);
 //            thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MAGNET);
-            return null;
+           logger.error("Can't create handler for thing type UID: {}", thingTypeUID.getAsString());
+           return null;
         }
     }
 }

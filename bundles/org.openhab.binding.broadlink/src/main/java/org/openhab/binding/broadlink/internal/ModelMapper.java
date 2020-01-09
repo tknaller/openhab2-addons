@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.broadlink.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
+@NonNullByDefault
 public class ModelMapper {
 
     private static final StringType UNKNOWN = new StringType("UNKNOWN");
@@ -96,10 +98,9 @@ public class ModelMapper {
 //            return BroadlinkBindingConstants.THING_TYPE_S1C;
 //        if (model == 0x4e4d)
 //            return null;
-
-        logger.error("Device identifying itself as '" + model + "' is not currently supported. Please report this to the developer!");
+        logger.error("Device identifying itself as '{}' is not currently supported. Please report this to the developer!", model);
         logger.error("Join the discussion at https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768/616");
-        return null;
+        throw new UnsupportedOperationException("Device identifying itself as '" + model + "' is not currently supported. Please report this to the developer!");
     }
 
     private static StringType lookup(StringType[] values, byte b) {

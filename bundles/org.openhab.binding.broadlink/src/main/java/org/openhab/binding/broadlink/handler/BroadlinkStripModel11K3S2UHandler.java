@@ -67,7 +67,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
                 setStatusOnDevice((byte) sid, (byte) 0);
             }
         } catch (IOException e) {
-            thingLogger.logError("Couldn't intepret command for strip device MP13K2U", e);
+            thingLogger.logError("Couldn't interpret command for strip device MP13K2U", e);
         }
     }
 
