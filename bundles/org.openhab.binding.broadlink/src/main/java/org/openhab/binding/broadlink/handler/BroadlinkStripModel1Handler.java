@@ -20,6 +20,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  * Multiple power socket strip device 
  *
@@ -58,14 +60,18 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
     }
 
     private void interpretCommandForSocket(int sid, Command command) {
-        if (command == OnOffType.ON) {
-            setStatusOnDevice((byte) sid, (byte) 1);
-        } else if (command == OnOffType.OFF) {
-            setStatusOnDevice((byte) sid, (byte) 0);
+        try {
+            if (command == OnOffType.ON) {
+                setStatusOnDevice((byte) sid, (byte) 1);
+            } else if (command == OnOffType.OFF) {
+                setStatusOnDevice((byte) sid, (byte) 0);
+            }
+        } catch (IOException e) {
+            thingLogger.logError("Couldn't intepret command for strip device", e);
         }
     }
 
-    private void setStatusOnDevice(byte sid, byte state) {
+    private void setStatusOnDevice(byte sid, byte state) throws IOException {
         int sid_mask = 1 << sid - 1;
         byte payload[] = new byte[16];
         payload[0] = 13;

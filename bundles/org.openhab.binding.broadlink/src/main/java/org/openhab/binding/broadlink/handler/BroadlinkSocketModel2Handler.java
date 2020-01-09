@@ -19,6 +19,8 @@ import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  * Smart power socket handler
  *
@@ -35,7 +37,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         super(thing, logger);
     }
 
-    protected void setStatusOnDevice(int status) {
+    protected void setStatusOnDevice(int status) throws IOException {
         byte payload[] = new byte[16];
         payload[0] = 2;
         payload[4] = (byte) status;

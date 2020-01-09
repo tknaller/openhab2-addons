@@ -22,23 +22,27 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class BroadlinkDeviceConfiguration {
-    @Nullable private String ipAddress;
+    private String ipAddress;
     private boolean staticIp;
     private int port;
-    @Nullable private String mac;
+    private String mac;
     private int pollingInterval;
     @Nullable private String mapFilename;
-    @Nullable private String authorizationKey;
-    @Nullable private String iv;
+    private String authorizationKey;
+    private String iv;
     private int retries = 1;
     private boolean ignoreFailedUpdates = false;
 
     public BroadlinkDeviceConfiguration() {
+        ipAddress = "";
+        mac = "";
         pollingInterval = 30;
         staticIp = true;
+        authorizationKey = "";
+        iv = "";
     }
 
-    public @Nullable String getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 
@@ -77,7 +81,7 @@ public class BroadlinkDeviceConfiguration {
         return configMac;
     }
 
-    public @Nullable String getMACAsString() {
+    public String getMACAsString() {
         return mac;
     }
 
@@ -97,7 +101,7 @@ public class BroadlinkDeviceConfiguration {
         this.mapFilename = mapFilename;
     }
 
-    public @Nullable String getAuthorizationKey() {
+    public String getAuthorizationKey() {
         return authorizationKey;
     }
 
@@ -105,7 +109,7 @@ public class BroadlinkDeviceConfiguration {
         this.authorizationKey = authorizationKey;
     }
 
-    public @Nullable String getIV() {
+    public String getIV() {
         return iv;
     }
 

@@ -20,6 +20,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  * Abstract superclass for power socket devices 
  *
@@ -36,15 +38,19 @@ public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
         super(thing, logger);
     }
 
-    protected abstract void setStatusOnDevice(int state);
+    protected abstract void setStatusOnDevice(int state) throws IOException;
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals("powerOn")) {
-            if (command == OnOffType.ON) {
-                setStatusOnDevice(1);
-            } else if (command == OnOffType.OFF) {
-                setStatusOnDevice(0);
+        try {
+            if (channelUID.getId().equals("powerOn")) {
+                if (command == OnOffType.ON) {
+                    setStatusOnDevice(1);
+                } else if (command == OnOffType.OFF) {
+                    setStatusOnDevice(0);
+                }
             }
+        } catch (IOException e) {
+            thingLogger.logError("Could not send command to socket device", e);
         }
     }
 }

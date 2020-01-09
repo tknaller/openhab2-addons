@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledFuture;
@@ -131,9 +132,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         thingLogger.logDebug("Authenticating with packet count = {}", this.count);
 
         authenticated = false;
-        byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload());
-        byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
+
         try {
+            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload());
+            byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
             byte decryptResponse[] = BroadlinkProtocol.decodePacket(response, thingConfig, null);
             byte deviceId[] = Utils.getDeviceId(decryptResponse);
             byte deviceKey[] = Utils.getDeviceKey(decryptResponse);
@@ -157,7 +159,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         return socket.sendAndReceive(message, purpose);
     }
 
-    protected byte[] buildMessage(byte command, byte payload[]) {
+    protected byte[] buildMessage(byte command, byte payload[]) throws IOException {
         Map<String, String> properties = editProperties();
         byte id[];
         if (properties.get("id") == null) {

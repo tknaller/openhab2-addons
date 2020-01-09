@@ -14,8 +14,14 @@ package org.openhab.binding.broadlink.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * Broadlink discovery implementation.
+ *
+ * @author John Marshall - Initial contribution
+ */
 @NonNullByDefault
 public interface DeviceRediscoveryListener {
-	public void onDeviceRediscovered(String newIpAddress);
-	public void onDeviceRediscoveryFailure();
+    void onDeviceRediscovered(String newIpAddress);
+
+    void onDeviceRediscoveryFailure();
 }
