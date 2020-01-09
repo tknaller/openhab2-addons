@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.*;
 
 /**
- * @author John Marshall
+ * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
 public class RetryableSocket {

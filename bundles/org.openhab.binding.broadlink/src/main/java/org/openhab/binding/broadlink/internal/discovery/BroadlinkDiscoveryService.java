@@ -40,7 +40,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         implements BroadlinkSocketListener, DiscoveryFinishedListener {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkDiscoveryService.class);
-	private int foundCount = 0;
+    private int foundCount = 0;
 
     public BroadlinkDiscoveryService() {
         super(BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet(), 10, true);
@@ -48,15 +48,15 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
     }
 
     public void startScan() {
-		foundCount = 0;
+        foundCount = 0;
         logger.warn("BroadlinkDiscoveryService - Beginning Broadlink device scan...");
         DiscoveryProtocol.beginAsync(this, 10000L, this);
     }
 
 
-	public void onDiscoveryFinished() {
-		logger.info("Discovery complete. Found {} Broadlink devices", foundCount);
-	}
+    public void onDiscoveryFinished() {
+        logger.info("Discovery complete. Found {} Broadlink devices", foundCount);
+    }
 
     protected synchronized void stopScan() {
         super.stopScan();
@@ -65,14 +65,14 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
         logger.info("Data received during Broadlink device discovery: from {}:{} [{}]", remoteAddress, remotePort, remoteMAC);
-				foundCount++;
+        foundCount++;
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
     }
 
     private void discoveryResultSubmission(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
         if (logger.isDebugEnabled()) {
             logger.debug("Adding new Broadlink device on {} with mac '{}' to Smarthome inbox", remoteAddress, remoteMAC);
-	}
+        }
         Map<String, Object> properties = new HashMap<String, Object>(6);
         properties.put("ipAddress", remoteAddress);
         properties.put("port", Integer.valueOf(remotePort));
@@ -82,23 +82,23 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
             logger.debug("Device '{}' discovered at '{}'.", thingUID, remoteAddress);
         }
 
-		if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
-			notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
-		} else {
-			logger.error("Discovered a {} but do not know how to support it at this time :-(", thingTypeUID );
-		}
+        if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
+            notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
+        } else {
+            logger.error("Discovered a {} but do not know how to support it at this time :-(", thingTypeUID);
+        }
     }
 
-	private void notifyThingDiscovered(ThingTypeUID thingTypeUID, ThingUID thingUID, String remoteAddress, Map<String, Object> properties) {
-		String deviceHumanName = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.get(thingTypeUID);
-		String label = deviceHumanName + " [" + remoteAddress + "]";
-	    DiscoveryResult result = DiscoveryResultBuilder
-		    .create(thingUID)
-		    .withThingType(thingTypeUID)
-		    .withProperties(properties)
-		    .withLabel(label)
-		    .build();
+    private void notifyThingDiscovered(ThingTypeUID thingTypeUID, ThingUID thingUID, String remoteAddress, Map<String, Object> properties) {
+        String deviceHumanName = BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.get(thingTypeUID);
+        String label = deviceHumanName + " [" + remoteAddress + "]";
+        DiscoveryResult result = DiscoveryResultBuilder
+                .create(thingUID)
+                .withThingType(thingTypeUID)
+                .withProperties(properties)
+                .withLabel(label)
+                .build();
 
-	    thingDiscovered(result);
-	}
+        thingDiscovered(result);
+    }
 }
