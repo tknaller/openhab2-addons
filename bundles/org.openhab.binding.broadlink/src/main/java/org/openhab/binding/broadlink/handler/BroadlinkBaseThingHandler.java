@@ -182,7 +182,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 thingConfig.getMAC(),
                 id,
                 Hex.convertHexToBytes(thingConfig.getIV()),
-                key
+                key,
+                thingConfig.getDeviceType()
         );
     }
 
