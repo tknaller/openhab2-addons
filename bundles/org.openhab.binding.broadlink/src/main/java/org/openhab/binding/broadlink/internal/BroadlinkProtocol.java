@@ -40,7 +40,8 @@ public class BroadlinkProtocol {
                                       byte[] mac,
                                       byte[] id,
                                       byte[] iv,
-                                      byte[] key) {
+                                      byte[] key,
+                                      int deviceType) {
         byte packet[] = new byte[56];
         packet[0] = 0x5a;
         packet[1] = (byte) 0xa5;
@@ -50,8 +51,8 @@ public class BroadlinkProtocol {
         packet[5] = (byte) 0xa5;
         packet[6] = (byte) 0xaa;
         packet[7] = 0x55;
-        packet[36] = 42; // 0x24 = 0x2a
-        packet[37] = 39; // 0x25 = 0x27
+        packet[36] = (byte)(deviceType & 0xff);
+        packet[37] = (byte)(deviceType >> 8); 
         packet[38] = command;
         packet[40] = (byte) (count & 0xff);
         packet[41] = (byte) (count >> 8);

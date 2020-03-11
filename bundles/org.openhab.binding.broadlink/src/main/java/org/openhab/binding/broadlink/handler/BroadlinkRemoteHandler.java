@@ -52,6 +52,11 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         try {
             abyte0 = new byte[4];
             abyte0[0] = 2;
+            if ((byte)thing.getConfiguration().get("deviceType") == 0x5f36) {
+                abyte0 = new byte[6];
+                abyte0[0] = (byte)0xd0;
+                abyte0[2] = 2;
+            }
             outputStream.write(abyte0);
             outputStream.write(code);
         } catch (IOException e) {
