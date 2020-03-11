@@ -64,11 +64,12 @@ public class BroadlinkSocket {
                     BroadlinkSocketListener listener;
                     byte remoteMAC[];
                     org.eclipse.smarthome.core.thing.ThingTypeUID deviceType;
-                    for (Iterator<BroadlinkSocketListener> iterator = (new ArrayList<BroadlinkSocketListener>(BroadlinkSocket.listeners)).iterator(); iterator.hasNext(); listener.onDataReceived(dgram.getAddress().getHostAddress(), dgram.getPort(), Hex.decodeMAC(remoteMAC), deviceType)) {
+                    int model;
+                    for (Iterator<BroadlinkSocketListener> iterator = (new ArrayList<BroadlinkSocketListener>(BroadlinkSocket.listeners)).iterator(); iterator.hasNext(); listener.onDataReceived(dgram.getAddress().getHostAddress(), dgram.getPort(), Hex.decodeMAC(remoteMAC), deviceType, model)) {
                         listener = iterator.next();
                         byte receivedPacket[] = dgram.getData();
                         remoteMAC = Arrays.copyOfRange(receivedPacket, 58, 64);
-                        int model = Byte.toUnsignedInt(receivedPacket[52]) | Byte.toUnsignedInt(receivedPacket[53]) << 8;
+                        model = Byte.toUnsignedInt(receivedPacket[52]) | Byte.toUnsignedInt(receivedPacket[53]) << 8;
                         deviceType = ModelMapper.getThingType(model);
                     }
 
