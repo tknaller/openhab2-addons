@@ -162,7 +162,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     protected byte[] buildMessage(byte command, byte payload[]) throws IOException {
         return buildMessage(command, payload, thingConfig.getDeviceType());
     }
-        protected byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
+    
+    protected byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
         Map<String, String> properties = editProperties();
         byte id[];
         if (properties.get("id") == null) {
