@@ -55,8 +55,8 @@ public class BroadlinkProtocol {
         packet[0x05] = (byte)0xa5;
         packet[0x06] = (byte)0xaa;
         packet[0x07] = 0x55;
-        packet[0x24] = (byte)(deviceType & 0xff);
-        packet[0x25] = (byte)(deviceType >> 8); 
+        packet[0x24] = 42;//(byte)(deviceType & 0xff);
+        packet[0x25] = 39;//(byte)(deviceType >> 8); 
         packet[0x26] = command;
         packet[0x28] = (byte) (count & 0xff);
         packet[0x29] = (byte) (count >> 8);
@@ -109,7 +109,7 @@ public class BroadlinkProtocol {
 
     public static byte[] buildAuthenticationPayload() {
         // https://github.com/mjg59/python-broadlink/blob/master/protocol.md
-        byte payload[] = new byte[80];
+        byte payload[] = new byte[0x50];
         payload[0x04] = 0x31;
         payload[0x05] = 0x31;
         payload[0x06] = 0x31;
@@ -126,6 +126,7 @@ public class BroadlinkProtocol {
         payload[0x11] = 0x31;
         payload[0x12] = 0x31;
 
+        payload[0x13] = 0x01;
         payload[0x1e] = 0x01;
         payload[0x2d] = 0x01;
 
@@ -201,9 +202,11 @@ public class BroadlinkProtocol {
             throw new ProtocolException("Incoming packet from device is null.");
         }
 
-        int error = (packet[0x22] | packet[0x23] | packet[0x24]) << 8;
+        /*boolean error = (int)packet[0x22] != 0 || (int)packet[0x23] != 0;// || (int)packet[0x24] != 0;
+        if (error) {*/
+        int error = packet[34] | packet[35] << 8;
         if (error != 0) {
-            throw new ProtocolException("Response from device is not valid. (Error code " + error + " )");
+            throw new ProtocolException(String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X,0x24=0x%02X)",packet[0x22],packet[0x23],packet[0x24]));
         }
 
         try {
