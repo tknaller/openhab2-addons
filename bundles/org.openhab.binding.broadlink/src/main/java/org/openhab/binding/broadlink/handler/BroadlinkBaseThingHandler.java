@@ -134,7 +134,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         authenticated = false;
 
         try {
-            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload());
+            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1);
             byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
             byte decryptResponse[] = BroadlinkProtocol.decodePacket(response, thingConfig, null);
             byte deviceId[] = Utils.getDeviceId(decryptResponse);
@@ -160,6 +160,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) throws IOException {
+        return buildMessage(command, payload, thingConfig.getDeviceType());
+    }
+        protected byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
         Map<String, String> properties = editProperties();
         byte id[];
         if (properties.get("id") == null) {
@@ -183,7 +186,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 id,
                 Hex.convertHexToBytes(thingConfig.getIV()),
                 key,
-                thingConfig.getDeviceType()
+                deviceType
         );
     }
 
