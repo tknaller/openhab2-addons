@@ -32,7 +32,7 @@ public class BroadlinkDeviceConfiguration {
     private String iv;
     private int retries = 1;
     private boolean ignoreFailedUpdates = false;
-    public int deviceType;
+    private int deviceType;
 
     public BroadlinkDeviceConfiguration() {
         ipAddress = "";
