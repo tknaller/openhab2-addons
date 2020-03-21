@@ -34,29 +34,22 @@ public class BroadlinkProtocol {
 
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkProtocol.class);
 
-    public static byte[] buildMessage(byte command,
-                                      byte[] payload,
-                                      int count,
-                                      byte[] mac,
-                                      byte[] id,
-                                      byte[] iv,
-                                      byte[] key,
-                                      int deviceType) {
+    public static byte[] buildMessage(byte command, byte[] payload, int count, byte[] mac, byte[] id, byte[] iv,
+            byte[] key, int deviceType) {
         byte packet[] = new byte[0x38];
         packet[0x00] = 0x5a;
-        packet[0x01] = (byte)0xa5; // https://stackoverflow.com/questions/20026942/type-mismatch-cannot-convert-int-to-byte
+        packet[0x01] = (byte) 0xa5; // https://stackoverflow.com/questions/20026942/type-mismatch-cannot-convert-int-to-byte
         /*
-        int 0b10000000 is 128
-        byte 0b10000000 is -128
-        */
-        packet[0x02] = (byte)0xaa;
+         * int 0b10000000 is 128 byte 0b10000000 is -128
+         */
+        packet[0x02] = (byte) 0xaa;
         packet[0x03] = 0x55;
         packet[0x04] = 0x5a;
-        packet[0x05] = (byte)0xa5;
-        packet[0x06] = (byte)0xaa;
+        packet[0x05] = (byte) 0xa5;
+        packet[0x06] = (byte) 0xaa;
         packet[0x07] = 0x55;
-        packet[0x24] = 42;//(byte)(deviceType & 0xff);
-        packet[0x25] = 39;//(byte)(deviceType >> 8); 
+        packet[0x24] = (byte) (deviceType & 0xff);
+        packet[0x25] = (byte) (deviceType >> 8);
         packet[0x26] = command;
         packet[0x28] = (byte) (count & 0xff);
         packet[0x29] = (byte) (count >> 8);
@@ -130,13 +123,13 @@ public class BroadlinkProtocol {
         payload[0x1e] = 0x01;
         payload[0x2d] = 0x01;
 
-        payload[0x30] = (byte)'T';
-        payload[0x31] = (byte)'e';
-        payload[0x32] = (byte)'s';
-        payload[0x33] = (byte)'T';
-        payload[0x34] = (byte)' ';
-        payload[0x35] = (byte)' ';
-        payload[0x36] = (byte)'1';
+        payload[0x30] = (byte) 'T';
+        payload[0x31] = (byte) 'e';
+        payload[0x32] = (byte) 's';
+        payload[0x33] = (byte) 'T';
+        payload[0x34] = (byte) ' ';
+        payload[0x35] = (byte) ' ';
+        payload[0x36] = (byte) '1';
 
         return payload;
     }
@@ -193,29 +186,29 @@ public class BroadlinkProtocol {
         return packet;
     }
 
-    public static byte[] decodePacket(byte[] packet, @Nullable BroadlinkDeviceConfiguration thingConfig, @Nullable Map<String, String> properties) throws IOException {
+    public static byte[] decodePacket(byte[] packet, @Nullable BroadlinkDeviceConfiguration thingConfig,
+            @Nullable Map<String, String> properties) throws IOException {
         // if a properties map is supplied, use it.
-        // During initial thing startup we don't have one yet, so use the auth key from the config.
+        // During initial thing startup we don't have one yet, so use the auth key from
+        // the config.
         final String key = (properties == null) ? thingConfig.getAuthorizationKey() : properties.get("key");
 
         if (packet == null) {
             throw new ProtocolException("Incoming packet from device is null.");
         }
 
-        /*boolean error = (int)packet[0x22] != 0 || (int)packet[0x23] != 0;// || (int)packet[0x24] != 0;
-        if (error) {*/
-        int error = packet[34] | packet[35] << 8;
-        if (error != 0) {
-            throw new ProtocolException(String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X,0x24=0x%02X)",packet[0x22],packet[0x23],packet[0x24]));
+        boolean error = (int) packet[0x22] != 0 || (int) packet[0x23] != 0 || (int) packet[0x24] != 0;
+        if (error) {
+            // int error = packet[34] | packet[35] << 8;
+            // if (error != 0) {
+            throw new ProtocolException(
+                    String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X,0x24=0x%02X)",
+                            packet[0x22], packet[0x23], packet[0x24]));
         }
 
         try {
             IvParameterSpec ivSpec = new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV()));
-            return Utils.decrypt(
-                    Hex.fromHexString(key),
-                    ivSpec,
-                    Utils.slice(packet, 56, 88)
-            );
+            return Utils.decrypt(Hex.fromHexString(key), ivSpec, Utils.slice(packet, 56, 88));
         } catch (Exception ex) {
             throw new IOException("Failed while getting device status", ex);
         }
