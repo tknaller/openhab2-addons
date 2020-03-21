@@ -197,10 +197,8 @@ public class BroadlinkProtocol {
             throw new ProtocolException("Incoming packet from device is null.");
         }
 
-        boolean error = (int) packet[0x22] != 0 || (int) packet[0x23] != 0 || (int) packet[0x24] != 0;
+        boolean error = (int) packet[0x22] != 0 || (int) packet[0x23] != 0;// || (int) packet[0x24] != 0;
         if (error) {
-            // int error = packet[34] | packet[35] << 8;
-            // if (error != 0) {
             throw new ProtocolException(
                     String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X,0x24=0x%02X)",
                             packet[0x22], packet[0x23], packet[0x24]));
