@@ -76,8 +76,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
-            clearProperty("id");
-            clearProperty("key");
+            setProperty("id", null);
+            setProperty("key", null);
         }
         thingLogger.logDebug("initialization complete. Updating status.");
 
