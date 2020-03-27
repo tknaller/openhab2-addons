@@ -4,7 +4,7 @@
 *.iml
 npm-debug.log
 .build.log
-
+.project
 .metadata/
 bin/
 target/
@@ -18,6 +18,6 @@ xtend-gen/
 bundles/**/src/main/history
 features/**/src/main/history
 features/**/src/main/feature
-
+addons/
 .vscode
 .factorypath
