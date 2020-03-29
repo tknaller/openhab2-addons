@@ -35,8 +35,8 @@ public class BroadlinkProtocol {
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkProtocol.class);
 
     public static byte[] buildMessage(byte command, byte[] payload, int count, byte[] mac, byte[] id, byte[] iv,
-            byte[] key, int deviceType) {
-        byte packet[] = new byte[0x38];
+        byte[] key, int deviceType) {     
+            byte packet[] = new byte[0x38];
         packet[0x00] = 0x5a;
         packet[0x01] = (byte) 0xa5; // https://stackoverflow.com/questions/20026942/type-mismatch-cannot-convert-int-to-byte
         /*
@@ -73,7 +73,6 @@ public class BroadlinkProtocol {
             checksum += i;
             checksum &= 0xffff;
         }
-
         packet[0x34] = (byte) (checksum & 0xff);
         packet[0x35] = (byte) (checksum >> 8);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -94,7 +93,6 @@ public class BroadlinkProtocol {
             checksum += i;
             checksum &= 0xffff;
         }
-
         data[0x20] = (byte) (checksum & 0xff);
         data[0x21] = (byte) (checksum >> 8);
         return data;
@@ -118,15 +116,12 @@ public class BroadlinkProtocol {
         payload[0x10] = 0x31;
         payload[0x11] = 0x31;
         payload[0x12] = 0x31;
-
-        payload[0x13] = 0x01;
         payload[0x1e] = 0x01;
         payload[0x2d] = 0x01;
-
         payload[0x30] = (byte) 'T';
         payload[0x31] = (byte) 'e';
         payload[0x32] = (byte) 's';
-        payload[0x33] = (byte) 'T';
+        payload[0x33] = (byte) 't';
         payload[0x34] = (byte) ' ';
         payload[0x35] = (byte) ' ';
         payload[0x36] = (byte) '1';
