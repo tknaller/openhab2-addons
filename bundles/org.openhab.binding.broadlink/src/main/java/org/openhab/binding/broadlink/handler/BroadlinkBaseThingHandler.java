@@ -170,6 +170,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         byte id[];
         if (isPropertyEmpty("id")) {
             id = new byte[4];
+            Arrays.fill(id, (byte)0);
         } else {
             id = Hex.fromHexString(properties.get("id"));
         }
@@ -265,6 +266,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             if (authenticate()) {
                 thingLogger.logDebug("Authenticated with newly-detected device, will now get its status");
             } else {
+                thingLogger.logError("ANTOBUG: linea 268 Basethinghandler");
                 thingLogger.logError("Attempting to authenticate prior to getting device status FAILED. Will mark as offline");
                 forceOffline();
                 return;
