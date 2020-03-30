@@ -35,6 +35,8 @@ import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListene
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
 import org.slf4j.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Abstract superclass of all supported Broadlink devices.
  *
@@ -76,8 +78,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
-            setProperty("id", null);
-            setProperty("key", null);
+            //clearProperty("id");
+            //clearProperty("key");
+            setProperty("id","");
+            setProperty("key","");
         }
         thingLogger.logDebug("initialization complete. Updating status.");
 
@@ -166,16 +170,20 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     protected byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
         Map<String, String> properties = editProperties();
         byte id[];
-        if (properties.get("id") == null) {
+        if (StringUtils.isEmpty(properties.get("id"))) {
             id = new byte[4];
+            Arrays.fill(id, (byte)0);
         } else {
             id = Hex.fromHexString(properties.get("id"));
         }
         byte key[];
-        if (properties.get("key") == null || properties.get("id") == null) {
+        if (StringUtils.isEmpty(properties.get("key"))) {
+            
             key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
+            thingLogger.logTrace("key is empty get from thingConfig.getAuthorizationKey()" + Arrays.toString(key));
         } else {
             key = Hex.fromHexString(properties.get("key"));
+            thingLogger.logTrace("key is full get from properties.get" + Arrays.toString(key));
         }
         count = count + 1 & 0xffff;
         thingLogger.logTrace("building message with count: {}, id: {}, key: {}", count, Hex.toHexString(id), Hex.toHexString(key));
