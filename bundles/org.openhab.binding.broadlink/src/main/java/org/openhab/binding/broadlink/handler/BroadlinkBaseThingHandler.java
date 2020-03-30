@@ -35,6 +35,8 @@ import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListene
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
 import org.slf4j.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Abstract superclass of all supported Broadlink devices.
  *
@@ -177,8 +179,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         byte key[];
         if (isPropertyEmpty("key") || isPropertyEmpty("id")) {
             key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
+            thingLogger.logTrace("key is empty get from thingConfig.getAuthorizationKey()" + Arrays.toString(key));
         } else {
             key = Hex.fromHexString(properties.get("key"));
+            thingLogger.logTrace("key is full get from properties.get" + Arrays.toString(key));
         }
         count = count + 1 & 0xffff;
         thingLogger.logTrace("building message with count: {}, id: {}, key: {}", count, Hex.toHexString(id), Hex.toHexString(key));
@@ -266,7 +270,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             if (authenticate()) {
                 thingLogger.logDebug("Authenticated with newly-detected device, will now get its status");
             } else {
-                thingLogger.logError("ANTOBUG: linea 268 Basethinghandler");
                 thingLogger.logError("Attempting to authenticate prior to getting device status FAILED. Will mark as offline");
                 forceOffline();
                 return;
