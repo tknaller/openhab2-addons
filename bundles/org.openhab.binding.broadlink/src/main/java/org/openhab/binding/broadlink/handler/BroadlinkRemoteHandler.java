@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.transform.*;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.Hex;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.osgi.framework.BundleContext;
@@ -31,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Remote blaster handler 
+ * Remote blaster handler
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
@@ -48,10 +49,17 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     protected void sendCode(byte code[]) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        BroadlinkDeviceConfiguration thingConfig = (BroadlinkDeviceConfiguration) getConfigAs(
+                BroadlinkDeviceConfiguration.class);
         byte abyte0[];
         try {
             abyte0 = new byte[4];
             abyte0[0] = 2;
+            if (thingConfig.getDeviceType() == 0x5f36) {
+                abyte0 = new byte[6];
+                abyte0[0] = (byte) 0xd0;
+                abyte0[2] = 2;
+            }
             outputStream.write(abyte0);
             outputStream.write(code);
         } catch (IOException e) {
@@ -60,14 +68,16 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         if (outputStream.size() % 16 == 0) {
             sendAndReceiveDatagram(buildMessage((byte) 106, outputStream.toByteArray()), "remote code");
         } else {
-            thingLogger.logError("Will not send remote code because it has an incorrect length (" + outputStream.size() + ")");
+            thingLogger.logError(
+                    "Will not send remote code because it has an incorrect length (" + outputStream.size() + ")");
         }
 
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!Utils.isOnline(getThing())) {
-            thingLogger.logDebug("Can't handle command {} because handler for thing {} is not ONLINE", command, getThing().getLabel());
+            thingLogger.logDebug("Can't handle command {} because handler for thing {} is not ONLINE", command,
+                    getThing().getLabel());
             return;
         }
         if (command instanceof RefreshType) {
@@ -87,21 +97,21 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         String s;
         try {
             switch ((s = channelTypeUID.getId()).hashCode()) {
-                case 950394699: // FIXME WTF?!?!
-                    if (s.equals("command")) {
-                        thingLogger.logDebug("Handling ir/rf command {} on channel {} of thing {}", new Object[]{
-                                command, channelUID.getId(), getThing().getLabel()
-                        });
-                        byte code[] = lookupCode(command, channelUID);
-                        if (code != null)
-                            sendCode(code);
-                        break;
-                    }
-                    // fall through
-
-                default:
-                    thingLogger.logDebug("Thing {} has unknown channel type {}", getThing().getLabel(), channelTypeUID.getId());
+            case 950394699: // FIXME WTF?!?!
+                if (s.equals("command")) {
+                    thingLogger.logDebug("Handling ir/rf command {} on channel {} of thing {}",
+                            new Object[] { command, channelUID.getId(), getThing().getLabel() });
+                    byte code[] = lookupCode(command, channelUID);
+                    if (code != null)
+                        sendCode(code);
                     break;
+                }
+                // fall through
+
+            default:
+                thingLogger.logDebug("Thing {} has unknown channel type {}", getThing().getLabel(),
+                        channelTypeUID.getId());
+                break;
             }
         } catch (IOException e) {
             thingLogger.logError("Exception while trying to send code", e);
@@ -121,7 +131,8 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         BundleContext bundleContext = FrameworkUtil.getBundle(BroadlinkRemoteHandler.class).getBundleContext();
         TransformationService transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
         if (transformService == null) {
-            thingLogger.logError("Failed to get MAP transformation service for thing {}; is bundle installed?", getThing().getLabel());
+            thingLogger.logError("Failed to get MAP transformation service for thing {}; is bundle installed?",
+                    getThing().getLabel());
             return null;
         }
         byte code[] = null;
@@ -130,20 +141,17 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             value = transformService.transform(mapFile, command.toString());
             code = Hex.convertHexToBytes(value);
         } catch (TransformationException e) {
-            thingLogger.logError("Failed to transform {} for thing {} using map file '{}', exception={}", new Object[]{
-                    command, getThing().getLabel(), mapFile, e.getMessage()
-            });
+            thingLogger.logError("Failed to transform {} for thing {} using map file '{}', exception={}",
+                    new Object[] { command, getThing().getLabel(), mapFile, e.getMessage() });
             return null;
         }
         if (StringUtils.isEmpty(value)) {
-            thingLogger.logError("No entry for {} in map file '{}' for thing {}", new Object[]{
-                    command, mapFile, getThing().getLabel()
-            });
+            thingLogger.logError("No entry for {} in map file '{}' for thing {}",
+                    new Object[] { command, mapFile, getThing().getLabel() });
             return null;
         }
-        thingLogger.logDebug("Transformed {} for thing {} with map file '{}'", new Object[]{
-                    command, getThing().getLabel(), mapFile
-            });
+        thingLogger.logDebug("Transformed {} for thing {} with map file '{}'",
+                new Object[] { command, getThing().getLabel(), mapFile });
         return code;
     }
 

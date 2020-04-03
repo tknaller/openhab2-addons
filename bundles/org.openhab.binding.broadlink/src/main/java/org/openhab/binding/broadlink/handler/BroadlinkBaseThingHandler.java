@@ -35,6 +35,8 @@ import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListene
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
 import org.slf4j.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Abstract superclass of all supported Broadlink devices.
  *
@@ -136,7 +138,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         authenticated = false;
 
         try {
-            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload());
+            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1);
             byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
             byte decryptResponse[] = BroadlinkProtocol.decodePacket(response, thingConfig, null);
             byte deviceId[] = Utils.getDeviceId(decryptResponse);
@@ -162,18 +164,25 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) throws IOException {
+        return buildMessage(command, payload, thingConfig.getDeviceType());
+    }
+    
+    protected byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
         Map<String, String> properties = editProperties();
         byte id[];
         if (isPropertyEmpty("id")) {
             id = new byte[4];
+            Arrays.fill(id, (byte)0);
         } else {
             id = Hex.fromHexString(properties.get("id"));
         }
         byte key[];
         if (isPropertyEmpty("key") || isPropertyEmpty("id")) {
             key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
+            thingLogger.logTrace("key is empty get from thingConfig.getAuthorizationKey()" + Arrays.toString(key));
         } else {
             key = Hex.fromHexString(properties.get("key"));
+            thingLogger.logTrace("key is full get from properties.get" + Arrays.toString(key));
         }
         count = count + 1 & 0xffff;
         thingLogger.logTrace("building message with count: {}, id: {}, key: {}", count, Hex.toHexString(id), Hex.toHexString(key));
@@ -184,7 +193,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 thingConfig.getMAC(),
                 id,
                 Hex.convertHexToBytes(thingConfig.getIV()),
-                key
+                key,
+                deviceType
         );
     }
 

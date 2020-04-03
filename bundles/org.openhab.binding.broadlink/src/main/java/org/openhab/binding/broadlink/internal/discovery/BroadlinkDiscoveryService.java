@@ -63,13 +63,13 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(getTimestampOfLastScan());
     }
 
-    public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
+    public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID, int model) {
         logger.info("Data received during Broadlink device discovery: from {}:{} [{}]", remoteAddress, remotePort, remoteMAC);
         foundCount++;
-        discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID);
+        discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID, model);
     }
 
-    private void discoveryResultSubmission(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
+    private void discoveryResultSubmission(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID, int model) {
         if (logger.isDebugEnabled()) {
             logger.debug("Adding new Broadlink device on {} with mac '{}' to Smarthome inbox", remoteAddress, remoteMAC);
         }
@@ -77,6 +77,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         properties.put("ipAddress", remoteAddress);
         properties.put("port", Integer.valueOf(remotePort));
         properties.put("mac", remoteMAC);
+        properties.put("deviceType", model);
         ThingUID thingUID = new ThingUID(thingTypeUID, remoteMAC.replace(":", "-"));
         if (logger.isDebugEnabled()) {
             logger.debug("Device '{}' discovered at '{}'.", thingUID, remoteAddress);

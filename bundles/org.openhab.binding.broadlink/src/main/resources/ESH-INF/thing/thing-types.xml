@@ -741,6 +741,13 @@
 		<advanced>true</advanced>
 		<default>false</default>
 		</parameter>
+		<parameter name="deviceType" type="integer">
+		<label>Device Type</label>
+		<description>The internal device type, see: https://github.com/mjg59/python-broadlink/blob/5daf12c86f8c046adcfde6151fcd4747eb4f882b/broadlink/__init__.py#L18 - enter as Integer! i.e. 0x272a = 10026</description>
+		<required>true</required>
+		<advanced>true</advanced>
+		<default>10026</default>
+		</parameter>
 	</config-description>
 	</thing-type>
 

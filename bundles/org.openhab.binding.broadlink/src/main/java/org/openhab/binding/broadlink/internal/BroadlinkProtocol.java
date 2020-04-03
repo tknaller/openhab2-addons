@@ -34,37 +34,35 @@ public class BroadlinkProtocol {
 
     private static final Logger logger = LoggerFactory.getLogger(BroadlinkProtocol.class);
 
-    public static byte[] buildMessage(byte command,
-                                      byte[] payload,
-                                      int count,
-                                      byte[] mac,
-                                      byte[] id,
-                                      byte[] iv,
-                                      byte[] key) {
-        byte packet[] = new byte[56];
-        packet[0] = 0x5a;
-        packet[1] = (byte) 0xa5;
-        packet[2] = (byte) 0xaa;
-        packet[3] = 0x55;
-        packet[4] = 0x5a;
-        packet[5] = (byte) 0xa5;
-        packet[6] = (byte) 0xaa;
-        packet[7] = 0x55;
-        packet[36] = 42;
-        packet[37] = 39;
-        packet[38] = command;
-        packet[40] = (byte) (count & 0xff);
-        packet[41] = (byte) (count >> 8);
-        packet[42] = mac[0];
-        packet[43] = mac[1];
-        packet[44] = mac[2];
-        packet[45] = mac[3];
-        packet[46] = mac[4];
-        packet[47] = mac[5];
-        packet[48] = id[0];
-        packet[49] = id[1];
-        packet[50] = id[2];
-        packet[51] = id[3];
+    public static byte[] buildMessage(byte command, byte[] payload, int count, byte[] mac, byte[] id, byte[] iv,
+        byte[] key, int deviceType) {     
+            byte packet[] = new byte[0x38];
+        packet[0x00] = 0x5a;
+        packet[0x01] = (byte) 0xa5; // https://stackoverflow.com/questions/20026942/type-mismatch-cannot-convert-int-to-byte
+        /*
+         * int 0b10000000 is 128 byte 0b10000000 is -128
+         */
+        packet[0x02] = (byte) 0xaa;
+        packet[0x03] = 0x55;
+        packet[0x04] = 0x5a;
+        packet[0x05] = (byte) 0xa5;
+        packet[0x06] = (byte) 0xaa;
+        packet[0x07] = 0x55;
+        packet[0x24] = (byte) (deviceType & 0xff);
+        packet[0x25] = (byte) (deviceType >> 8);
+        packet[0x26] = command;
+        packet[0x28] = (byte) (count & 0xff);
+        packet[0x29] = (byte) (count >> 8);
+        packet[0x2a] = mac[0];
+        packet[0x2b] = mac[1];
+        packet[0x2c] = mac[2];
+        packet[0x2d] = mac[3];
+        packet[0x2e] = mac[4];
+        packet[0x2f] = mac[5];
+        packet[0x30] = id[0];
+        packet[0x31] = id[1];
+        packet[0x32] = id[2];
+        packet[0x33] = id[3];
         int checksum = 0xBEAF;
         int i = 0;
         byte abyte0[];
@@ -75,9 +73,8 @@ public class BroadlinkProtocol {
             checksum += i;
             checksum &= 0xffff;
         }
-
-        packet[52] = (byte) (checksum & 0xff);
-        packet[53] = (byte) (checksum >> 8);
+        packet[0x34] = (byte) (checksum & 0xff);
+        packet[0x35] = (byte) (checksum >> 8);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             outputStream.write(packet);
@@ -96,43 +93,38 @@ public class BroadlinkProtocol {
             checksum += i;
             checksum &= 0xffff;
         }
-
-        data[32] = (byte) (checksum & 0xff);
-        data[33] = (byte) (checksum >> 8);
+        data[0x20] = (byte) (checksum & 0xff);
+        data[0x21] = (byte) (checksum >> 8);
         return data;
     }
 
     public static byte[] buildAuthenticationPayload() {
         // https://github.com/mjg59/python-broadlink/blob/master/protocol.md
-        byte payload[] = new byte[80];
-        payload[4] = 49;
-        payload[5] = 49;
-        payload[6] = 49;
-        payload[7] = 49;
-        payload[8] = 49;
-        payload[9] = 49;
-        payload[0x0a] = 49;
-        payload[0x0b] = 49;
-        payload[0x0c] = 49;
-        payload[0x0d] = 49;
-        payload[0x0e] = 49;
-        payload[0x0f] = 49;
-        payload[0x10] = 49;
-        payload[0x11] = 49;
-        payload[0x12] = 49;
-
-        payload[0x13] = 0x01;
-
-
-        payload[30] = 1;
-        payload[45] = 1;
-        payload[0x30] = 84;
-        payload[0x31] = 101;
-        payload[0x32] = 115;
-        payload[0x33] = 116;
-        payload[0x34] = 32;
-        payload[0x35] = 32;
-        payload[0x36] = 49;
+        byte payload[] = new byte[0x50];
+        payload[0x04] = 0x31;
+        payload[0x05] = 0x31;
+        payload[0x06] = 0x31;
+        payload[0x07] = 0x31;
+        payload[0x08] = 0x31;
+        payload[0x09] = 0x31;
+        payload[0x0a] = 0x31;
+        payload[0x0b] = 0x31;
+        payload[0x0c] = 0x31;
+        payload[0x0d] = 0x31;
+        payload[0x0e] = 0x31;
+        payload[0x0f] = 0x31;
+        payload[0x10] = 0x31;
+        payload[0x11] = 0x31;
+        payload[0x12] = 0x31;
+        payload[0x1e] = 0x01;
+        payload[0x2d] = 0x01;
+        payload[0x30] = (byte) 'T';
+        payload[0x31] = (byte) 'e';
+        payload[0x32] = (byte) 's';
+        payload[0x33] = (byte) 't';
+        payload[0x34] = (byte) ' ';
+        payload[0x35] = (byte) ' ';
+        payload[0x36] = (byte) '1';
 
         return payload;
     }
@@ -189,27 +181,27 @@ public class BroadlinkProtocol {
         return packet;
     }
 
-    public static byte[] decodePacket(byte[] packet, @Nullable BroadlinkDeviceConfiguration thingConfig, @Nullable Map<String, String> properties) throws IOException {
+    public static byte[] decodePacket(byte[] packet, @Nullable BroadlinkDeviceConfiguration thingConfig,
+            @Nullable Map<String, String> properties) throws IOException {
         // if a properties map is supplied, use it.
-        // During initial thing startup we don't have one yet, so use the auth key from the config.
+        // During initial thing startup we don't have one yet, so use the auth key from
+        // the config.
         final String key = (properties == null) ? thingConfig.getAuthorizationKey() : properties.get("key");
 
         if (packet == null) {
             throw new ProtocolException("Incoming packet from device is null.");
         }
 
-        int error = packet[34] | packet[35] << 8;
-        if (error != 0) {
-            throw new ProtocolException("Response from device is not valid. (Error code " + error + " )");
+        boolean error = (int) packet[0x22] != 0 || (int) packet[0x23] != 0;// || (int) packet[0x24] != 0;
+        if (error) {
+            throw new ProtocolException(
+                    String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X,0x24=0x%02X)",
+                            packet[0x22], packet[0x23], packet[0x24]));
         }
 
         try {
             IvParameterSpec ivSpec = new IvParameterSpec(Hex.convertHexToBytes(thingConfig.getIV()));
-            return Utils.decrypt(
-                    Hex.fromHexString(key),
-                    ivSpec,
-                    Utils.slice(packet, 56, 88)
-            );
+            return Utils.decrypt(Hex.fromHexString(key), ivSpec, Utils.slice(packet, 56, 88));
         } catch (Exception ex) {
             throw new IOException("Failed while getting device status", ex);
         }

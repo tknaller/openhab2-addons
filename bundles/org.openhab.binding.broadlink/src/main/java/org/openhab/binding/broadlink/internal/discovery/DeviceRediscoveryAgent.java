@@ -48,7 +48,7 @@ public class DeviceRediscoveryAgent implements BroadlinkSocketListener, Discover
         DiscoveryProtocol.beginAsync(this, 5000L, this);
     }
 
-    public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID) {
+    public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID, int model) {
         logger.trace("Data received during Broadlink device rediscovery: from {}:{} [{}]", remoteAddress, remotePort, remoteMAC);
 
         // if this thing matches the missingThingConfig, we've found it!

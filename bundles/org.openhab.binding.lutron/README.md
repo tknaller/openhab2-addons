@@ -14,7 +14,7 @@ Each is described in a separate section below.
 
 **Note:** While the integration protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2, HomeWorks QS, and Caseta with Smart Bridge Pro.
 Homeworks QS support is still a work in progress, since not all features/devices are supported yet.
-RA2 Select has been reported to work with the binding, but support is unconfirmed.
+RA2 Select systems have been reported to work with the binding, but full support is still unconfirmed.
 The binding has not been tested with Quantum, QS Standalone, or myRoom Plus systems.
 
 **Note:** Caseta support is only possible with the Smart Bridge **Pro** hub.
@@ -52,7 +52,10 @@ Discovered repeaters/processors will be accessed using the default integration c
 These can be changed in the bridge thing configuration.
 Discovered keypad devices should now have their model parameters automatically set to the correct value.
 
-Hubs and their connected devices in Caseta and RA2 Select systems need to be configured manually.
+Caseta Smart Bridge PRO 2 hubs should now be discovered automatically via mDNS.
+Devices attached to them still need to be configured manually.
+
+Other supported Lutron systems must be configured manually.
 
 ## Binding Configuration
 
@@ -313,8 +316,9 @@ Supported options are `integrationId` and `autorelease`.
 Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
-They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
-They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
+The VCRX security (Full/Flash) input controls both the cci1 and cci2 channels, while input connections 1 and 2 map to the cci3 and cci4 channels respectively.
+The cci channels are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
 Note that the `autorelease` option **does not** apply to CCI channels.
 
 Thing configuration file example:

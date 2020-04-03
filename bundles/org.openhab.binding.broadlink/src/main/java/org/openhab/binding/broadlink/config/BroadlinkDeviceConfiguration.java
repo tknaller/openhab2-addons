@@ -32,6 +32,7 @@ public class BroadlinkDeviceConfiguration {
     private String iv;
     private int retries = 1;
     private boolean ignoreFailedUpdates = false;
+    private int deviceType;
 
     public BroadlinkDeviceConfiguration() {
         ipAddress = "";
@@ -116,6 +117,15 @@ public class BroadlinkDeviceConfiguration {
     public void setIV(String iv) {
         this.iv = iv;
     }
+
+    public int getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(int ideviceTypev) {
+        this.deviceType = deviceType;
+    }
+
 
     public void setRetries(int retries) {
         this.retries = retries;
