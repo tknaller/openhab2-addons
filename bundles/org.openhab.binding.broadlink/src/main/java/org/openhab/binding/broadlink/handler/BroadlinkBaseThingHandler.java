@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public abstract class BroadlinkBaseThingHandler extends BaseThingHandler implements DeviceRediscoveryListener {
 
+    private static final String EMPTY = "<empty";
+
     @Nullable
     private RetryableSocket socket;
     private boolean authenticated = false;
@@ -76,8 +78,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         if (iv != thingConfig.getIV() || authenticationKey != thingConfig.getAuthorizationKey()) {
             iv = thingConfig.getIV();
             authenticationKey = thingConfig.getAuthorizationKey();
-            clearProperty("id");
-            clearProperty("key");
+            emptyProperty("id");
+            emptyProperty("key");
         }
         thingLogger.logDebug("initialization complete. Updating status.");
 
@@ -162,13 +164,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     protected byte[] buildMessage(byte command, byte payload[]) throws IOException {
         Map<String, String> properties = editProperties();
         byte id[];
-        if (properties.get("id") == null) {
+        if (isPropertyEmpty("id")) {
             id = new byte[4];
         } else {
             id = Hex.fromHexString(properties.get("id"));
         }
         byte key[];
-        if (properties.get("key") == null || properties.get("id") == null) {
+        if (isPropertyEmpty("key") || isPropertyEmpty("id")) {
             key = Hex.convertHexToBytes(thingConfig.getAuthorizationKey());
         } else {
             key = Hex.fromHexString(properties.get("key"));
@@ -275,8 +277,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     private void forceOffline() {
         thingLogger.logError("updateItemStatus: Online -> Offline");
         this.authenticated = false; // This session is dead; we'll need to re-authenticate next time
-        clearProperty("id");
-        clearProperty("key");
+        emptyProperty("id");
+        emptyProperty("key");
         updateStatus(
                 ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR,
@@ -293,9 +295,15 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         updateProperties(properties);
     }
 
-    private void clearProperty(String propName) {
+    private void emptyProperty(String propName) {
+        setProperty(propName, EMPTY); // Apparently removing the property entirely breaks things; use a marker
+    }
+
+    private boolean isPropertyEmpty(String propName) {
         Map<String, String> properties = editProperties();
-        properties.remove(propName);
-        updateProperties(properties);
+        if (properties.containsKey(propName)) {
+            return EMPTY.equals(properties.get(propName));
+        }
+        return true;
     }
 }
