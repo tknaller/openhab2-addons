@@ -14,6 +14,7 @@ package org.openhab.binding.broadlink.handler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +56,9 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         try {
             abyte0 = new byte[4];
             abyte0[0] = 2;
-            if (thingConfig.getDeviceType() == 0x5f36) {
+            //https://github.com/mjg59/python-broadlink/blob/0.13.0/broadlink/__init__.py#L50 add RM4 list
+            //FIXME extend BroadlinkRemoteHandler to new type rm4 and extend sendCode to receive correct abyte0 
+            if (Arrays.asList(0x5f36, 0x5f36, 0x610f,0x610e,0x62be).contains(thingConfig.getDeviceType())) {
                 abyte0 = new byte[6];
                 abyte0[0] = (byte) 0xd0;
                 abyte0[2] = 2;
